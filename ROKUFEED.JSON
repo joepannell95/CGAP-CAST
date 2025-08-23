@@ -1,0 +1,58 @@
+{
+  "providerName": "CGAP Cast",
+  "lastUpdated": "2025-08-22T23:59:00Z",
+  "language": "en-US",
+  "liveFeeds": [
+    {
+      "id": "redbulltv",
+      "title": "Red Bull TV",
+      "shortDescription": "Action sports & adventure",
+      "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/9/99/Red_Bull_TV_logo.svg",
+      "genres": ["sports"],
+      "content": {
+        "dateAdded": "2025-08-22T00:00:00Z",
+        "videos": [
+          {
+            "url": "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8",
+            "quality": "HD",
+            "videoType": "HLS"
+          }
+        ]
+      }
+    },
+    {
+      "id": "skynews",
+      "title": "Sky News (Intl)",
+      "shortDescription": "24/7 world news",
+      "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Sky_News_2015_logo.svg",
+      "genres": ["news"],
+      "content": {
+        "dateAdded": "2025-08-22T00:00:00Z",
+        "videos": [
+          {
+            "url": "https://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5df975f7db171a001a5e13a8/master.m3u8?appName=rokutv",
+            "quality": "HD",
+            "videoType": "HLS"
+          }
+        ]
+      }
+    },
+    {
+      "id": "bloomberg",
+      "title": "Bloomberg TV (Free)",
+      "shortDescription": "Business & markets",
+      "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/6/66/Bloomberg_Television_2016.png",
+      "genres": ["news"],
+      "content": {
+        "dateAdded": "2025-08-22T00:00:00Z",
+        "videos": [
+          {
+            "url": "https://bloomberg.com/media-manifest/streams/asia.m3u8",
+            "quality": "HD",
+            "videoType": "HLS"
+          }
+        ]
+      }
+    }
+  ]
+}
