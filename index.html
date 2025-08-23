@@ -2,15 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>CGAP Cast</title>
+  <title>PannellCast</title>
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; background:#111; color:#eee; }
+    header { background:#1b5e20; padding:10px; text-align:center; color:#fff; }
+    #channels { width:250px; height:100vh; overflow:auto; background:#222; float:left; }
+    #channels div { padding:10px; cursor:pointer; border-bottom:1px solid #333; }
+    #channels div:hover { background:#333; }
+    #player { margin-left:250px; height:100vh; display:flex; align-items:center; justify-content:center; background:#000; }
+    video { width:100%; height:100%; }
+  </style>
 </head>
 <body>
-  <h1 style="color:green;">Welcome to CGAP Cast</h1>
-  <p>This will pull in IPTV playlists.</p>
-  <p>
-    👉 <a href="https://iptv-org.github.io/iptv/countries/us.m3u" target="_blank">
-      Open US IPTV Playlist
-    </a>
-  </p>
+  <header>
+    <h1>PannellCast IPTV</h1>
+    <p>Free US Playlist via iptv-org</p>
+  </header>
+  <div id="channels"></div>
+  <div id="player">
+    <video id="video" controls autoplay playsinline></video>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script>
+  const PLAYLIST_URL = "https://iptv-org.github.io/iptv/countries/us.m3u";
+  const video = document.getElementById("video");
+  const list = document.getElementById("channels");
+
+  function play(url) {
+    if (Hls.isSupported()) {
+      if (window.hls) window.hls.destroy();
+      const hls = new Hls();
+      hls.loadSource(url);
+      hls.attachMedia(video);
+      window.hls = hls;
+    } else {
+      video.src = url;
+    }
+  }
+
+  function parseM3U(text) {
+    const lines = text.split(/\r?\n/);
+    const channels = [];
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith("#EXTINF")) {
+        const name = lines[i].split(",").pop().trim();
+        const url = lines[i+1];
+        channels.push({ name, url });
+      }
+    }
+    return channels;
+  }
+
+  fetch(PLAYLIST_URL)
+    .then(r => r.text())
+    .then(text => {
+      const channels = parseM3U(text);
+      channels.forEach((ch, i) => {
+        const div = document.createElement("div");
+        div.textContent = ch.name;
+        div.onclick = () => play(ch.url);
+        list.appendChild(div);
+        if (i === 0) play(ch.url); // auto-play first channel
+      });
+    })
+    .catch(err => {
+      list.innerHTML = "Failed to load playlist.";
+      console.error(err);
+    });
+  </script>
 </body>
 </html>
