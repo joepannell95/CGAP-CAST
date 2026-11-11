@@ -187,6 +187,7 @@
         <div class="sf-grid" id="sf-grid"></div>
         <div class="sf-load" id="sf-load"><i></i><div>Searching the catalog…</div></div>
         <button class="sf-more" id="sf-more" type="button" hidden>Show more signs</button>
+        <p class="sf-cta" style="text-align:center;margin:2.4rem 0 0;font-size:1.45rem;color:#5d6660">Not quite right? <a href="/products/custom-safety-sign-8x12-aluminum" style="color:#E0731A;font-weight:700">We will make it with your wording</a> for the same $29.99. Need signs for a whole facility? <a href="/pages/site-sign-plan" style="color:#173F24;font-weight:700">Get a site sign plan</a>.</p>
       </div>
     </div>
   </div>
@@ -365,7 +366,7 @@
       }
       const grid = $('#sf-grid');
       if (!d.results.length && st.page === 0) {
-        grid.innerHTML = `<div class="sf-empty" style="grid-column:1/-1"><h3>No exact match yet</h3><p>Try describing the equipment or where the sign will hang, or <a href="/pages/request-a-quote">tell us what you need</a> and we will make it.</p></div>`;
+        grid.innerHTML = `<div class="sf-empty" style="grid-column:1/-1"><h3>No exact match yet</h3><p>Try describing the equipment or where the sign will hang, or <a href="/products/custom-safety-sign-8x12-aluminum">design a custom sign</a> with your exact wording for the same $29.99. Outfitting a whole site? <a href="/pages/site-sign-plan">Build a site sign plan</a>.</p></div>`;
       }
       d.results.forEach((r, i) => grid.appendChild(card(r, i)));
       const shown = (st.page + 1) * (browse ? 48 : 24);
