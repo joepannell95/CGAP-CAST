@@ -13,7 +13,14 @@ FACILITIES = [
   ("school", "School, campus or property", ["shop_class", "mechanical_room", "electrical", "chemical", "pool", "visitor", "emergency", "roof"]),
   ("oil_chem", "Oil, gas or chemical plant", ["flammable", "h2s", "chemical", "confined", "electrical", "ppe", "fuel", "lockout", "visitor", "emergency"]),
   ("cold", "Cold storage or ammonia refrigeration", ["ammonia", "cold_storage", "forklift", "dock", "battery", "electrical", "emergency"]),
+  ("carwash", "Car wash or detailing", ["car_tunnel", "pressure_wash", "wet_floor", "chemical", "electrical", "vehicles", "employee_only", "visitor", "emergency"]),
+  ("datacenter", "Data center or server room", ["restricted", "electrical", "arc_flash", "ups", "fire_supp", "mechanical_room", "visitor", "emergency"]),
+  ("brewery", "Brewery, distillery or winery", ["co2", "confined", "chemical", "wet_floor", "boiler", "forklift", "noise", "cold_storage", "electrical", "ppe", "visitor", "emergency"]),
+  ("woodshop", "Sawmill, wood shop or pallet plant", ["saw", "dust", "machines", "lockout", "forklift", "noise", "flammable", "electrical", "ppe", "emergency"]),
+  ("fuelstop", "Gas station, truck stop or fuel yard", ["fuel_dispenser", "fuel", "flammable", "vehicles", "electrical", "employee_only", "visitor", "emergency"]),
+  ("quarry", "Quarry, mine or aggregate plant", ["blasting", "haul_road", "machines", "conveyor", "lockout", "noise", "ppe", "fuel", "vehicles", "electrical", "excavation", "visitor", "emergency"]),
 ]
+
 
 AREAS = {
   "emergency": ("Exits, first aid and emergency gear", [("Fire extinguisher location", "fire extinguisher location", "area"), ("Eyewash station", "eyewash station", "area"), ("First aid station", "first aid kit station", "site"), ("Emergency assembly point", "emergency assembly point muster", "site")]),
