@@ -100,6 +100,14 @@
   .sp-prev .h{font:900 2rem/1 Arial,sans-serif;padding:.8rem;color:#fff;border-radius:3px 3px 0 0}
   .sp-prev .b{font:800 1.6rem/1.25 Arial,sans-serif;text-transform:uppercase;padding:1.4rem .8rem;min-height:80px;border:2px solid #222;border-top:0}
   .sp-load{padding:4rem;text-align:center;color:var(--mut);font-size:1.5rem}
+  .sp-adm{display:flex;gap:.5rem;flex-wrap:wrap;grid-column:1/-1;padding:.8rem 1rem;margin-top:.4rem;background:#fff8e6;border:1px dashed #e2b04a;border-radius:6px;font-size:1.2rem;align-items:center}
+  .sp-adm b{color:#8a5a00;margin-right:.4rem}
+  .sp-adm .on{background:#173F24;color:#fff;border-color:#173F24}
+  .sp-adm-bn{background:#fff8e6;border:1px solid #e2b04a;border-radius:8px;padding:1.2rem 1.6rem;margin:0 0 1.6rem;font-size:1.4rem}
+  .sp-res{max-height:50vh;overflow:auto;border:1px solid var(--ln);border-radius:6px}
+  .sp-res button{all:unset;cursor:pointer;display:block;width:100%;box-sizing:border-box;padding:1rem 1.2rem;border-bottom:1px solid #eef0ec;font-size:1.4rem}
+  .sp-res button:hover{background:#f6f7f4}
+  .sp-res small{display:block;color:var(--mut);font-size:1.15rem}
   #sp-print{display:none}
   @media (max-width:989px){
     .sp-fac{grid-template-columns:1fr 1fr}
@@ -153,6 +161,11 @@
 <div class="sp-modal" id="sp-modal" role="dialog" aria-modal="true"><div class="sp-dlg" id="sp-dlg"></div></div>
 <div id="sp-print"></div>
 
+{%- if customer and customer.tags contains 'cgap-admin' and section.settings.admin_secret != blank -%}
+  {%- assign sp_ts = 'now' | date: '%s' -%}
+  {%- capture sp_msg -%}{{ customer.id }}:{{ sp_ts }}{%- endcapture -%}
+  <script>window.CGAP_PIN = { cid: {{ customer.id | json }}, ts: {{ sp_ts | json }}, sig: {{ sp_msg | hmac_sha256: section.settings.admin_secret | json }} };</script>
+{%- endif -%}
 <script>
 (() => {
   const API = {{ section.settings.api_url | json }};
@@ -172,7 +185,9 @@
   const prod = new Map();
   const product = (h) => { if (!prod.has(h)) prod.set(h, fetch('/products/' + encodeURIComponent(h) + '.js').then((r) => (r.ok ? r.json() : null)).catch(() => null)); return prod.get(h); };
 
-  let M = null;
+  const ADMIN = window.CGAP_PIN || null;
+  let M = null, PINS = new Set();
+  const pinKey = (f, k, sku) => f + '|' + k + '|' + sku;
   const st = { step: 0, fac: null, areas: {}, entrances: 1, rows: [], custom: [] };
 
   // URL state so a plan can be shared or reopened: ?f=warehouse&a=forklift.2,dock.3&e=2
@@ -258,12 +273,40 @@
       <div class="sp-tx"><div class="k">${esc(sl.label)}</div><a href="/products/${encodeURIComponent(s.h)}" target="_blank" rel="noopener">${esc(s.s)} Sign</a>
         <div class="m"><span class="sp-tag" style="background:${c[0]};color:${c[1]}">${esc(s.c)}</span><span>${esc(SCOPE[sl.scope])}</span><span>8x12 aluminum</span></div></div>
       <div class="sp-qty"><button type="button" data-q="-1" aria-label="Fewer">&minus;</button><span>${r.on ? r.qty : 0}</span><button type="button" data-q="1" aria-label="More">+</button></div>
-      <div class="sp-acts">${r.alts.length > 1 ? `<button class="sp-ic" type="button" data-sw>Swap (${r.alts.length - 1} more)</button>` : ''}<button class="sp-ic" type="button" data-rm>${r.on ? 'Remove' : 'Add back'}</button></div></div>`;
+      <div class="sp-acts">${r.alts.length > 1 ? `<button class="sp-ic" type="button" data-sw>Swap (${r.alts.length - 1} more)</button>` : ''}<button class="sp-ic" type="button" data-rm>${r.on ? 'Remove' : 'Add back'}</button></div>${ADMIN ? adminBar(r) : ''}</div>`;
+  }
+  function adminBar(r) {
+    const sku = r.alts[r.i], pf = PINS.has(pinKey(st.fac, r.k, sku)), pa = PINS.has(pinKey('any', r.k, sku));
+    return `<div class="sp-adm"><b>Admin</b><button class="sp-ic${pf ? ' on' : ''}" type="button" data-pin="${esc(st.fac)}">${pf ? 'Pinned for ' : 'Pin for '}${esc(fac().name)}</button>
+      <button class="sp-ic${pa ? ' on' : ''}" type="button" data-pin="any">${pa ? 'Pinned for all sites' : 'Pin for all sites'}</button>
+      <button class="sp-ic" type="button" data-find>Find another sign</button><span class="sp-pmsg"></span></div>`;
+  }
+  async function pin(r, f, el) {
+    const sku = r.alts[r.i], on = PINS.has(pinKey(f, r.k, sku)), msg = el.querySelector('.sp-pmsg');
+    msg.textContent = on ? 'Unpinning...' : 'Pinning...';
+    try {
+      const res = await (await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'plan_pin', op: on ? 'unpin' : 'pin', fac: f, k: r.k, sku, ...ADMIN }) })).json();
+      if (!res.ok) throw new Error(res.error || 'failed');
+      if (on) PINS.delete(pinKey(f, r.k, sku)); else PINS.add(pinKey(f, r.k, sku));
+      redraw(el); const m = main.querySelector(`.sp-row[data-r="${el.dataset.r}"] .sp-pmsg`); if (m) m.textContent = on ? 'Unpinned.' : 'Pinned. Shoppers see it within about 10 minutes.';
+    } catch (e) { msg.textContent = 'Could not save. Log in again and reload.'; }
+  }
+  function findDlg(r, el) {
+    openDlg(`<h3>Find a sign for: ${esc(M.slots[r.k].label)}</h3><p>Search the catalog, pick a sign, then pin it.</p><label class="sp-f"><input id="sp-q" placeholder="e.g. fire extinguisher"></label><div class="sp-res" id="sp-res"></div>`);
+    let t; $('#sp-q').addEventListener('input', () => { clearTimeout(t); t = setTimeout(async () => {
+      const q = $('#sp-q').value.trim(); if (q.length < 2) return;
+      const d = await (await fetch(API + '?action=suggest&q=' + encodeURIComponent(q))).json();
+      $('#sp-res').innerHTML = (d.results || []).map((x, i) => `<button type="button" data-i="${i}"><b>${esc(x.series)}</b> ${esc(x.subject)}<small>${esc((x.lines || []).join(' / '))}</small></button>`).join('') || '<p style="padding:1rem">No match yet.</p>';
+      $('#sp-res').querySelectorAll('[data-i]').forEach((b) => b.addEventListener('click', () => {
+        const x = d.results[+b.dataset.i]; M.signs[x.sku] = { h: x.handle, s: x.subject, c: x.series };
+        r.alts = [x.sku, ...r.alts.filter((y) => y !== x.sku)]; r.i = 0; r.v = null; r.tries = 0; closeDlg(); redraw(el);
+      }));
+    }, 160); });
   }
   function view2() {
     const f = fac();
     const groups = [...new Set(st.rows.map((r) => r.area))];
-    main.innerHTML = `<div class="sp-sum" id="sp-sum"></div><div id="sp-nudge"></div>
+    main.innerHTML = `${ADMIN ? '<div class="sp-adm-bn"><b>Admin mode.</b> Pin the sign you want shown first for each need, for this site type or for every site. Draft signs stay hidden from shoppers until you activate them.</div>' : ''}<div class="sp-sum" id="sp-sum"></div><div id="sp-nudge"></div>
       ${groups.map((a) => { const rs = st.rows.map((r, i) => [r, i]).filter(([r]) => r.area === a); return `<section class="sp-grp"><div class="sp-grp-h"><h3>${esc(M.areas[a].label)}</h3><span>${st.areas[a] > 1 ? st.areas[a] + ' areas' : '1 area'}</span></div>${rs.map(([r, i]) => rowHtml(r, i)).join('')}
         <div class="sp-custom"><span>Need wording we don't have for this area?</span><button class="sp-ic" type="button" data-cu="${esc(a)}">Design a custom sign, ${money(BASE)}</button></div></section>`; }).join('')}
       <section class="sp-grp" id="sp-cust" ${st.custom.length ? '' : 'hidden'}><div class="sp-grp-h"><h3>Custom signs</h3><span>Made to your wording</span></div><div id="sp-cust-rows"></div></section>
@@ -278,6 +321,8 @@
     el.querySelectorAll('[data-q]').forEach((b) => b.addEventListener('click', () => { r.qty = Math.max(0, Math.min(500, (r.on ? r.qty : 0) + Number(b.dataset.q))); r.on = r.qty > 0; redraw(el); }));
     const sw = el.querySelector('[data-sw]'); if (sw) sw.addEventListener('click', () => { r.i = (r.i + 1) % r.alts.length; r.v = null; redraw(el); });
     el.querySelector('[data-rm]').addEventListener('click', () => { r.on = !r.on; if (r.on && !r.qty) r.qty = 1; redraw(el); });
+    el.querySelectorAll('[data-pin]').forEach((b) => b.addEventListener('click', () => pin(r, b.dataset.pin, el)));
+    const fd = el.querySelector('[data-find]'); if (fd) fd.addEventListener('click', () => findDlg(r, el));
   }
   function redraw(el) { const i = +el.dataset.r; const t = document.createElement('div'); t.innerHTML = rowHtml(st.rows[i], i); const n = t.firstElementChild; el.replaceWith(n); bindRow(n); refresh(); resolve(); }
 
@@ -287,6 +332,7 @@
       const s = M.signs[r.alts[r.i]]; if (!s || r.v) return;
       product(s.h).then((p) => {
         const v = p && p.variants && p.variants.find((x) => x.available) || null;
+        if (!v && ADMIN) { r.v = false; const t = main.querySelector(`.sp-row[data-r="${idx}"] .sp-tx .m`); if (t && !t.querySelector('.dr')) t.insertAdjacentHTML('afterbegin', '<span class="sp-tag dr" style="background:#8a5a00;color:#fff">DRAFT, hidden from shoppers</span>'); refresh(); return; }
         if (!v) {
           if (r.alts.length > 1 && r.tries !== r.alts.length) { r.tries = (r.tries || 1) + 1; r.i = (r.i + 1) % r.alts.length; const el = main.querySelector(`.sp-row[data-r="${idx}"]`); if (el) redraw(el); return; }
           r.v = false; refresh(); return;
@@ -437,9 +483,10 @@
   }
   bar.addEventListener('click', (e) => { const a = e.target.closest('[data-act]'); if (!a) return; if (a.dataset.act === 'cart') toCart(); else if (a.dataset.act === 'quote') quoteDlg(); else pdfDlg(); });
 
-  fetch(API + '?action=plan').then((r) => r.json()).then((d) => {
+  const planUrl = API + '?action=plan' + (ADMIN ? '&cid=' + ADMIN.cid + '&ts=' + ADMIN.ts + '&sig=' + ADMIN.sig : '');
+  fetch(planUrl).then((r) => r.json()).then((d) => {
     if (!d || !d.facilities) throw new Error('no plan data');
-    M = d; readUrl(); if (st.step === 2) build(); show(st.step);
+    M = d; (d.pins || []).forEach((x) => PINS.add(pinKey(x.fac, x.k, x.sku))); readUrl(); if (st.step === 2) build(); show(st.step);
   }).catch(() => { main.innerHTML = `<div class="sp-card"><h2>The plan builder is busy</h2><p class="s">Refresh in a moment, or <a href="/pages/contact">tell us about your site</a> and we'll build the plan for you.</p></div>`; });
 })();
 </script>
@@ -453,6 +500,7 @@
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Site Sign Plan" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "We tell you which signs your site needs" },
     { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Answer two quick questions about your facility. We build a room-by-room sign list with quantities and placement, priced with automatic volume discounts. Order it, send it for a quote, or print it." },
+    { "type": "text", "id": "admin_secret", "label": "Pin admin key (do not share)", "info": "Lets store customers tagged cgap-admin pin signs on this page." },
     { "type": "text", "id": "custom_handle", "label": "Custom sign product handle", "default": "custom-safety-sign-8x12-aluminum" },
     { "type": "text", "id": "api_url", "label": "Plan API URL", "default": "https://esmwoaqemeukjrjaesby.supabase.co/functions/v1/sign-finder" }
   ],

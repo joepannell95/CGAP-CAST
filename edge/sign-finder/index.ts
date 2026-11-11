@@ -1,6 +1,18 @@
 import postgres from 'npm:postgres@3.4.4';
 const sql = postgres(Deno.env.get('SUPABASE_DB_URL')!, { max: 3, prepare: false });
 let planCache: { t: number; d: any } | null = null;
+// Shared with the theme (Site Sign Plan section setting). The theme signs "<customer id>:<unix time>" only for customers tagged cgap-admin.
+const PIN_SECRET = '__PIN_SECRET__ (set at deploy, never commit)';
+async function hmacHex(key: string, msg: string) {
+  const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(key), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const b = await crypto.subtle.sign('HMAC', k, new TextEncoder().encode(msg));
+  return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, '0')).join('');
+}
+async function isAdmin(p: any) {
+  const cid = String(p.cid ?? ''), ts = Number(p.ts) || 0, sig = String(p.sig ?? '');
+  if (!/^\d+$/.test(cid) || !sig || Math.abs(Date.now() / 1000 - ts) > 86400) return false;
+  return (await hmacHex(PIN_SECRET, cid + ':' + ts)) === sig;
+}
 let _model: any = null;
 const model = () => (_model ??= new Supabase.ai.Session('gte-small'));
 
@@ -104,13 +116,31 @@ Deno.serve(async (req) => {
       if (sku && cq) await sql`select finder.log_click(${cq}, ${sku}, ${kind})`.catch(() => {});
       return new Response(null, { status: 204, headers: h });
     }
+    if (action === 'plan' && p.cid) {
+      // Admin view: always fresh, plus the current pins.
+      if (!(await isAdmin(p))) return json({ error: 'forbidden' }, 0);
+      const r = await sql`select data, (select coalesce(jsonb_agg(jsonb_build_object('fac', fac, 'k', k, 'sku', sku) order by fac, k, rank), '[]'::jsonb) from finder.plan_pin) pins from finder.plan_map where id = 1`;
+      return json({ ...r[0].data, pins: r[0].pins }, 0);
+    }
+    if (action === 'plan_pin') {
+      if (!(await isAdmin(p))) return json({ ok: false, error: 'forbidden' }, 0);
+      const fac = String(p.fac ?? 'any').replace(/[^a-z_]/g, '').slice(0, 30) || 'any';
+      const k = String(p.k ?? '').replace(/[^a-z_.0-9]/g, '').slice(0, 40);
+      const sku = String(p.sku ?? '').slice(0, 80).trim();
+      if (!k || !sku) return json({ ok: false, error: 'missing' }, 0);
+      if (p.op === 'unpin') await sql`delete from finder.plan_pin where fac = ${fac} and k = ${k} and sku = ${sku}`;
+      else await sql`insert into finder.plan_pin (fac, k, sku, rank) values (${fac}, ${k}, ${sku}, (select coalesce(min(rank), 0) - 1 from finder.plan_pin where fac = ${fac} and k = ${k})) on conflict (fac, k, sku) do update set rank = excluded.rank`;
+      await sql`select finder.plan_build()`;
+      planCache = null;
+      return json({ ok: true }, 0);
+    }
     if (action === 'plan') {
       // Site Sign Plan rules and picks, rebuilt by finder.plan_build(). One row, cached in memory.
-      if (!planCache || Date.now() - planCache.t > 3600_000) {
+      if (!planCache || Date.now() - planCache.t > 600_000) {
         const r = await sql`select data from finder.plan_map where id = 1`;
         planCache = { t: Date.now(), d: r[0]?.data ?? null };
       }
-      return json(planCache.d, 21600);
+      return json(planCache.d, 1800);
     }
     if (action === 'plan_lead') {
       // Shopper saved or requested a quote for a plan. Stored so nothing is lost if the store email fails.
