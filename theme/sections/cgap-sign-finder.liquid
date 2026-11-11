@@ -210,6 +210,8 @@
   const st = { q: '', page: 0, f: { series: [], sector: [], hazard_class: [] }, mode: null, results: [], total: 0, kit: new Map(), data: null };
   const prod = new Map();
   const fmt = (n) => Number(n).toLocaleString();
+  // Tells the finder which results shoppers actually used, so weak searches show up in the weekly gap report.
+  const beacon = (kind, r) => { try { if (!st.q || !r || !r.sku) return; const b = JSON.stringify({ action: 'click', q: st.q, sku: r.sku, kind }); if (!(navigator.sendBeacon && navigator.sendBeacon(API, b))) fetch(API, { method: 'POST', body: b, keepalive: true }).catch(() => {}); } catch (e) {} };
 
   async function api(params) {
     const u = new URL(API);
@@ -243,12 +245,12 @@
     el.querySelector('.sf-pick').addEventListener('click', () => toggleKit(r, el));
     const add = el.querySelector('.sf-add');
     product(r.handle).then((p) => {
-      if (!p) { el.querySelector('.sf-price').textContent = ''; add.textContent = 'View'; add.disabled = false; add.onclick = () => (location.href = '/products/' + r.handle); return; }
+      if (!p) { el.querySelector('.sf-price').textContent = ''; add.textContent = 'View'; add.disabled = false; add.onclick = () => { beacon('view', r); location.href = '/products/' + r.handle; }; return; }
       const img = el.querySelector('img');
       if (p.featured_image) { img.onload = () => img.classList.add('ok'); img.src = p.featured_image + (p.featured_image.includes('?') ? '&' : '?') + 'width=500'; }
       el.querySelector('.sf-price').textContent = '$' + (p.price / 100).toFixed(2);
       add.disabled = !p.available;
-      add.onclick = async () => { add.disabled = true; add.textContent = 'Adding…'; await addToCart([{ id: p.variants[0].id, quantity: 1 }]); add.textContent = 'Added'; setTimeout(() => { add.textContent = 'Add to cart'; add.disabled = false; }, 1600); };
+      add.onclick = async () => { beacon('cart', r); add.disabled = true; add.textContent = 'Adding…'; await addToCart([{ id: p.variants[0].id, quantity: 1 }]); add.textContent = 'Added'; setTimeout(() => { add.textContent = 'Add to cart'; add.disabled = false; }, 1600); };
     });
     return el;
   }
@@ -264,19 +266,21 @@
   }
 
   function toggleKit(r, el) {
-    if (st.kit.has(r.handle)) st.kit.delete(r.handle); else st.kit.set(r.handle, r);
+    if (st.kit.has(r.handle)) st.kit.delete(r.handle); else { st.kit.set(r.handle, r); beacon('pick', r); }
     el && el.classList.toggle('sel', st.kit.has(r.handle));
     $('#sf-kn').textContent = st.kit.size; $('#sf-kit').classList.toggle('on', st.kit.size > 0);
   }
   $('#sf-kclr').onclick = () => { st.kit.clear(); document.querySelectorAll('.sf-card.sel').forEach((c) => c.classList.remove('sel')); $('#sf-kn').textContent = 0; $('#sf-kit').classList.remove('on'); };
   $('#sf-kadd').onclick = async () => {
     const b = $('#sf-kadd'); b.textContent = 'Adding…';
+    [...st.kit.values()].slice(0, 20).forEach((r) => beacon('kit', r));
     const ps = await Promise.all([...st.kit.keys()].map(product));
     const items = ps.filter((p) => p && p.available).map((p) => ({ id: p.variants[0].id, quantity: 1 }));
     await addToCart(items); b.textContent = 'Added ' + items.length; setTimeout(() => (b.textContent = 'Add all to cart'), 2000);
   };
 
   async function openDrawer(r) {
+    beacon('open', r);
     const s = SER[r.series] || SER.NOTICE;
     $('#sf-dr-body').innerHTML = `<div class="im"><div class="sf-media" style="height:100%"><img alt="">${mini(r)}</div></div>
       <div class="ct">${tag(r.series)}<h2>${esc(r.title || r.subject)}</h2>
@@ -292,11 +296,12 @@
       <div class="sf-row"><button class="p" type="button" id="sf-dadd">Add to cart</button><a class="s" href="/products/${encodeURIComponent(r.handle)}">Full details</a></div>
       <h3 class="sf-sec-h" style="font-size:1.8rem">More signs like this</h3><div class="sf-sim" id="sf-sim"><div class="sf-load on" style="grid-column:1/-1"><i></i></div></div></div>`;
     $('#sf-dr').classList.add('on'); document.body.style.overflow = 'hidden';
+    const full = $('#sf-dr-body a.s'); if (full) full.addEventListener('click', () => beacon('view', r));
     const p = await product(r.handle);
     const img = $('#sf-dr-body .im img');
     if (p && p.featured_image) { img.onload = () => img.classList.add('ok'); img.src = p.featured_image + '?width=900'; }
     const b = $('#sf-dadd');
-    if (p) { b.textContent = 'Add to cart · $' + (p.price / 100).toFixed(2); b.onclick = async () => { b.textContent = 'Adding…'; await addToCart([{ id: p.variants[0].id, quantity: 1 }]); b.textContent = 'Added to cart'; }; } else b.onclick = () => (location.href = '/products/' + r.handle);
+    if (p) { b.textContent = 'Add to cart · $' + (p.price / 100).toFixed(2); b.onclick = async () => { beacon('cart', r); b.textContent = 'Adding…'; await addToCart([{ id: p.variants[0].id, quantity: 1 }]); b.textContent = 'Added to cart'; }; } else b.onclick = () => { beacon('view', r); location.href = '/products/' + r.handle; };
     try {
       const sim = await api({ action: 'similar', sku: r.sku });
       const box = $('#sf-sim'); box.innerHTML = '';

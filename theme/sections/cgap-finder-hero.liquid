@@ -136,12 +136,14 @@
   let timer, seq = 0, act = -1, items = [];
   const img = (h) => { if (!imgs.has(h)) imgs.set(h, fetch('/products/' + h + '.js').then((r) => (r.ok ? r.json() : null)).then((p) => (p && p.featured_image ? p.featured_image + '?width=160' : null)).catch(() => null)); return imgs.get(h); };
   function go(q) { location.href = '/search?q=' + encodeURIComponent(q); }
+  const beacon = (a) => { try { if (!a || !a.dataset.sku) return; const b = JSON.stringify({ action: 'click', q: inp.value.trim(), sku: a.dataset.sku, kind: 'suggest' }); if (!(navigator.sendBeacon && navigator.sendBeacon(API, b))) fetch(API, { method: 'POST', body: b, keepalive: true }).catch(() => {}); } catch (e) {} };
+  dd.addEventListener('click', (e) => beacon(e.target.closest('a[data-sku]')));
   function render(q, d) {
     const rows = d.results || [];
     const s = rows.map((r, i) => {
       const c = SER[r.series] || SER.NOTICE;
       const lines = (r.lines || []).filter((l) => l && l.toUpperCase() !== r.series).slice(0, 4).map(esc).join('<br>');
-      return `<a href="/products/${encodeURIComponent(r.handle)}" role="option" data-i="${i}"><span class="fh-th"><span class="h" style="background:${c[2]};color:${c[0] === '#C8102E' ? '#fff' : c[1]}">${esc(r.series)}</span><span class="b">${lines}</span><img alt="" data-h="${esc(r.handle)}"></span><span class="fh-tx"><b>${esc(r.subject)}</b><small>${esc(r.sector || '')}${r.install_point ? ' · ' + esc(r.install_point) : ''}</small></span><span class="fh-tg" style="background:${c[0]};color:${c[1]}">${esc(r.series)}</span></a>`;
+      return `<a href="/products/${encodeURIComponent(r.handle)}" role="option" data-i="${i}" data-sku="${esc(r.sku)}"><span class="fh-th"><span class="h" style="background:${c[2]};color:${c[0] === '#C8102E' ? '#fff' : c[1]}">${esc(r.series)}</span><span class="b">${lines}</span><img alt="" data-h="${esc(r.handle)}"></span><span class="fh-tx"><b>${esc(r.subject)}</b><small>${esc(r.sector || '')}${r.install_point ? ' · ' + esc(r.install_point) : ''}</small></span><span class="fh-tg" style="background:${c[0]};color:${c[1]}">${esc(r.series)}</span></a>`;
     }).join('');
     const all = `<a class="all" href="/search?q=${encodeURIComponent(q)}" data-i="${rows.length}"><span>${rows.length ? 'See every sign for' : 'Search all signs for'} “${esc(q)}”</span><span>${d.total >= 500 ? '500+' : (d.total || '')} →</span></a>`;
     dd.innerHTML = (rows.length ? s : `<div class="hint">Keep typing, or press Enter to search by meaning.</div>`) + all;
@@ -163,7 +165,7 @@
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault(); act = (act + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
       items.forEach((a, i) => a.classList.toggle('act', i === act));
-    } else if (e.key === 'Enter' && act >= 0) { e.preventDefault(); location.href = items[act].href; }
+    } else if (e.key === 'Enter' && act >= 0) { e.preventDefault(); beacon(items[act]); location.href = items[act].href; }
     else if (e.key === 'Escape') dd.classList.remove('on');
   });
   document.addEventListener('click', (e) => { if (!e.target.closest('.fh-search')) dd.classList.remove('on'); });
