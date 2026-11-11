@@ -1,0 +1,438 @@
+{%- comment -%} CGAP Sign Finder: natural-language sign search across the full catalog {%- endcomment -%}
+<link rel="preconnect" href="https://esmwoaqemeukjrjaesby.supabase.co">
+<style>
+  .sf{--g:#173F24;--g2:#0f2b18;--o:#E0731A;--paper:#F3F4F1;--ink:#14181a;--mut:#5d6660;--line:#dfe2dc;font-family:var(--font-body-family);color:var(--ink)}
+  .sf *{box-sizing:border-box}
+  .sf-hero{background:radial-gradient(1200px 400px at 85% -10%,rgba(224,115,26,.22),transparent 60%),linear-gradient(160deg,var(--g) 0%,var(--g2) 100%);color:var(--paper);position:relative;overflow:hidden}
+  .sf-hero:before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.035) 0 14px,transparent 14px 28px);pointer-events:none}
+  .sf-hero__in{position:relative;max-width:1100px;margin:0 auto;padding:5.6rem 2rem 4.4rem}
+  .sf-eyebrow{display:inline-flex;align-items:center;gap:.8rem;font-size:1.2rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:#f7c79f}
+  .sf-eyebrow i{width:26px;height:4px;background:var(--o);display:block}
+  .sf h1{font-family:var(--font-heading-family);text-transform:uppercase;font-size:clamp(3.2rem,5.4vw,5.8rem);line-height:1.02;margin:1.4rem 0 1.2rem;letter-spacing:.01em;color:#fff}
+  .sf h1 em{font-style:normal;color:var(--o)}
+  .sf-sub{font-size:1.75rem;max-width:720px;opacity:.88;line-height:1.5;margin:0 0 2.6rem}
+  .sf-box{display:flex;background:#fff;border-radius:6px;box-shadow:0 18px 50px rgba(0,0,0,.35);overflow:hidden;border:2px solid transparent;transition:border-color .2s}
+  .sf-box:focus-within{border-color:var(--o)}
+  .sf-box svg{flex:none;margin:0 0 0 2rem;align-self:center;opacity:.5}
+  .sf-input{flex:1;border:0;outline:0;font-size:2rem;padding:2.2rem 1.6rem;color:var(--ink);background:transparent;min-width:0;font-family:inherit}
+  .sf-go{border:0;background:var(--o);color:#fff;font-family:var(--font-heading-family);text-transform:uppercase;letter-spacing:.08em;font-size:1.7rem;padding:0 3.2rem;cursor:pointer;transition:background .15s}
+  .sf-go:hover{background:#c55f0e}
+  .sf-try{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.8rem;align-items:center}
+  .sf-try span{font-size:1.3rem;opacity:.7;margin-right:.4rem}
+  .sf-chip{border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.06);color:#fff;border-radius:40px;padding:.7rem 1.4rem;font-size:1.35rem;cursor:pointer;transition:all .15s;font-family:inherit}
+  .sf-chip:hover{background:var(--o);border-color:var(--o)}
+  .sf-stats{display:flex;gap:3.6rem;margin-top:3.6rem;flex-wrap:wrap}
+  .sf-stat b{display:block;font-family:var(--font-heading-family);font-size:3rem;color:#fff;line-height:1}
+  .sf-stat small{font-size:1.2rem;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
+  .sf-main{max-width:1320px;margin:0 auto;padding:3rem 2rem 6rem}
+  .sf-explore h2,.sf-sec-h{font-family:var(--font-heading-family);text-transform:uppercase;font-size:2.6rem;margin:1rem 0 .6rem;letter-spacing:.02em}
+  .sf-explore p.lead{color:var(--mut);font-size:1.5rem;margin:0 0 2.2rem}
+  .sf-divs{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.4rem}
+  .sf-div{background:#fff;border:1px solid var(--line);border-top:5px solid var(--g);padding:2rem;cursor:pointer;transition:transform .15s,box-shadow .15s;text-align:left;font-family:inherit;color:inherit}
+  .sf-div:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(23,63,36,.14);border-top-color:var(--o)}
+  .sf-div h3{font-family:var(--font-heading-family);text-transform:uppercase;font-size:1.8rem;margin:0 0 .6rem;line-height:1.15}
+  .sf-div .n{font-size:1.3rem;color:var(--mut)}
+  .sf-div .secs{margin-top:1.2rem;font-size:1.3rem;color:var(--mut);line-height:1.5}
+  .sf-sectors{display:none;margin-top:2.4rem}
+  .sf-sectors.on{display:block}
+  .sf-seclist{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+  .sf-secbtn{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);padding:1.3rem 1.6rem;cursor:pointer;font-size:1.45rem;text-align:left;font-family:inherit;color:inherit;transition:border-color .15s}
+  .sf-secbtn:hover{border-color:var(--o)}
+  .sf-secbtn span{color:var(--mut);font-size:1.25rem;white-space:nowrap;margin-left:1rem}
+  .sf-results{display:none}
+  .sf-results.on{display:grid;grid-template-columns:270px 1fr;gap:3rem}
+  .sf-side{position:sticky;top:2rem;align-self:start;max-height:calc(100vh - 4rem);overflow:auto;padding-right:.4rem}
+  .sf-fg{border-bottom:1px solid var(--line);padding:1.4rem 0}
+  .sf-fg h4{font-size:1.15rem;letter-spacing:.14em;text-transform:uppercase;margin:0 0 1rem;color:var(--mut)}
+  .sf-opt{display:flex;align-items:center;gap:.8rem;width:100%;background:none;border:0;padding:.55rem 0;font-size:1.4rem;cursor:pointer;text-align:left;color:inherit;font-family:inherit}
+  .sf-opt .bx{width:16px;height:16px;border:1.5px solid #9aa39c;flex:none;display:grid;place-items:center}
+  .sf-opt.on .bx{background:var(--g);border-color:var(--g)}
+  .sf-opt.on .bx:after{content:"";width:8px;height:4px;border:2px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+  .sf-opt .lb{flex:1;line-height:1.25}
+  .sf-opt .ct{color:var(--mut);font-size:1.2rem}
+  .sf-sw{width:10px;height:10px;border-radius:2px;flex:none}
+  .sf-bar{display:flex;flex-wrap:wrap;align-items:center;gap:1rem;justify-content:space-between;margin-bottom:1.6rem}
+  .sf-count{font-size:1.5rem;color:var(--mut)}
+  .sf-count b{color:var(--ink)}
+  .sf-det{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;font-size:1.3rem;color:var(--mut)}
+  .sf-det button{background:#fff4ea;color:#8a420a;border:1px solid #f3c79f;border-radius:30px;padding:.4rem 1.1rem;font-size:1.25rem;cursor:pointer;font-family:inherit}
+  .sf-active{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.4rem}
+  .sf-active button{background:var(--g);color:#fff;border:0;border-radius:30px;padding:.5rem 1.2rem;font-size:1.25rem;cursor:pointer;font-family:inherit}
+  .sf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.8rem}
+  .sf-card{background:#fff;border:1px solid var(--line);display:flex;flex-direction:column;transition:box-shadow .18s,transform .18s;position:relative;animation:sfIn .35s ease both}
+  @keyframes sfIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .sf-card:hover{box-shadow:0 14px 34px rgba(0,0,0,.12);transform:translateY(-2px)}
+  .sf-pick{position:absolute;top:1rem;left:1rem;z-index:2;width:26px;height:26px;border-radius:4px;border:2px solid #fff;background:rgba(0,0,0,.35);cursor:pointer;display:grid;place-items:center}
+  .sf-card.sel .sf-pick{background:var(--o)}
+  .sf-card.sel{outline:3px solid var(--o)}
+  .sf-card.sel .sf-pick:after{content:"";width:10px;height:5px;border:2.5px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+  .sf-media{aspect-ratio:1/1;background:#eef0ec;display:grid;place-items:center;cursor:pointer;overflow:hidden;position:relative}
+  .sf-media img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s}
+  .sf-media img.ok{opacity:1}
+  .sf-mini{position:absolute;inset:14% 10%;background:#fff;border:1px solid #cfd3cc;box-shadow:0 6px 16px rgba(0,0,0,.08);display:flex;flex-direction:column;transition:opacity .3s}
+  .sf-media img.ok+.sf-mini{opacity:0}
+  .sf-mini .hd{padding:.7rem;text-align:center;font-family:Arial,Helvetica,sans-serif;font-weight:900;font-size:1.5rem;letter-spacing:.04em}
+  .sf-mini .bd{flex:1;display:flex;flex-direction:column;justify-content:center;padding:.6rem;text-align:center;font-family:Arial,Helvetica,sans-serif;font-weight:800;font-size:1.05rem;line-height:1.2;gap:.25rem;color:#111;text-transform:uppercase}
+  .sf-body{padding:1.4rem 1.5rem 1.6rem;display:flex;flex-direction:column;gap:.7rem;flex:1}
+  .sf-tag{display:inline-block;font-size:1.05rem;font-weight:800;letter-spacing:.1em;padding:.25rem .7rem;border-radius:2px;align-self:flex-start}
+  .sf-card h3{font-size:1.6rem;margin:0;line-height:1.25;font-family:var(--font-body-family);font-weight:700;cursor:pointer}
+  .sf-where{font-size:1.3rem;color:var(--mut);line-height:1.4}
+  .sf-where b{color:var(--ink);font-weight:600}
+  .sf-match{display:flex;flex-wrap:wrap;gap:.4rem}
+  .sf-match span{background:#eef5ef;color:var(--g);font-size:1.1rem;padding:.2rem .7rem;border-radius:20px;font-weight:600}
+  .sf-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-top:.6rem}
+  .sf-price{font-weight:800;font-size:1.6rem}
+  .sf-add{border:0;background:var(--g);color:#fff;padding:.9rem 1.4rem;font-size:1.25rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;font-family:inherit}
+  .sf-add:hover{background:var(--o)}
+  .sf-add[disabled]{opacity:.5;cursor:default}
+  .sf-more{display:block;margin:3rem auto 0;background:#fff;border:2px solid var(--g);color:var(--g);padding:1.3rem 3rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;font-family:inherit;font-size:1.3rem}
+  .sf-load{display:none;padding:4rem;text-align:center;color:var(--mut);font-size:1.5rem}
+  .sf-load.on{display:block}
+  .sf-load i{display:inline-block;width:34px;height:34px;border:4px solid var(--line);border-top-color:var(--o);border-radius:50%;animation:sfSp 0.8s linear infinite;margin-bottom:1rem}
+  @keyframes sfSp{to{transform:rotate(360deg)}}
+  .sf-empty{padding:4rem 2rem;text-align:center;background:#fff;border:1px dashed #c9cec6}
+  .sf-empty h3{font-family:var(--font-heading-family);text-transform:uppercase;font-size:2.2rem;margin:0 0 1rem}
+  .sf-empty a{color:var(--o);font-weight:700}
+  .sf-kit{position:fixed;left:50%;bottom:2rem;transform:translate(-50%,160%);background:var(--ink);color:#fff;display:flex;align-items:center;gap:2rem;padding:1.2rem 1.2rem 1.2rem 2.4rem;border-radius:6px;box-shadow:0 18px 40px rgba(0,0,0,.35);z-index:50;transition:transform .3s;font-size:1.45rem}
+  .sf-kit.on{transform:translate(-50%,0)}
+  .sf-kit button{border:0;padding:1rem 1.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;font-family:inherit;font-size:1.25rem}
+  .sf-kit .add{background:var(--o);color:#fff}
+  .sf-kit .clr{background:transparent;color:#fff;opacity:.7}
+  .sf-dr{position:fixed;inset:0;z-index:60;display:none}
+  .sf-dr.on{display:block}
+  .sf-dr .bg{position:absolute;inset:0;background:rgba(10,14,12,.55);backdrop-filter:blur(2px)}
+  .sf-dr .pn{position:absolute;right:0;top:0;bottom:0;width:min(560px,100%);background:#fff;overflow:auto;animation:sfDr .25s ease}
+  @keyframes sfDr{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+  .sf-dr .x{position:absolute;top:1.2rem;right:1.2rem;border:0;background:#fff;width:40px;height:40px;font-size:2.4rem;cursor:pointer;z-index:2;border-radius:50%}
+  .sf-dr .im{aspect-ratio:1/1;background:#eef0ec;position:relative}
+  .sf-dr .im img{width:100%;height:100%;object-fit:cover}
+  .sf-dr .ct{padding:2.2rem 2.4rem 3rem}
+  .sf-dr h2{font-size:2.2rem;margin:.8rem 0 1.4rem;line-height:1.2;font-family:var(--font-body-family)}
+  .sf-dl{display:grid;grid-template-columns:120px 1fr;gap:1rem 1.4rem;font-size:1.4rem;margin:0 0 2rem}
+  .sf-dl dt{color:var(--mut);font-size:1.15rem;letter-spacing:.1em;text-transform:uppercase;padding-top:.2rem}
+  .sf-dl dd{margin:0;line-height:1.45}
+  .sf-why{background:#fff8f2;border-left:4px solid var(--o);padding:1.4rem 1.6rem;font-size:1.45rem;line-height:1.5;margin-bottom:2rem}
+  .sf-row{display:flex;gap:1rem;margin-bottom:2.4rem}
+  .sf-row a,.sf-row button{flex:1;text-align:center;padding:1.3rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:1.3rem;cursor:pointer;text-decoration:none;font-family:inherit}
+  .sf-row .p{background:var(--g);color:#fff;border:0}
+  .sf-row .s{background:#fff;color:var(--g);border:2px solid var(--g)}
+  .sf-sim{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+  .sf-sim button{background:#fff;border:1px solid var(--line);padding:0;cursor:pointer;text-align:left;font-family:inherit}
+  .sf-sim .sf-media{aspect-ratio:1/1}
+  .sf-sim p{font-size:1.15rem;padding:.6rem .7rem;margin:0;line-height:1.25}
+  .sf-filt-btn{display:none}
+  @media (max-width:900px){
+    .sf-results.on{grid-template-columns:1fr}
+    .sf-side{position:fixed;inset:0;z-index:55;background:#fff;padding:2rem;max-height:none;display:none}
+    .sf-side.open{display:block}
+    .sf-filt-btn{display:inline-block;border:2px solid var(--g);background:#fff;color:var(--g);padding:.7rem 1.4rem;font-weight:800;text-transform:uppercase;font-size:1.2rem;font-family:inherit}
+    .sf-grid{grid-template-columns:repeat(2,1fr);gap:1rem}
+    .sf-input{font-size:1.6rem;padding:1.7rem 1rem}
+    .sf-go{padding:0 1.8rem;font-size:1.4rem}
+    .sf-box svg{display:none}
+    .sf-hero__in{padding:3.6rem 1.6rem 3rem}
+    .sf-stats{gap:2rem}
+    .sf-body{padding:1rem}
+    .sf-card h3{font-size:1.4rem}
+    .sf-foot{flex-direction:column;align-items:stretch}
+  }
+</style>
+
+<div class="sf" id="sf">
+  <section class="sf-hero">
+    <div class="sf-hero__in">
+      <div class="sf-eyebrow"><i></i>{{ section.settings.eyebrow }}</div>
+      <h1>{{ section.settings.heading }}</h1>
+      <p class="sf-sub">{{ section.settings.subheading }}</p>
+      <form class="sf-box" id="sf-form" role="search">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <input class="sf-input" id="sf-q" type="search" autocomplete="off" aria-label="Describe your site, equipment or hazard" placeholder="Describe your site, equipment or hazard">
+        <button class="sf-go" type="submit">Find signs</button>
+      </form>
+      <div class="sf-try"><span>Try:</span>
+        {%- assign ex = section.settings.examples | split: '|' -%}
+        {%- for e in ex -%}<button type="button" class="sf-chip" data-q="{{ e | strip | escape }}">{{ e | strip }}</button>{%- endfor -%}
+      </div>
+      <div class="sf-stats">
+        <div class="sf-stat"><b id="sf-total">87,000+</b><small>Signs in the catalog</small></div>
+        <div class="sf-stat"><b id="sf-nsec">150+</b><small>Industries covered</small></div>
+        <div class="sf-stat"><b>8x12</b><small>.065 rust-resistant aluminum</small></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="sf-main">
+    <div class="sf-explore" id="sf-explore">
+      <h2>Browse by industry</h2>
+      <p class="lead">Every sign is written for a specific piece of equipment, task or install point. Pick your world to see it.</p>
+      <div class="sf-divs" id="sf-divs"></div>
+      <div class="sf-sectors" id="sf-sectors">
+        <h3 class="sf-sec-h" id="sf-sectors-h"></h3>
+        <div class="sf-seclist" id="sf-seclist"></div>
+      </div>
+    </div>
+
+    <div class="sf-results" id="sf-results">
+      <aside class="sf-side" id="sf-side">
+        <button class="sf-filt-btn" type="button" id="sf-close-f" style="margin-bottom:1rem">Done</button>
+        <div id="sf-facets"></div>
+      </aside>
+      <div>
+        <div class="sf-bar">
+          <div class="sf-count" id="sf-count"></div>
+          <button class="sf-filt-btn" type="button" id="sf-open-f">Filters</button>
+        </div>
+        <div class="sf-det" id="sf-det"></div>
+        <div class="sf-active" id="sf-active"></div>
+        <div class="sf-grid" id="sf-grid"></div>
+        <div class="sf-load" id="sf-load"><i></i><div>Searching the catalog…</div></div>
+        <button class="sf-more" id="sf-more" type="button" hidden>Show more signs</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sf-kit" id="sf-kit"><span><b id="sf-kn">0</b> signs selected for your site kit</span><button class="clr" type="button" id="sf-kclr">Clear</button><button class="add" type="button" id="sf-kadd">Add all to cart</button></div>
+  <div class="sf-dr" id="sf-dr"><div class="bg" data-close></div><div class="pn"><button class="x" type="button" data-close aria-label="Close">&times;</button><div id="sf-dr-body"></div></div></div>
+</div>
+
+<script>
+(() => {
+  const API = {{ section.settings.api_url | json }};
+  const SER = {
+    'DANGER': { bg: '#C8102E', fg: '#fff', head: 'DANGER', hb: '#111', hf: '#fff' },
+    'WARNING': { bg: '#F47B20', fg: '#111', head: 'WARNING', hb: '#F47B20', hf: '#111' },
+    'CAUTION': { bg: '#FFD100', fg: '#111', head: 'CAUTION', hb: '#FFD100', hf: '#111' },
+    'NOTICE': { bg: '#005EB8', fg: '#fff', head: 'NOTICE', hb: '#005EB8', hf: '#fff' },
+    'SAFETY FIRST': { bg: '#00843D', fg: '#fff', head: 'SAFETY FIRST', hb: '#00843D', hf: '#fff' }
+  };
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const st = { q: '', page: 0, f: { series: [], sector: [], hazard_class: [] }, mode: null, results: [], total: 0, kit: new Map(), data: null };
+  const prod = new Map();
+  const fmt = (n) => Number(n).toLocaleString();
+
+  async function api(params) {
+    const u = new URL(API);
+    for (const [k, v] of Object.entries(params)) { if (Array.isArray(v)) { if (v.length) u.searchParams.set(k, v.join('|')); } else if (v !== '' && v != null) u.searchParams.set(k, v); }
+    const r = await fetch(u); if (!r.ok) throw new Error('search failed'); return r.json();
+  }
+  async function product(handle) {
+    if (prod.has(handle)) return prod.get(handle);
+    const p = fetch('/products/' + handle + '.js').then((r) => (r.ok ? r.json() : null)).catch(() => null);
+    prod.set(handle, p); return p;
+  }
+  function mini(r) {
+    const s = SER[r.series] || SER.NOTICE;
+    const lines = (r.lines || []).filter((l) => l && l.toUpperCase() !== s.head).slice(0, 5);
+    return `<div class="sf-mini"><div class="hd" style="background:${s.hb};color:${s.hf}">${s.head}</div><div class="bd">${lines.map((l) => `<div>${esc(l)}</div>`).join('')}</div></div>`;
+  }
+  function tag(series) { const s = SER[series] || SER.NOTICE; return `<span class="sf-tag" style="background:${s.bg};color:${s.fg}">${esc(series)}</span>`; }
+
+  function card(r, i) {
+    const el = document.createElement('div');
+    el.className = 'sf-card' + (st.kit.has(r.handle) ? ' sel' : '');
+    el.style.animationDelay = Math.min(i, 12) * 25 + 'ms';
+    const m = (r.matched_on || []).slice(0, 3).map((x) => `<span>matches ${esc(x)}</span>`).join('');
+    el.innerHTML = `<button class="sf-pick" type="button" aria-label="Add to site kit"></button>
+      <div class="sf-media" data-open><img alt="${esc(r.subject)} ${esc(r.series)} sign" loading="lazy">${mini(r)}</div>
+      <div class="sf-body">${tag(r.series)}<h3 data-open>${esc(r.subject)}</h3>
+      ${r.install_point ? `<div class="sf-where"><b>Post at:</b> ${esc(r.install_point.replace(/^Mount (on|at|beside|near) /i, ''))}</div>` : ''}
+      ${m ? `<div class="sf-match">${m}</div>` : ''}
+      <div class="sf-foot"><span class="sf-price"></span><button class="sf-add" type="button" disabled>Add to cart</button></div></div>`;
+    el.querySelectorAll('[data-open]').forEach((x) => x.addEventListener('click', () => openDrawer(r)));
+    el.querySelector('.sf-pick').addEventListener('click', () => toggleKit(r, el));
+    const add = el.querySelector('.sf-add');
+    product(r.handle).then((p) => {
+      if (!p) { el.querySelector('.sf-price').textContent = ''; add.textContent = 'View'; add.disabled = false; add.onclick = () => (location.href = '/products/' + r.handle); return; }
+      const img = el.querySelector('img');
+      if (p.featured_image) { img.onload = () => img.classList.add('ok'); img.src = p.featured_image + (p.featured_image.includes('?') ? '&' : '?') + 'width=500'; }
+      el.querySelector('.sf-price').textContent = '$' + (p.price / 100).toFixed(2);
+      add.disabled = !p.available;
+      add.onclick = async () => { add.disabled = true; add.textContent = 'Adding…'; await addToCart([{ id: p.variants[0].id, quantity: 1 }]); add.textContent = 'Added'; setTimeout(() => { add.textContent = 'Add to cart'; add.disabled = false; }, 1600); };
+    });
+    return el;
+  }
+
+  async function addToCart(items) {
+    await fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items }) });
+    try {
+      const c = await (await fetch('/cart.js')).json();
+      document.querySelectorAll('.cart-count-bubble span[aria-hidden], #cart-icon-bubble .cart-count-bubble span').forEach((n) => (n.textContent = c.item_count));
+      const drawer = document.querySelector('cart-drawer');
+      if (drawer) { const r = await fetch('/?sections=cart-drawer,cart-icon-bubble'); const s = await r.json(); const doc = new DOMParser().parseFromString(s['cart-drawer'], 'text/html'); const inner = doc.querySelector('#CartDrawer'); if (inner) { document.querySelector('#CartDrawer').innerHTML = inner.innerHTML; } const b = new DOMParser().parseFromString(s['cart-icon-bubble'], 'text/html').querySelector('.shopify-section'); if (b) document.getElementById('cart-icon-bubble').innerHTML = b.innerHTML; drawer.classList.remove('is-empty'); drawer.open && drawer.open(); }
+    } catch (e) {}
+  }
+
+  function toggleKit(r, el) {
+    if (st.kit.has(r.handle)) st.kit.delete(r.handle); else st.kit.set(r.handle, r);
+    el && el.classList.toggle('sel', st.kit.has(r.handle));
+    $('#sf-kn').textContent = st.kit.size; $('#sf-kit').classList.toggle('on', st.kit.size > 0);
+  }
+  $('#sf-kclr').onclick = () => { st.kit.clear(); document.querySelectorAll('.sf-card.sel').forEach((c) => c.classList.remove('sel')); $('#sf-kn').textContent = 0; $('#sf-kit').classList.remove('on'); };
+  $('#sf-kadd').onclick = async () => {
+    const b = $('#sf-kadd'); b.textContent = 'Adding…';
+    const ps = await Promise.all([...st.kit.keys()].map(product));
+    const items = ps.filter((p) => p && p.available).map((p) => ({ id: p.variants[0].id, quantity: 1 }));
+    await addToCart(items); b.textContent = 'Added ' + items.length; setTimeout(() => (b.textContent = 'Add all to cart'), 2000);
+  };
+
+  async function openDrawer(r) {
+    const s = SER[r.series] || SER.NOTICE;
+    $('#sf-dr-body').innerHTML = `<div class="im"><div class="sf-media" style="height:100%"><img alt="">${mini(r)}</div></div>
+      <div class="ct">${tag(r.series)}<h2>${esc(r.title || r.subject)}</h2>
+      ${r.why ? `<div class="sf-why"><b>Why this sign matters:</b> ${esc(r.why)}</div>` : ''}
+      <dl class="sf-dl">
+        <dt>Sign reads</dt><dd>${(r.lines || []).map(esc).join('<br>')}</dd>
+        ${r.equipment ? `<dt>Equipment</dt><dd>${esc(r.equipment)}</dd>` : ''}
+        ${r.install_point ? `<dt>Post at</dt><dd>${esc(r.install_point)}</dd>` : ''}
+        ${r.sector ? `<dt>Industry</dt><dd>${esc(r.sector)}</dd>` : ''}
+        ${r.hazard_class ? `<dt>Hazard</dt><dd>${esc(r.hazard_class)}</dd>` : ''}
+        <dt>Build</dt><dd>8 x 12 in. .065 rust-resistant aluminum, UV-stable print, pre-drilled corners</dd>
+      </dl>
+      <div class="sf-row"><button class="p" type="button" id="sf-dadd">Add to cart</button><a class="s" href="/products/${encodeURIComponent(r.handle)}">Full details</a></div>
+      <h3 class="sf-sec-h" style="font-size:1.8rem">More signs like this</h3><div class="sf-sim" id="sf-sim"><div class="sf-load on" style="grid-column:1/-1"><i></i></div></div></div>`;
+    $('#sf-dr').classList.add('on'); document.body.style.overflow = 'hidden';
+    const p = await product(r.handle);
+    const img = $('#sf-dr-body .im img');
+    if (p && p.featured_image) { img.onload = () => img.classList.add('ok'); img.src = p.featured_image + '?width=900'; }
+    const b = $('#sf-dadd');
+    if (p) { b.textContent = 'Add to cart · $' + (p.price / 100).toFixed(2); b.onclick = async () => { b.textContent = 'Adding…'; await addToCart([{ id: p.variants[0].id, quantity: 1 }]); b.textContent = 'Added to cart'; }; } else b.onclick = () => (location.href = '/products/' + r.handle);
+    try {
+      const sim = await api({ action: 'similar', sku: r.sku });
+      const box = $('#sf-sim'); box.innerHTML = '';
+      sim.results.slice(0, 9).forEach((x) => {
+        const bt = document.createElement('button'); bt.type = 'button';
+        bt.innerHTML = `<div class="sf-media"><img alt="">${mini(x)}</div><p>${esc(x.subject)}</p>`;
+        bt.onclick = () => openDrawer(x); box.appendChild(bt);
+        product(x.handle).then((pp) => { const im = bt.querySelector('img'); if (pp && pp.featured_image) { im.onload = () => im.classList.add('ok'); im.src = pp.featured_image + '?width=300'; } });
+      });
+    } catch (e) { $('#sf-sim').innerHTML = ''; }
+  }
+  document.querySelectorAll('#sf-dr [data-close]').forEach((x) => x.addEventListener('click', () => { $('#sf-dr').classList.remove('on'); document.body.style.overflow = ''; }));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { $('#sf-dr').classList.remove('on'); document.body.style.overflow = ''; } });
+
+  function renderFacets(fc) {
+    const box = $('#sf-facets'); box.innerHTML = '';
+    const groups = [['series', 'Sign type'], ['sector', 'Industry'], ['hazard_class', 'Hazard']];
+    for (const [k, label] of groups) {
+      let opts = (fc && fc[k]) || [];
+      st.f[k].forEach((v) => { if (!opts.find((o) => o.value === v)) opts = [{ value: v, count: '' }, ...opts]; });
+      if (!opts.length) continue;
+      const g = document.createElement('div'); g.className = 'sf-fg';
+      g.innerHTML = `<h4>${label}</h4>`;
+      opts.forEach((o) => {
+        const on = st.f[k].includes(o.value);
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'sf-opt' + (on ? ' on' : '');
+        const sw = k === 'series' ? `<i class="sf-sw" style="background:${(SER[o.value] || {}).bg}"></i>` : '';
+        b.innerHTML = `<span class="bx"></span>${sw}<span class="lb">${esc(o.value)}</span><span class="ct">${o.count}</span>`;
+        b.onclick = () => { st.f[k] = on ? st.f[k].filter((v) => v !== o.value) : [...st.f[k], o.value]; run(true); };
+        g.appendChild(b);
+      });
+      box.appendChild(g);
+    }
+    const act = $('#sf-active'); act.innerHTML = '';
+    for (const k of Object.keys(st.f)) st.f[k].forEach((v) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = v + '  ×'; b.onclick = () => { st.f[k] = st.f[k].filter((x) => x !== v); run(true); }; act.appendChild(b); });
+  }
+
+  function showResults() { $('#sf-explore').style.display = 'none'; $('#sf-results').classList.add('on'); }
+  function syncUrl() {
+    const u = new URL(location.href); u.search = '';
+    if (st.q) u.searchParams.set('q', st.q);
+    for (const k of Object.keys(st.f)) if (st.f[k].length) u.searchParams.set(k, st.f[k].join('|'));
+    history.replaceState(null, '', u);
+  }
+
+  async function run(reset) {
+    if (reset) { st.page = 0; $('#sf-grid').innerHTML = ''; }
+    showResults(); syncUrl();
+    $('#sf-load').classList.add('on'); $('#sf-more').hidden = true;
+    const browse = !st.q;
+    try {
+      const d = browse ? await api({ action: 'browse', page: st.page, ...st.f }) : await api({ q: st.q, page: st.page, ...st.f });
+      $('#sf-load').classList.remove('on');
+      if (reset) {
+        st.total = d.total;
+        $('#sf-count').innerHTML = browse ? `<b>${fmt(d.total)}</b> signs in ${esc(st.f.sector.join(', ') || 'the catalog')}` : `<b>${d.total >= 300 ? '300+' : fmt(d.total)}</b> signs matched <b>“${esc(st.q)}”</b>`;
+        const det = $('#sf-det'); det.innerHTML = '';
+        const ds = (d.detected && d.detected.sectors || []).filter((s) => !st.f.sector.includes(s));
+        if (ds.length) { det.innerHTML = '<span>Narrow to your industry:</span>'; ds.forEach((s) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = s; b.onclick = () => { st.f.sector = [s]; run(true); }; det.appendChild(b); }); }
+        renderFacets(browse ? { series: Object.entries(st.data && st.data.secSeries && st.data.secSeries[st.f.sector[0]] || {}).map(([value, count]) => ({ value, count })) } : d.facets);
+      }
+      const grid = $('#sf-grid');
+      if (!d.results.length && st.page === 0) {
+        grid.innerHTML = `<div class="sf-empty" style="grid-column:1/-1"><h3>No exact match yet</h3><p>Try describing the equipment or where the sign will hang, or <a href="/pages/request-a-quote">tell us what you need</a> and we will make it.</p></div>`;
+      }
+      d.results.forEach((r, i) => grid.appendChild(card(r, i)));
+      const shown = (st.page + 1) * (browse ? 48 : 24);
+      $('#sf-more').hidden = shown >= d.total;
+    } catch (e) {
+      $('#sf-load').classList.remove('on');
+      $('#sf-grid').innerHTML = '<div class="sf-empty" style="grid-column:1/-1"><h3>Search is busy</h3><p>Please try again in a moment.</p></div>';
+    }
+  }
+  $('#sf-more').onclick = () => { st.page++; run(false); };
+  $('#sf-form').addEventListener('submit', (e) => { e.preventDefault(); st.q = $('#sf-q').value.trim(); st.f = { series: [], sector: [], hazard_class: [] }; if (st.q) { run(true); $('#sf-results').scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
+  document.querySelectorAll('.sf-chip').forEach((c) => c.addEventListener('click', () => { $('#sf-q').value = c.dataset.q; $('#sf-form').requestSubmit(); }));
+  $('#sf-open-f').onclick = () => $('#sf-side').classList.add('open');
+  $('#sf-close-f').onclick = () => $('#sf-side').classList.remove('open');
+
+  // animated placeholder
+  const ph = {{ section.settings.placeholders | split: '|' | json }};
+  let pi = 0, pc = 0, del = false;
+  (function tick() {
+    const inp = $('#sf-q'); if (document.activeElement === inp || inp.value) { setTimeout(tick, 600); return; }
+    const t = (ph[pi] || '').trim();
+    pc += del ? -1 : 1; inp.setAttribute('placeholder', t.slice(0, pc) + (pc < t.length ? '' : ''));
+    if (!del && pc >= t.length) { del = true; setTimeout(tick, 1800); return; }
+    if (del && pc <= 0) { del = false; pi = (pi + 1) % ph.length; }
+    setTimeout(tick, del ? 25 : 55);
+  })();
+
+  // browse tree
+  api({ action: 'tree' }).then((d) => {
+    const divs = {}; const secSeries = {};
+    d.tree.forEach((r) => { (divs[r.division] = divs[r.division] || []).push(r); secSeries[r.sector] = r.by_series; });
+    st.data = { divs, secSeries };
+    $('#sf-total').textContent = fmt(d.total);
+    $('#sf-nsec').textContent = d.tree.filter((r) => r.sector).length;
+    const box = $('#sf-divs');
+    Object.entries(divs).filter(([k]) => k !== 'Other').sort((a, b) => b[1].reduce((s, x) => s + x.n, 0) - a[1].reduce((s, x) => s + x.n, 0)).forEach(([name, secs]) => {
+      const n = secs.reduce((s, x) => s + x.n, 0);
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'sf-div';
+      b.innerHTML = `<h3>${esc(name)}</h3><div class="n">${fmt(n)} signs · ${secs.length} industries</div><div class="secs">${secs.slice(0, 4).map((s) => esc(s.sector)).join(' · ')}…</div>`;
+      b.onclick = () => {
+        $('#sf-sectors').classList.add('on'); $('#sf-sectors-h').textContent = name;
+        const l = $('#sf-seclist'); l.innerHTML = '';
+        secs.filter((s) => s.sector).forEach((s) => { const x = document.createElement('button'); x.type = 'button'; x.className = 'sf-secbtn'; x.innerHTML = `${esc(s.sector)}<span>${fmt(s.n)}</span>`; x.onclick = () => { st.q = ''; $('#sf-q').value = ''; st.f = { series: [], sector: [s.sector], hazard_class: [] }; run(true); window.scrollTo({ top: $('#sf-results').offsetTop - 20, behavior: 'smooth' }); }; l.appendChild(x); });
+        $('#sf-sectors').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+      box.appendChild(b);
+    });
+  }).catch(() => {});
+
+  // deep links: ?q=...&sector=...
+  const sp = new URLSearchParams(location.search);
+  if (sp.get('q') || sp.get('sector')) {
+    st.q = sp.get('q') || ''; $('#sf-q').value = st.q;
+    for (const k of Object.keys(st.f)) if (sp.get(k)) st.f[k] = sp.get(k).split('|');
+    run(true);
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "CGAP Sign Finder",
+  "tag": "section",
+  "class": "cgap-sign-finder",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "CGAP Sign Finder" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Find the exact sign for your site" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Describe your industry, facility, machine or hazard in plain words. We match it against every sign we make, down to the install point." },
+    { "type": "text", "id": "examples", "label": "Example searches (separate with |)", "default": "commercial kitchen fryer station|grain bin entry|forklift traffic at loading dock|arc flash at electrical panel|dairy milking parlor|car wash bay" },
+    { "type": "text", "id": "placeholders", "label": "Animated placeholder phrases (separate with |)", "default": "Grain bin roof manhole on our farm|Lockout on a meat grinder|Battery charging room for forklifts|Confined space at a lift station wet well|Hot oil fryers in a restaurant kitchen" },
+    { "type": "text", "id": "api_url", "label": "Search API URL", "default": "https://esmwoaqemeukjrjaesby.supabase.co/functions/v1/sign-finder" }
+  ],
+  "presets": [{ "name": "CGAP Sign Finder" }]
+}
+{% endschema %}
