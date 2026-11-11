@@ -1,0 +1,93 @@
+{%- comment -%} Sitewide: replaces the header search dropdown with Sign Finder instant suggestions {%- endcomment -%}
+<style>
+  .cgs-dd{position:fixed;z-index:2147483000;background:#fff;color:#14181a;border-radius:8px;box-shadow:0 24px 60px rgba(0,0,0,.3);overflow:hidden;display:none;font-family:var(--font-body-family);border:1px solid #e3e6e0}
+  .cgs-dd.on{display:block}
+  .cgs-dd a{display:flex;gap:1.2rem;align-items:center;padding:.9rem 1.3rem;text-decoration:none;color:inherit;border-bottom:1px solid #eef0ec}
+  .cgs-dd a.act,.cgs-dd a:hover{background:#f6f7f4}
+  .cgs-th{width:60px;height:45px;flex:none;background:#fff;border:1px solid #e1e4de;position:relative;display:flex;flex-direction:column;overflow:hidden}
+  .cgs-th img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;opacity:0;transition:opacity .2s}
+  .cgs-th img.ok{opacity:1}
+  .cgs-th .h{height:13px;font-size:7px;font-weight:900;text-align:center;line-height:13px;font-family:Arial,sans-serif}
+  .cgs-th .b{flex:1;font-size:5px;font-weight:800;text-align:center;line-height:1.15;padding:2px;font-family:Arial,sans-serif;text-transform:uppercase;color:#111}
+  .cgs-tx{flex:1;min-width:0}
+  .cgs-tx b{display:block;font-size:1.45rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cgs-tx small{display:block;font-size:1.15rem;color:#5d6660;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cgs-tg{font-size:.95rem;font-weight:800;letter-spacing:.08em;padding:.2rem .55rem;border-radius:2px;flex:none}
+  .cgs-dd .all{justify-content:space-between;background:#173F24;color:#fff;font-weight:700;font-size:1.35rem;border:0}
+  .cgs-dd .all:hover,.cgs-dd .all.act{background:#0f2b18}
+  .cgs-dd .all span:last-child{color:#f7c79f}
+  .cgs-dd .hint{padding:1.1rem 1.3rem;font-size:1.3rem;color:#5d6660}
+  .cgs-dd .tip{padding:.7rem 1.3rem;font-size:1.1rem;letter-spacing:.12em;text-transform:uppercase;color:#8a420a;background:#fff4ea;font-weight:700}
+  predictive-search .predictive-search{display:none !important}
+</style>
+<script>
+(() => {
+  if (window.__cgapSuggest) return; window.__cgapSuggest = true;
+  const API = {{ section.settings.api_url | json }};
+  const SER = { 'DANGER': ['#C8102E', '#fff', '#111'], 'WARNING': ['#F47B20', '#111', '#F47B20'], 'CAUTION': ['#FFD100', '#111', '#FFD100'], 'NOTICE': ['#005EB8', '#fff', '#005EB8'], 'SAFETY FIRST': ['#00843D', '#fff', '#00843D'] };
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const cache = new Map(), imgs = new Map();
+  const dd = document.createElement('div'); dd.className = 'cgs-dd'; dd.setAttribute('role', 'listbox');
+  document.addEventListener('DOMContentLoaded', () => document.body.appendChild(dd));
+  if (document.body) document.body.appendChild(dd);
+  let cur = null, timer, seq = 0, act = -1, items = [];
+  const isTarget = (el) => el && el.matches && el.matches('input[name="q"]') && !el.closest('.fh, .sf');
+  const img = (h) => { if (!imgs.has(h)) imgs.set(h, fetch('/products/' + h + '.js').then((r) => (r.ok ? r.json() : null)).then((p) => (p && p.featured_image ? p.featured_image + '?width=150' : null)).catch(() => null)); return imgs.get(h); };
+  function place() {
+    if (!cur) return;
+    const f = cur.closest('form') || cur; const r = f.getBoundingClientRect();
+    const w = Math.max(r.width, Math.min(560, window.innerWidth - 16));
+    let left = Math.min(r.left, window.innerWidth - w - 8); left = Math.max(8, left);
+    dd.style.left = left + 'px'; dd.style.top = (r.bottom + 6) + 'px'; dd.style.width = w + 'px';
+    dd.style.maxHeight = (window.innerHeight - r.bottom - 16) + 'px'; dd.style.overflowY = 'auto';
+  }
+  function render(q, d) {
+    const rows = d.results || [];
+    const s = rows.map((r, i) => {
+      const c = SER[r.series] || SER.NOTICE;
+      const lines = (r.lines || []).filter((l) => l && l.toUpperCase() !== r.series).slice(0, 4).map(esc).join('<br>');
+      return `<a href="/products/${encodeURIComponent(r.handle)}" role="option"><span class="cgs-th"><span class="h" style="background:${c[2]};color:${c[0] === '#C8102E' ? '#fff' : c[1]}">${esc(r.series)}</span><span class="b">${lines}</span><img alt="" data-h="${esc(r.handle)}"></span><span class="cgs-tx"><b>${esc(r.subject)}</b><small>${esc(r.sector || '')}${r.install_point ? ' · ' + esc(r.install_point) : ''}</small></span><span class="cgs-tg" style="background:${c[0]};color:${c[1]}">${esc(r.series)}</span></a>`;
+    }).join('');
+    dd.innerHTML = (rows.length ? '<div class="tip">Sign Finder</div>' + s : '<div class="hint">Keep typing, or press Enter to search every sign by meaning.</div>') +
+      `<a class="all" href="/search?q=${encodeURIComponent(q)}"><span>See every sign for “${esc(q)}”</span><span>${d.total >= 500 ? '500+' : (d.total || '')} →</span></a>`;
+    items = [...dd.querySelectorAll('a')]; act = -1; place(); dd.classList.add('on');
+    dd.querySelectorAll('img[data-h]').forEach((im) => img(im.dataset.h).then((u) => { if (u) { im.onload = () => im.classList.add('ok'); im.src = u; } }));
+  }
+  async function suggest() {
+    if (!cur) return; const q = cur.value.trim();
+    if (q.length < 2) { dd.classList.remove('on'); return; }
+    const my = ++seq; let d = cache.get(q);
+    if (!d) { try { d = await (await fetch(API + '?action=suggest&q=' + encodeURIComponent(q))).json(); cache.set(q, d); } catch (e) { return; } }
+    if (my === seq && cur && cur.value.trim() === q) render(q, d);
+  }
+  // capture phase: runs before the theme's own predictive search and stops it
+  window.addEventListener('input', (e) => { if (!isTarget(e.target)) return; e.stopImmediatePropagation(); cur = e.target; clearTimeout(timer); timer = setTimeout(suggest, 130); }, true);
+  window.addEventListener('focusin', (e) => { if (!isTarget(e.target)) return; cur = e.target; if (cur.value.trim().length >= 2) suggest(); }, true);
+  window.addEventListener('keydown', (e) => {
+    if (!isTarget(e.target)) return;
+    if (e.key === 'Enter') {
+      if (act >= 0 && items[act]) { e.preventDefault(); e.stopImmediatePropagation(); location.href = items[act].href; return; }
+      const q = e.target.value.trim(); if (q) { e.preventDefault(); e.stopImmediatePropagation(); location.href = '/search?q=' + encodeURIComponent(q); }
+      return;
+    }
+    if (!dd.classList.contains('on') || !items.length) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); e.stopImmediatePropagation(); act = (act + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length; items.forEach((a, i) => a.classList.toggle('act', i === act)); }
+    else if (e.key === 'Escape') dd.classList.remove('on');
+  }, true);
+  document.addEventListener('click', (e) => { if (!dd.contains(e.target) && !isTarget(e.target)) dd.classList.remove('on'); });
+  window.addEventListener('resize', place); window.addEventListener('scroll', place, { passive: true });
+  // hide when the search modal closes
+  new MutationObserver(() => { if (cur && !cur.offsetParent) dd.classList.remove('on'); }).observe(document.documentElement, { attributes: true, subtree: true, attributeFilter: ['open', 'class'] });
+})();
+</script>
+{% schema %}
+{
+  "name": "CGAP search suggestions",
+  "class": "cgap-search-suggest",
+  "enabled_on": { "groups": ["header"] },
+  "settings": [
+    { "type": "text", "id": "api_url", "label": "Search API URL", "default": "https://esmwoaqemeukjrjaesby.supabase.co/functions/v1/sign-finder" }
+  ],
+  "presets": [{ "name": "CGAP search suggestions" }]
+}
+{% endschema %}
