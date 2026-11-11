@@ -1,0 +1,4 @@
+{
+  "sections": { "main": { "type": "cgap-site-plan", "settings": {} } },
+  "order": ["main"]
+}

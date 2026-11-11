@@ -7,17 +7,35 @@
   .fh-bg:before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.035) 0 14px,transparent 14px 28px)}
   .fh-bg:after{content:"";position:absolute;width:900px;height:900px;right:-260px;top:-380px;background:radial-gradient(circle,rgba(224,115,26,.28),transparent 62%)}
   .fh-stripe{position:absolute;left:0;right:0;bottom:0;height:8px;background:repeating-linear-gradient(-45deg,#111 0 14px,#FFD100 14px 28px);opacity:.95}
-  .fh-in{position:relative;max-width:1240px;margin:0 auto;padding:3.8rem 2.4rem 4.6rem;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:4rem;align-items:center}
+  .fh-in{position:relative;max-width:1000px;margin:0 auto;padding:6.4rem 2.4rem 5.2rem;min-height:min(86vh,860px);display:flex;flex-direction:column;justify-content:center;text-align:center;z-index:2}
+  .fh-in>div:first-child{display:flex;flex-direction:column;align-items:center}
+  .fh-search{width:100%;text-align:left}
+  .fh-modes{display:inline-flex;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.16);border-radius:50px;padding:5px;margin:0 0 1.6rem;gap:4px}
+  .fh-modes button{border:0;background:transparent;color:#fff;font:inherit;font-weight:700;font-size:1.45rem;padding:1rem 2.2rem;border-radius:50px;cursor:pointer;display:flex;align-items:center;gap:.8rem;transition:background .15s,color .15s}
+  .fh-modes button[aria-selected=true]{background:#fff;color:var(--g)}
+  .fh-modes button .nw{font-size:1rem;letter-spacing:.1em;background:var(--o);color:#fff;border-radius:3px;padding:.2rem .5rem}
+  .fh-pane[hidden]{display:none!important}
+  .fh-plan{width:100%;background:#fff;color:var(--ink);border-radius:10px;box-shadow:0 22px 60px rgba(0,0,0,.4);padding:2.2rem 2.2rem 2rem;text-align:left}
+  .fh-plan h2{margin:0 0 .4rem;font-family:var(--font-heading-family);text-transform:uppercase;font-size:2rem;color:var(--g)}
+  .fh-plan p{margin:0 0 1.6rem;color:var(--mut);font-size:1.45rem}
+  .fh-fac{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
+  .fh-fac a{display:flex;align-items:center;gap:.9rem;border:2px solid #e3e6e0;border-radius:7px;padding:1.1rem 1.2rem;text-decoration:none;color:var(--ink);font-weight:700;font-size:1.4rem;line-height:1.25;transition:border-color .15s,background .15s}
+  .fh-fac a:hover{border-color:var(--o);background:#fff7f0}
+  .fh-fac a i{flex:none;width:10px;height:10px;background:var(--o);transform:rotate(45deg)}
+  .fh-plan .fh-pfoot{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:1.4rem;font-size:1.35rem;color:var(--mut);flex-wrap:wrap}
+  .fh-plan .fh-pfoot a{color:var(--g);font-weight:700}
+  .fh-plan .fh-start{background:var(--o);color:#fff!important;text-decoration:none;padding:1.1rem 2rem;border-radius:6px;font-family:var(--font-heading-family);text-transform:uppercase;letter-spacing:.06em}
+  .fh-try,.fh-stats{justify-content:center}
   .fh-eyebrow{display:inline-flex;align-items:center;gap:1rem;font-size:1.25rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:#f7c79f}
   .fh-eyebrow i{width:28px;height:4px;background:var(--o)}
-  .fh h1{font-family:var(--font-heading-family);text-transform:uppercase;font-size:clamp(3rem,3.6vw,4.8rem);line-height:1.02;margin:1rem 0 1rem;color:#fff;letter-spacing:.005em}
+  .fh h1{font-family:var(--font-heading-family);text-transform:uppercase;font-size:clamp(3.4rem,5.2vw,6.4rem);line-height:1;margin:1.2rem 0 1.2rem;max-width:920px;color:#fff;letter-spacing:.005em}
   .fh h1 em{font-style:normal;color:var(--o)}
-  .fh-sub{font-size:1.65rem;line-height:1.5;opacity:.9;margin:0 0 2.2rem;max-width:620px}
+  .fh-sub{font-size:1.8rem;line-height:1.5;opacity:.9;margin:0 auto 2.4rem;max-width:700px}
   .fh-search{position:relative}
   .fh-box{display:flex;background:#fff;border-radius:8px;box-shadow:0 22px 60px rgba(0,0,0,.4);border:3px solid transparent;transition:border-color .2s,box-shadow .2s}
   .fh-box:focus-within{border-color:var(--o);box-shadow:0 22px 70px rgba(224,115,26,.35)}
   .fh-box svg{flex:none;align-self:center;margin-left:2rem;color:#7c857f}
-  .fh-input{flex:1;min-width:0;border:0;outline:0;background:transparent;font-size:2.1rem;padding:2.3rem 1.4rem;color:var(--ink);font-family:inherit}
+  .fh-input{flex:1;min-width:0;border:0;outline:0;background:transparent;font-size:2.3rem;padding:2.7rem 1.4rem;color:var(--ink);font-family:inherit}
   .fh-go{border:0;background:var(--o);color:#fff;font-family:var(--font-heading-family);text-transform:uppercase;letter-spacing:.08em;font-size:1.8rem;padding:0 3.4rem;cursor:pointer;border-radius:0 5px 5px 0;transition:background .15s}
   .fh-go:hover{background:#c55f0e}
   .fh-dd{position:absolute;left:0;right:0;top:calc(100% + 8px);background:#fff;color:var(--ink);border-radius:8px;box-shadow:0 24px 60px rgba(0,0,0,.35);overflow:hidden;display:none;z-index:20}
@@ -44,12 +62,14 @@
   .fh-stats{display:flex;gap:3.4rem;margin-top:2.4rem;flex-wrap:wrap}
   .fh-stats b{display:block;font-family:var(--font-heading-family);font-size:3.2rem;line-height:1;color:#fff}
   .fh-stats small{font-size:1.15rem;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
-  .fh-art{position:relative;height:390px}
+  .fh-art{position:absolute;inset:0;pointer-events:none;z-index:1}
+  .fh-art .fh-card{pointer-events:auto;width:210px;opacity:.92}
   .fh-card{position:absolute;width:265px;background:#fff;border-radius:4px;box-shadow:0 26px 50px rgba(0,0,0,.45);padding:10px;transition:transform .4s}
   .fh-card img{display:block;width:100%;height:auto}
-  .fh-card:nth-child(1){top:0;right:30px;transform:rotate(4deg)}
-  .fh-card:nth-child(2){top:115px;right:150px;transform:rotate(-5deg);z-index:2}
-  .fh-card:nth-child(3){top:215px;right:10px;transform:rotate(2deg);z-index:3}
+  .fh-card:nth-child(1){top:14%;left:calc(50% - 760px);transform:rotate(-6deg)}
+  .fh-card:nth-child(2){top:22%;right:calc(50% - 770px);transform:rotate(5deg)}
+  .fh-card:nth-child(3){bottom:12%;left:calc(50% - 730px);transform:rotate(3deg)}
+  @media (max-width:1439px){.fh-art{display:none}}
   .fh-art:hover .fh-card:nth-child(1){transform:rotate(6deg) translateY(-6px)}
   .fh-art:hover .fh-card:nth-child(2){transform:rotate(-7deg) translateY(-6px)}
   .fh-art:hover .fh-card:nth-child(3){transform:rotate(3deg) translateY(-6px)}
@@ -61,7 +81,10 @@
   .fh-ind a i{width:8px;height:8px;background:var(--o);display:block}
   .fh-ind .lbl{flex:none;align-self:center;font-size:1.15rem;letter-spacing:.16em;text-transform:uppercase;color:#f7c79f;margin-right:.6rem;font-weight:700}
   @media (max-width:989px){
-    .fh-in{grid-template-columns:1fr;padding:3.6rem 1.6rem 4rem;gap:0}
+    .fh-in{padding:3.6rem 1.6rem 3.6rem;min-height:0}
+    .fh-modes button{padding:.9rem 1.3rem;font-size:1.3rem}
+    .fh-fac{grid-template-columns:1fr 1fr}
+    .fh-fac a{font-size:1.3rem;padding:1rem}
     .fh-art{display:none}
     .fh-input{font-size:1.7rem;padding:1.8rem 1rem}
     .fh-box svg{display:none}
@@ -80,6 +103,11 @@
       <div class="fh-eyebrow"><i></i>{{ section.settings.eyebrow }}</div>
       <h1>{{ section.settings.heading }}</h1>
       <p class="fh-sub">{{ section.settings.subheading }}</p>
+      <div class="fh-modes" role="tablist" aria-label="How do you want to shop?">
+        <button type="button" role="tab" aria-selected="true" aria-controls="fh-p1" id="fh-t1">Find a sign</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="fh-p2" id="fh-t2">Plan my whole site <span class="nw">NEW</span></button>
+      </div>
+      <div class="fh-pane" id="fh-p1" role="tabpanel" aria-labelledby="fh-t1" style="width:100%">
       <div class="fh-search">
         <form class="fh-box" action="/search" method="get" role="search" id="fh-form">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
@@ -91,6 +119,18 @@
       <div class="fh-try"><span>Try:</span>
         {%- assign ex = section.settings.examples | split: '|' -%}
         {%- for e in ex -%}{%- assign t = e | strip -%}<a href="/search?q={{ t | url_encode }}">{{ t }}</a>{%- endfor -%}
+      </div>
+      </div>
+      <div class="fh-pane" id="fh-p2" role="tabpanel" aria-labelledby="fh-t2" hidden style="width:100%">
+        <div class="fh-plan">
+          <h2>{{ section.settings.plan_heading }}</h2>
+          <p>{{ section.settings.plan_sub }}</p>
+          <div class="fh-fac">
+            {%- assign facs = section.settings.plan_facilities | split: '|' -%}
+            {%- for x in facs -%}{%- assign pair = x | split: '=' -%}{%- assign lbl = pair[1] | strip -%}{%- assign code = pair[0] | strip -%}<a href="{{ section.settings.plan_url }}?f={{ code }}"><i></i>{{ lbl }}</a>{%- endfor -%}
+          </div>
+          <div class="fh-pfoot"><span>Takes about 60 seconds. Every sign from $29.99, with automatic volume pricing.</span><a class="fh-start" href="{{ section.settings.plan_url }}">Start my plan</a></div>
+        </div>
       </div>
       <div class="fh-stats">
         <div><b>{{ section.settings.stat1 }}</b><small>{{ section.settings.stat1_label }}</small></div>
@@ -131,6 +171,9 @@
 (() => {
   const API = {{ section.settings.api_url | json }};
   const SER = { 'DANGER': ['#C8102E', '#fff', '#111'], 'WARNING': ['#F47B20', '#111', '#F47B20'], 'CAUTION': ['#FFD100', '#111', '#FFD100'], 'NOTICE': ['#005EB8', '#fff', '#005EB8'], 'SAFETY FIRST': ['#00843D', '#fff', '#00843D'] };
+  const tabs = [document.getElementById('fh-t1'), document.getElementById('fh-t2')], panes = [document.getElementById('fh-p1'), document.getElementById('fh-p2')];
+  tabs.forEach((t, i) => t && t.addEventListener('click', () => { tabs.forEach((x, j) => x.setAttribute('aria-selected', String(i === j))); panes.forEach((p, j) => { p.hidden = i !== j; }); if (i === 0) document.getElementById('fh-q').focus(); }));
+  if (location.hash === '#plan' && tabs[1]) tabs[1].click();
   const inp = document.getElementById('fh-q'), dd = document.getElementById('fh-dd'), form = document.getElementById('fh-form');
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const cache = new Map(), imgs = new Map();

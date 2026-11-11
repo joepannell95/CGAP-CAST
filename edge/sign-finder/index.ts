@@ -1,5 +1,6 @@
 import postgres from 'npm:postgres@3.4.4';
 const sql = postgres(Deno.env.get('SUPABASE_DB_URL')!, { max: 3, prepare: false });
+let planCache: { t: number; d: any } | null = null;
 let _model: any = null;
 const model = () => (_model ??= new Supabase.ai.Session('gte-small'));
 
@@ -102,6 +103,26 @@ Deno.serve(async (req) => {
       const kind = String(p.kind ?? 'open').replace(/[^a-z_]/g, '').slice(0, 20) || 'open';
       if (sku && cq) await sql`select finder.log_click(${cq}, ${sku}, ${kind})`.catch(() => {});
       return new Response(null, { status: 204, headers: h });
+    }
+    if (action === 'plan') {
+      // Site Sign Plan rules and picks, rebuilt by finder.plan_build(). One row, cached in memory.
+      if (!planCache || Date.now() - planCache.t > 3600_000) {
+        const r = await sql`select data from finder.plan_map where id = 1`;
+        planCache = { t: Date.now(), d: r[0]?.data ?? null };
+      }
+      return json(planCache.d, 21600);
+    }
+    if (action === 'plan_lead') {
+      // Shopper saved or requested a quote for a plan. Stored so nothing is lost if the store email fails.
+      const email = String(p.email ?? '').slice(0, 200).trim().toLowerCase();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json({ ok: false, error: 'email' }, 0);
+      const kind = String(p.kind ?? 'save').replace(/[^a-z_]/g, '').slice(0, 20) || 'save';
+      const info = { name: String(p.name ?? '').slice(0, 120), company: String(p.company ?? '').slice(0, 160), phone: String(p.phone ?? '').slice(0, 40), note: String(p.note ?? '').slice(0, 2000) };
+      const plan = p.plan && typeof p.plan === 'object' ? p.plan : null;
+      const planStr = plan ? JSON.stringify(plan).slice(0, 60000) : null;
+      let planObj: any = null; try { planObj = planStr ? JSON.parse(planStr) : null; } catch (_) { planObj = null; }
+      await sql`insert into finder.plan_leads(email, kind, facility, info, plan, signs, total) values (${email}, ${kind}, ${String(p.facility ?? '').slice(0, 40)}, ${sql.json(info)}, ${planObj ? sql.json(planObj) : null},${Number(p.signs) || 0}, ${Number(p.total) || 0})`;
+      return json({ ok: true }, 0);
     }
     if (action === 'suggest') {
       const q = String(p.q ?? '').slice(0, 120).trim();

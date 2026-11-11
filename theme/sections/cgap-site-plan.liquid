@@ -1,0 +1,461 @@
+{%- comment -%} CGAP Site Sign Plan: short questionnaire that builds a room-by-room sign plan, then cart / quote / printable plan {%- endcomment -%}
+<link rel="preconnect" href="https://esmwoaqemeukjrjaesby.supabase.co">
+<style>
+  .sp{--g:#173F24;--g2:#0d2615;--o:#E0731A;--ink:#14181a;--mut:#5d6660;--ln:#e3e6e0;--bg:#f5f6f2;font-family:var(--font-body-family);color:var(--ink);background:var(--bg)}
+  .sp *{box-sizing:border-box}
+  .sp-hd{background:linear-gradient(155deg,var(--g),var(--g2));color:#fff;position:relative;overflow:hidden}
+  .sp-hd:before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.035) 0 14px,transparent 14px 28px)}
+  .sp-hd-in{position:relative;max-width:1180px;margin:0 auto;padding:4.4rem 2.4rem 3.6rem}
+  .sp-eb{display:inline-flex;align-items:center;gap:1rem;font-size:1.2rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:#f7c79f}
+  .sp-eb i{width:28px;height:4px;background:var(--o)}
+  .sp-hd h1{font-family:var(--font-heading-family);text-transform:uppercase;font-size:clamp(3rem,4.4vw,5.2rem);line-height:1.02;margin:1rem 0;color:#fff}
+  .sp-hd p{font-size:1.7rem;opacity:.9;max-width:720px;margin:0;line-height:1.5}
+  .sp-steps{display:flex;gap:.6rem;margin-top:2.4rem;flex-wrap:wrap}
+  .sp-steps span{font-size:1.25rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.7rem 1.3rem;border-radius:40px;border:1px solid rgba(255,255,255,.25);opacity:.6}
+  .sp-steps span.on{opacity:1;background:var(--o);border-color:var(--o)}
+  .sp-steps span.done{opacity:1}
+  .sp-stripe{height:8px;background:repeating-linear-gradient(-45deg,#111 0 14px,#FFD100 14px 28px)}
+  .sp-main{max-width:1180px;margin:0 auto;padding:3.2rem 2.4rem 14rem}
+  .sp-card{background:#fff;border:1px solid var(--ln);border-radius:10px;padding:2.6rem;box-shadow:0 6px 24px rgba(20,24,26,.05)}
+  .sp-card h2{font-family:var(--font-heading-family);text-transform:uppercase;font-size:2.4rem;margin:0 0 .4rem;color:var(--g)}
+  .sp-card>p.s{color:var(--mut);font-size:1.5rem;margin:0 0 2rem}
+  .sp-fac{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+  .sp-fac button{all:unset;cursor:pointer;border:2px solid var(--ln);border-radius:8px;padding:1.6rem 1.4rem;font-weight:700;font-size:1.5rem;line-height:1.3;display:flex;gap:1rem;align-items:center;transition:all .15s;background:#fff}
+  .sp-fac button i{flex:none;width:12px;height:12px;background:var(--o);transform:rotate(45deg)}
+  .sp-fac button:hover{border-color:var(--o);background:#fff7f0}
+  .sp-fac button[aria-pressed=true]{border-color:var(--g);background:#eef4ef;box-shadow:inset 0 0 0 1px var(--g)}
+  .sp-areas{display:grid;grid-template-columns:repeat(2,1fr);gap:.9rem}
+  .sp-area{display:flex;align-items:center;gap:1.2rem;border:2px solid var(--ln);border-radius:8px;padding:1.1rem 1.3rem;background:#fff;transition:border-color .15s}
+  .sp-area.on{border-color:var(--g);background:#f4f8f4}
+  .sp-area label{flex:1;display:flex;align-items:center;gap:1rem;cursor:pointer;font-weight:700;font-size:1.45rem;line-height:1.3}
+  .sp-area input[type=checkbox]{width:2rem;height:2rem;accent-color:var(--g);flex:none;margin:0}
+  .sp-area small{display:block;font-weight:400;color:var(--mut);font-size:1.2rem}
+  .sp-qty{display:inline-flex;align-items:center;border:1px solid #cfd4cc;border-radius:6px;overflow:hidden;flex:none;background:#fff}
+  .sp-qty button{all:unset;cursor:pointer;width:3.2rem;height:3.2rem;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;color:var(--g)}
+  .sp-qty button:hover{background:#eef2ec}
+  .sp-qty span{min-width:3rem;text-align:center;font-weight:800;font-size:1.45rem}
+  .sp-area:not(.on) .sp-qty{opacity:.35;pointer-events:none}
+  .sp-more{margin-top:1.6rem}
+  .sp-more summary{cursor:pointer;font-weight:700;color:var(--g);font-size:1.45rem;padding:.6rem 0}
+  .sp-more .sp-areas{margin-top:1rem}
+  .sp-site{display:flex;gap:2rem;flex-wrap:wrap;margin:0 0 2.2rem;padding:1.6rem;border-radius:8px;background:var(--bg)}
+  .sp-site>div{display:flex;align-items:center;gap:1.2rem;font-weight:700;font-size:1.45rem}
+  .sp-site small{display:block;color:var(--mut);font-weight:400;font-size:1.2rem}
+  .sp-nav{display:flex;justify-content:space-between;align-items:center;margin-top:2.4rem;gap:1rem}
+  .sp-btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:.8rem;background:var(--o);color:#fff;font-family:var(--font-heading-family);text-transform:uppercase;letter-spacing:.06em;font-size:1.6rem;padding:1.4rem 2.6rem;border-radius:7px;transition:background .15s;text-align:center}
+  .sp-btn:hover{background:#c55f0e}
+  .sp-btn.g{background:var(--g)}.sp-btn.g:hover{background:#0f2b18}
+  .sp-btn.w{background:#fff;color:var(--g);box-shadow:inset 0 0 0 2px var(--g)}.sp-btn.w:hover{background:#eef4ef}
+  .sp-btn[disabled]{opacity:.45;pointer-events:none}
+  .sp-link{all:unset;cursor:pointer;color:var(--g);font-weight:700;font-size:1.4rem;text-decoration:underline}
+  .sp-sum{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:0 0 2rem}
+  .sp-sum div{background:#fff;border:1px solid var(--ln);border-radius:8px;padding:1.4rem 1.6rem}
+  .sp-sum b{display:block;font-family:var(--font-heading-family);font-size:2.8rem;line-height:1;color:var(--g)}
+  .sp-sum small{font-size:1.15rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+  .sp-nudge{background:#fff7f0;border:1px solid #f3c9a3;border-radius:8px;padding:1.2rem 1.6rem;margin:0 0 2rem;font-size:1.45rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+  .sp-nudge b{color:#a54d06}
+  .sp-grp{background:#fff;border:1px solid var(--ln);border-radius:10px;margin:0 0 1.6rem;overflow:hidden}
+  .sp-grp-h{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1.4rem 1.8rem;background:#f9faf7;border-bottom:1px solid var(--ln)}
+  .sp-grp-h h3{margin:0;font-family:var(--font-heading-family);text-transform:uppercase;font-size:1.8rem;color:var(--g)}
+  .sp-grp-h span{font-size:1.3rem;color:var(--mut)}
+  .sp-row{display:grid;grid-template-columns:96px minmax(0,1fr) auto auto;gap:1.6rem;align-items:center;padding:1.3rem 1.8rem;border-bottom:1px solid #eef0ec}
+  .sp-row:last-child{border-bottom:0}
+  .sp-row.off{opacity:.45}
+  .sp-th{width:96px;height:64px;border:1px solid var(--ln);border-radius:4px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+  .sp-th img{width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .2s}
+  .sp-th img.ok{opacity:1}
+  .sp-th .ph{position:absolute;inset:6px;border-radius:2px;display:flex;align-items:flex-start;justify-content:center;font:900 9px/1.6 Arial,sans-serif;color:#fff}
+  .sp-th img.ok+.ph{display:none}
+  .sp-tx{min-width:0}
+  .sp-tx .k{font-size:1.15rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:700}
+  .sp-tx a{display:block;font-weight:800;font-size:1.55rem;color:var(--ink);text-decoration:none;line-height:1.3;margin:.2rem 0}
+  .sp-tx a:hover{color:var(--o)}
+  .sp-tx .m{font-size:1.25rem;color:var(--mut);display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center}
+  .sp-tag{font-size:1rem;font-weight:800;letter-spacing:.08em;padding:.2rem .6rem;border-radius:2px}
+  .sp-acts{display:flex;gap:.6rem;align-items:center}
+  .sp-ic{all:unset;cursor:pointer;font-size:1.25rem;font-weight:700;color:var(--g);padding:.6rem .9rem;border-radius:5px;border:1px solid #d5dad2;white-space:nowrap}
+  .sp-ic:hover{border-color:var(--o);color:var(--o)}
+  .sp-custom{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1.2rem 1.8rem;background:#fcfcfa;font-size:1.35rem;color:var(--mut);flex-wrap:wrap}
+  .sp-bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:3px solid var(--o);box-shadow:0 -10px 40px rgba(0,0,0,.14);z-index:60;transform:translateY(110%);transition:transform .3s}
+  .sp-bar.on{transform:none}
+  .sp-bar-in{max-width:1180px;margin:0 auto;padding:1.4rem 2.4rem;display:flex;align-items:center;gap:1.6rem;flex-wrap:wrap}
+  .sp-bar .tot{flex:1;min-width:220px}
+  .sp-bar .tot b{font-family:var(--font-heading-family);font-size:2.6rem;color:var(--g)}
+  .sp-bar .tot small{display:block;font-size:1.25rem;color:var(--mut)}
+  .sp-bar .sp-btn{padding:1.2rem 2rem;font-size:1.45rem}
+  .sp-modal{position:fixed;inset:0;background:rgba(10,20,14,.55);z-index:80;display:none;align-items:center;justify-content:center;padding:1.6rem}
+  .sp-modal.on{display:flex}
+  .sp-dlg{background:#fff;border-radius:10px;max-width:560px;width:100%;max-height:92vh;overflow:auto;padding:2.6rem;position:relative}
+  .sp-dlg h3{font-family:var(--font-heading-family);text-transform:uppercase;color:var(--g);font-size:2.2rem;margin:0 0 .6rem}
+  .sp-dlg p{color:var(--mut);font-size:1.45rem;margin:0 0 1.6rem}
+  .sp-dlg .x{all:unset;cursor:pointer;position:absolute;right:1.4rem;top:1.2rem;font-size:2.6rem;line-height:1;color:var(--mut)}
+  .sp-f{display:block;margin:0 0 1.2rem}
+  .sp-f span{display:block;font-weight:700;font-size:1.3rem;margin:0 0 .4rem}
+  .sp-f input,.sp-f textarea,.sp-f select{width:100%;border:1px solid #cfd4cc;border-radius:6px;padding:1.1rem 1.2rem;font:inherit;font-size:1.5rem;background:#fff;color:var(--ink)}
+  .sp-f textarea{min-height:90px;resize:vertical}
+  .sp-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  .sp-ok{background:#eef4ef;border:1px solid #bcd3c1;border-radius:8px;padding:1.4rem;font-size:1.45rem;color:var(--g);font-weight:700}
+  .sp-err{color:#b3261e;font-size:1.3rem;margin:.4rem 0 0;min-height:1.6rem}
+  .sp-prev{border:1px solid var(--ln);border-radius:6px;padding:1.2rem;text-align:center;margin:0 0 1.4rem}
+  .sp-prev .h{font:900 2rem/1 Arial,sans-serif;padding:.8rem;color:#fff;border-radius:3px 3px 0 0}
+  .sp-prev .b{font:800 1.6rem/1.25 Arial,sans-serif;text-transform:uppercase;padding:1.4rem .8rem;min-height:80px;border:2px solid #222;border-top:0}
+  .sp-load{padding:4rem;text-align:center;color:var(--mut);font-size:1.5rem}
+  #sp-print{display:none}
+  @media (max-width:989px){
+    .sp-fac{grid-template-columns:1fr 1fr}
+    .sp-areas{grid-template-columns:1fr}
+    .sp-sum{grid-template-columns:1fr 1fr}
+    .sp-row{grid-template-columns:72px minmax(0,1fr);gap:1rem;padding:1.2rem}
+    .sp-th{width:72px;height:50px}
+    .sp-row .sp-qty,.sp-row .sp-acts{grid-column:2}
+    .sp-row .sp-acts{justify-content:flex-start}
+    .sp-card{padding:1.8rem}
+    .sp-bar-in{padding:1rem 1.2rem;gap:.8rem}
+    .sp-bar .tot{flex-basis:100%}
+    .sp-bar .sp-btn{flex:1;padding:1.1rem .8rem;font-size:1.2rem}
+    .sp-2{grid-template-columns:1fr}
+  }
+  @media print{
+    body *{visibility:hidden!important}
+    #sp-print,#sp-print *{visibility:visible!important}
+    #sp-print{display:block!important;position:absolute;left:0;top:0;width:100%;font-family:Arial,sans-serif;color:#111;font-size:11pt}
+    #sp-print h1{font-size:20pt;margin:0 0 4pt}
+    #sp-print h2{font-size:13pt;margin:14pt 0 4pt;border-bottom:2px solid #173F24;padding-bottom:2pt;color:#173F24}
+    #sp-print table{width:100%;border-collapse:collapse}
+    #sp-print td,#sp-print th{border:1px solid #bbb;padding:4pt 5pt;text-align:left;vertical-align:top}
+    #sp-print th{background:#eee}
+    #sp-print tr{page-break-inside:avoid}
+    #sp-print .meta{color:#444;margin:0 0 8pt}
+    #sp-print .box{width:12pt;height:12pt;border:1px solid #333;display:inline-block}
+  }
+</style>
+
+<div class="sp" id="sp">
+  <header class="sp-hd">
+    <div class="sp-hd-in">
+      <div class="sp-eb"><i></i>{{ section.settings.eyebrow }}</div>
+      <h1>{{ section.settings.heading }}</h1>
+      <p>{{ section.settings.subheading }}</p>
+      <div class="sp-steps" id="sp-steps"><span data-s="0">1. Your site</span><span data-s="1">2. Your areas</span><span data-s="2">3. Your sign plan</span></div>
+    </div>
+    <div class="sp-stripe"></div>
+  </header>
+  <div class="sp-main" id="sp-main"><div class="sp-load">Loading the plan builder...</div></div>
+</div>
+
+<div class="sp-bar" id="sp-bar"><div class="sp-bar-in">
+  <div class="tot"><b id="sp-bt">$0.00</b><small id="sp-bs"></small></div>
+  <button class="sp-btn w" type="button" data-act="pdf">Save or print plan</button>
+  <button class="sp-btn g" type="button" data-act="quote">Request quote / PO</button>
+  <button class="sp-btn" type="button" data-act="cart" id="sp-cartbtn">Add all to cart</button>
+</div></div>
+
+<div class="sp-modal" id="sp-modal" role="dialog" aria-modal="true"><div class="sp-dlg" id="sp-dlg"></div></div>
+<div id="sp-print"></div>
+
+<script>
+(() => {
+  const API = {{ section.settings.api_url | json }};
+  const CUSTOM = {{ section.settings.custom_handle | json }};
+  const STORE = {{ shop.name | json }};
+  const TIERS = [[50, 14.99], [25, 15.99], [10, 17.99], [4, 19.99], [2, 26.99], [1, 29.99]];
+  const BASE = 29.99;
+  const SER = { 'DANGER': ['#C8102E', '#fff'], 'WARNING': ['#F47B20', '#111'], 'CAUTION': ['#FFD100', '#111'], 'NOTICE': ['#005EB8', '#fff'], 'SAFETY FIRST': ['#00843D', '#fff'] };
+  const CORE = ['emergency', 'ppe', 'visitor', 'electrical'];
+  const SCOPE = { site: 'One for the site', entrance: 'One at each entrance', area: 'One at each area' };
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const money = (n) => '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const unit = (q) => { for (const [min, p] of TIERS) if (q >= min) return p; return BASE; };
+  const next = (q) => { const t = [...TIERS].reverse().find(([min]) => min > q); return t ? { need: t[0] - q, price: t[1] } : null; };
+  const main = $('#sp-main'), bar = $('#sp-bar'), modal = $('#sp-modal'), dlg = $('#sp-dlg');
+  const prod = new Map();
+  const product = (h) => { if (!prod.has(h)) prod.set(h, fetch('/products/' + encodeURIComponent(h) + '.js').then((r) => (r.ok ? r.json() : null)).catch(() => null)); return prod.get(h); };
+
+  let M = null;
+  const st = { step: 0, fac: null, areas: {}, entrances: 1, rows: [], custom: [] };
+
+  // URL state so a plan can be shared or reopened: ?f=warehouse&a=forklift.2,dock.3&e=2
+  function readUrl() {
+    const u = new URLSearchParams(location.search);
+    const f = u.get('f'); if (f && M.facilities.some((x) => x.code === f)) { st.fac = f; st.step = 1; }
+    const a = u.get('a');
+    if (a && st.fac) { st.areas = {}; a.split(',').forEach((p) => { const [k, n] = p.split('.'); if (M.areas[k]) st.areas[k] = Math.max(1, Math.min(50, Number(n) || 1)); }); st.step = 2; }
+    else if (st.fac) defaults();
+    const e = Number(u.get('e')); if (e) st.entrances = Math.max(1, Math.min(20, e));
+  }
+  function writeUrl() {
+    const u = new URLSearchParams();
+    if (st.fac) u.set('f', st.fac);
+    if (st.step >= 2) { u.set('a', Object.entries(st.areas).map(([k, n]) => k + '.' + n).join(',')); u.set('e', st.entrances); }
+    history.replaceState(null, '', location.pathname + (u.toString() ? '?' + u : ''));
+  }
+  const fac = () => M.facilities.find((x) => x.code === st.fac);
+  function defaults() { st.areas = {}; (fac()?.areas || []).forEach((a) => { st.areas[a] = 1; }); }
+
+  function steps() { document.querySelectorAll('#sp-steps span').forEach((s) => { const i = +s.dataset.s; s.className = i === st.step ? 'on' : i < st.step ? 'done' : ''; }); }
+  function show(step) { st.step = step; steps(); writeUrl(); bar.classList.toggle('on', step === 2); [view0, view1, view2][step](); window.scrollTo({ top: Math.max(0, $('#sp').offsetTop - 20), behavior: 'smooth' }); }
+
+  function view0() {
+    main.innerHTML = `<div class="sp-card"><h2>What kind of site is it?</h2><p class="s">Pick the closest match. You can add any area in the next step.</p>
+      <div class="sp-fac">${M.facilities.map((f) => `<button type="button" data-f="${esc(f.code)}" aria-pressed="${f.code === st.fac}"><i></i>${esc(f.name)}</button>`).join('')}</div></div>`;
+    main.querySelectorAll('[data-f]').forEach((b) => b.addEventListener('click', () => { st.fac = b.dataset.f; defaults(); show(1); }));
+  }
+
+  function areaRow(code) {
+    const a = M.areas[code], on = code in st.areas, n = st.areas[code] || 1;
+    const per = (a.slots || []).length;
+    return `<div class="sp-area${on ? ' on' : ''}" data-a="${esc(code)}"><label><input type="checkbox" ${on ? 'checked' : ''}><span>${esc(a.label)}<small>${per} sign${per === 1 ? '' : 's'} per area</small></span></label>
+      <div class="sp-qty" title="How many of these areas"><button type="button" data-d="-1" aria-label="Fewer">&minus;</button><span>${n}</span><button type="button" data-d="1" aria-label="More">+</button></div></div>`;
+  }
+  function view1() {
+    const f = fac(); const mine = f.areas; const rest = Object.keys(M.areas).filter((k) => !mine.includes(k)).sort((x, y) => M.areas[x].ord - M.areas[y].ord);
+    main.innerHTML = `<div class="sp-card"><h2>${esc(f.name)}: which areas do you have?</h2><p class="s">We checked the areas most ${esc(f.name.toLowerCase())}s have. Uncheck what you don't have and set how many of each.</p>
+      <div class="sp-site"><div><span>Entrances and gates<small>Visitor, PPE and keep-out signs go at each</small></span><div class="sp-qty" id="sp-ent"><button type="button" data-d="-1" aria-label="Fewer">&minus;</button><span>${st.entrances}</span><button type="button" data-d="1" aria-label="More">+</button></div></div></div>
+      <div class="sp-areas" id="sp-mine">${mine.map(areaRow).join('')}</div>
+      <details class="sp-more" ${rest.some((k) => k in st.areas) ? 'open' : ''}><summary>+ Add other areas (${rest.length})</summary><div class="sp-areas">${rest.map(areaRow).join('')}</div></details>
+      <div class="sp-nav"><button class="sp-link" type="button" id="sp-back">&larr; Change site type</button><button class="sp-btn" type="button" id="sp-build">Build my sign plan &rarr;</button></div></div>`;
+    main.querySelectorAll('.sp-area').forEach((el) => {
+      const code = el.dataset.a, cb = el.querySelector('input');
+      cb.addEventListener('change', () => { if (cb.checked) st.areas[code] = st.areas[code] || 1; else delete st.areas[code]; el.classList.toggle('on', cb.checked); upd(); });
+      el.querySelectorAll('[data-d]').forEach((b) => b.addEventListener('click', () => { st.areas[code] = Math.max(1, Math.min(50, (st.areas[code] || 1) + Number(b.dataset.d))); el.querySelector('.sp-qty span').textContent = st.areas[code]; }));
+    });
+    $('#sp-ent').querySelectorAll('[data-d]').forEach((b) => b.addEventListener('click', () => { st.entrances = Math.max(1, Math.min(20, st.entrances + Number(b.dataset.d))); $('#sp-ent span').textContent = st.entrances; }));
+    const upd = () => { $('#sp-build').disabled = !Object.keys(st.areas).length; };
+    upd();
+    $('#sp-back').addEventListener('click', () => show(0));
+    $('#sp-build').addEventListener('click', () => { build(); show(2); });
+  }
+
+  // Turn answers into rows: one per sign slot, best pick first, never the same sign twice.
+  function build() {
+    const picks = (M.picks[st.fac] || {}), any = M.picks.any || {};
+    const used = new Set(); const rows = [];
+    const order = Object.keys(st.areas).sort((x, y) => (fac().areas.indexOf(x) + 1 || 99) - (fac().areas.indexOf(y) + 1 || 99) || M.areas[x].ord - M.areas[y].ord);
+    for (const a of order) for (const k of (M.areas[a].slots || [])) {
+      const alts = [...(picks[k] || []), ...(any[k] || [])].filter((s, i, arr) => M.signs[s] && arr.indexOf(s) === i);
+      if (!alts.length) continue;
+      const sl = M.slots[k];
+      const qty = sl.scope === 'site' ? 1 : sl.scope === 'entrance' ? st.entrances : st.areas[a];
+      const i = Math.max(0, alts.findIndex((s) => !used.has(s)));
+      used.add(alts[i]);
+      rows.push({ area: a, k, alts, i, qty, on: true, v: null, price: null });
+    }
+    st.rows = rows;
+  }
+
+  const totals = () => {
+    const live = st.rows.filter((r) => r.on && r.qty > 0 && r.v !== false);
+    const q = live.reduce((s, r) => s + r.qty, 0) + st.custom.reduce((s, c) => s + c.qty, 0);
+    const u = unit(q);
+    return { q, u, total: q * u, list: q * BASE, lines: live.length + st.custom.length };
+  };
+
+  function rowHtml(r, idx) {
+    const s = M.signs[r.alts[r.i]] || {}, sl = M.slots[r.k], c = SER[s.c] || SER.NOTICE;
+    return `<div class="sp-row${r.on ? '' : ' off'}" data-r="${idx}">
+      <div class="sp-th"><img alt="" data-h="${esc(s.h)}"><span class="ph" style="background:${c[0]};color:${c[1]}">${esc(s.c)}</span></div>
+      <div class="sp-tx"><div class="k">${esc(sl.label)}</div><a href="/products/${encodeURIComponent(s.h)}" target="_blank" rel="noopener">${esc(s.s)} Sign</a>
+        <div class="m"><span class="sp-tag" style="background:${c[0]};color:${c[1]}">${esc(s.c)}</span><span>${esc(SCOPE[sl.scope])}</span><span>8x12 aluminum</span></div></div>
+      <div class="sp-qty"><button type="button" data-q="-1" aria-label="Fewer">&minus;</button><span>${r.on ? r.qty : 0}</span><button type="button" data-q="1" aria-label="More">+</button></div>
+      <div class="sp-acts">${r.alts.length > 1 ? `<button class="sp-ic" type="button" data-sw>Swap (${r.alts.length - 1} more)</button>` : ''}<button class="sp-ic" type="button" data-rm>${r.on ? 'Remove' : 'Add back'}</button></div></div>`;
+  }
+  function view2() {
+    const f = fac();
+    const groups = [...new Set(st.rows.map((r) => r.area))];
+    main.innerHTML = `<div class="sp-sum" id="sp-sum"></div><div id="sp-nudge"></div>
+      ${groups.map((a) => { const rs = st.rows.map((r, i) => [r, i]).filter(([r]) => r.area === a); return `<section class="sp-grp"><div class="sp-grp-h"><h3>${esc(M.areas[a].label)}</h3><span>${st.areas[a] > 1 ? st.areas[a] + ' areas' : '1 area'}</span></div>${rs.map(([r, i]) => rowHtml(r, i)).join('')}
+        <div class="sp-custom"><span>Need wording we don't have for this area?</span><button class="sp-ic" type="button" data-cu="${esc(a)}">Design a custom sign, ${money(BASE)}</button></div></section>`; }).join('')}
+      <section class="sp-grp" id="sp-cust" ${st.custom.length ? '' : 'hidden'}><div class="sp-grp-h"><h3>Custom signs</h3><span>Made to your wording</span></div><div id="sp-cust-rows"></div></section>
+      <div class="sp-nav"><button class="sp-link" type="button" id="sp-back">&larr; Change areas</button><button class="sp-ic" type="button" data-cu="">+ Add a custom sign</button></div>`;
+    $('#sp-back').addEventListener('click', () => show(1));
+    main.querySelectorAll('[data-cu]').forEach((b) => b.addEventListener('click', () => customDlg(b.dataset.cu)));
+    main.querySelectorAll('.sp-row').forEach(bindRow);
+    renderCustom(); refresh(); resolve();
+  }
+  function bindRow(el) {
+    const r = st.rows[+el.dataset.r];
+    el.querySelectorAll('[data-q]').forEach((b) => b.addEventListener('click', () => { r.qty = Math.max(0, Math.min(500, (r.on ? r.qty : 0) + Number(b.dataset.q))); r.on = r.qty > 0; redraw(el); }));
+    const sw = el.querySelector('[data-sw]'); if (sw) sw.addEventListener('click', () => { r.i = (r.i + 1) % r.alts.length; r.v = null; redraw(el); });
+    el.querySelector('[data-rm]').addEventListener('click', () => { r.on = !r.on; if (r.on && !r.qty) r.qty = 1; redraw(el); });
+  }
+  function redraw(el) { const i = +el.dataset.r; const t = document.createElement('div'); t.innerHTML = rowHtml(st.rows[i], i); const n = t.firstElementChild; el.replaceWith(n); bindRow(n); refresh(); resolve(); }
+
+  // Fetch product data for each shown pick: image, variant id, live price. Unavailable picks fall to the next alternative.
+  function resolve() {
+    st.rows.forEach((r, idx) => {
+      const s = M.signs[r.alts[r.i]]; if (!s || r.v) return;
+      product(s.h).then((p) => {
+        const v = p && p.variants && p.variants.find((x) => x.available) || null;
+        if (!v) {
+          if (r.alts.length > 1 && r.tries !== r.alts.length) { r.tries = (r.tries || 1) + 1; r.i = (r.i + 1) % r.alts.length; const el = main.querySelector(`.sp-row[data-r="${idx}"]`); if (el) redraw(el); return; }
+          r.v = false; refresh(); return;
+        }
+        r.v = v.id; r.price = v.price / 100;
+        const im = main.querySelector(`.sp-row[data-r="${idx}"] img`);
+        if (im && p.featured_image) { im.onload = () => im.classList.add('ok'); im.src = p.featured_image + (p.featured_image.includes('?') ? '&' : '?') + 'width=240'; }
+      });
+    });
+  }
+
+  function refresh() {
+    const t = totals(); const sv = t.list - t.total;
+    const sum = $('#sp-sum'); if (sum) sum.innerHTML = `<div><b>${t.q}</b><small>Signs in plan</small></div><div><b>${Object.keys(st.areas).length}</b><small>Areas covered</small></div><div><b>${money(t.u)}</b><small>Price per sign</small></div><div><b>${money(t.total)}</b><small>${sv > 0 ? 'You save ' + money(sv) : 'Plan total'}</small></div>`;
+    const nx = next(t.q), nd = $('#sp-nudge');
+    if (nd) nd.innerHTML = nx && t.q > 0 ? `<div class="sp-nudge">Add <b>${nx.need} more sign${nx.need === 1 ? '' : 's'}</b> and every sign in your order drops to <b>${money(nx.price)}</b>. <button class="sp-ic" type="button" id="sp-addmore">Add spares to my plan</button></div>` : '';
+    const am = $('#sp-addmore'); if (am) am.addEventListener('click', () => { spares(nx.need); });
+    $('#sp-bt').textContent = money(t.total);
+    $('#sp-bs').textContent = `${t.q} signs at ${money(t.u)} each` + (t.list > t.total ? ` (list ${money(t.list)})` : '') + '. Volume price applies in cart.';
+    $('#sp-cartbtn').textContent = `Add all ${t.q} to cart`;
+    $('#sp-cartbtn').disabled = !t.q;
+  }
+  // Spares go to the signs most likely to be needed in more places: entrance and area signs first.
+  function spares(n) {
+    const pool = st.rows.filter((r) => r.on && M.slots[r.k].scope !== 'site');
+    for (let i = 0; i < n && pool.length; i++) pool[i % pool.length].qty++;
+    view2();
+  }
+
+  function planData() {
+    const f = fac(); const t = totals();
+    return { facility: f.name, code: st.fac, entrances: st.entrances, areas: st.areas, total: t.total, unit: t.u, signs: t.q,
+      rows: st.rows.filter((r) => r.on && r.qty > 0).map((r) => { const s = M.signs[r.alts[r.i]]; return { area: M.areas[r.area].label, slot: M.slots[r.k].label, scope: SCOPE[M.slots[r.k].scope], sign: s.s, series: s.c, handle: s.h, qty: r.qty }; }),
+      custom: st.custom, url: location.href };
+  }
+  function planText(d) {
+    const lines = [`Site sign plan: ${d.facility}`, `Plan link: ${d.url}`, `${d.signs} signs, ${money(d.unit)} each, est. ${money(d.total)}`, ''];
+    d.rows.forEach((r) => lines.push(`${r.qty} x ${r.series} ${r.sign} (${r.area}: ${r.slot}) https://${location.host}/products/${r.handle}`));
+    d.custom.forEach((c) => lines.push(`${c.qty} x CUSTOM ${c.header}: ${c.text}${c.area ? ' (' + c.area + ')' : ''}`));
+    return lines.join('\n');
+  }
+  async function lead(kind, info) {
+    const d = planData();
+    const body = { action: 'plan_lead', kind, email: info.email, name: info.name, company: info.company, phone: info.phone, note: info.note, facility: st.fac, plan: d, signs: d.signs, total: d.total };
+    const a = fetch(API, { method: 'POST', body: JSON.stringify(body) }).then((r) => r.json()).catch(() => ({ ok: false }));
+    // Also send through the store contact form so the owner gets an email with the plan.
+    const fd = new FormData();
+    fd.append('form_type', 'contact'); fd.append('utf8', '✓');
+    fd.append('contact[email]', info.email); if (info.name) fd.append('contact[name]', info.name);
+    if (info.phone) fd.append('contact[phone]', info.phone);
+    fd.append('contact[body]', `[${kind === 'quote' ? 'QUOTE / PO REQUEST' : 'SAVED SIGN PLAN'}]\n` + (info.company ? 'Company: ' + info.company + '\n' : '') + (info.note ? 'Notes: ' + info.note + '\n' : '') + '\n' + planText(d));
+    const b = fetch('/contact#contact_form', { method: 'POST', body: fd, credentials: 'same-origin' }).catch(() => null);
+    const [r] = await Promise.all([a, b]);
+    return r && r.ok;
+  }
+
+  function openDlg(html) { dlg.innerHTML = `<button class="x" type="button" aria-label="Close">&times;</button>` + html; modal.classList.add('on'); dlg.querySelector('.x').addEventListener('click', closeDlg); const f = dlg.querySelector('input,textarea,select'); if (f) setTimeout(() => f.focus(), 30); }
+  function closeDlg() { modal.classList.remove('on'); }
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeDlg(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDlg(); });
+
+  function pdfDlg() {
+    openDlg(`<h3>Save your sign plan</h3><p>Enter your email and we'll keep a copy of this plan for you, then open the printable version. Print it or choose "Save as PDF".</p>
+      <form id="sp-f"><label class="sp-f"><span>Email</span><input type="email" name="email" required autocomplete="email"></label>
+      <div class="sp-2"><label class="sp-f"><span>Name (optional)</span><input name="name" autocomplete="name"></label><label class="sp-f"><span>Company (optional)</span><input name="company" autocomplete="organization"></label></div>
+      <div class="sp-err" id="sp-e"></div><button class="sp-btn" type="submit" style="width:100%">Save and open printable plan</button></form>`);
+    $('#sp-f').addEventListener('submit', async (e) => {
+      e.preventDefault(); const fd = Object.fromEntries(new FormData(e.target));
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(fd.email)) { $('#sp-e').textContent = 'Enter a valid email.'; return; }
+      e.target.querySelector('button').disabled = true; e.target.querySelector('button').textContent = 'Saving...';
+      await lead('save', fd); closeDlg(); printPlan(fd);
+    });
+  }
+  function printPlan(info) {
+    const d = planData(); const dt = new Date().toLocaleDateString();
+    const by = {}; d.rows.forEach((r) => { (by[r.area] = by[r.area] || []).push(r); });
+    $('#sp-print').innerHTML = `<h1>Site Safety Sign Plan</h1><p class="meta"><b>${esc(d.facility)}</b>${info && info.company ? ' &middot; ' + esc(info.company) : ''} &middot; Prepared ${dt} by ${esc(STORE)} &middot; ${d.signs} signs, ${d.entrances} entrance${d.entrances === 1 ? '' : 's'}</p>
+      <p class="meta">Use this list to order, place and check off each sign. Walk the site to confirm locations and add anything specific to your equipment.</p>
+      ${Object.entries(by).map(([a, rs]) => `<h2>${esc(a)}</h2><table><tr><th style="width:24%">Need</th><th>Sign</th><th style="width:18%">Placement</th><th style="width:6%">Qty</th><th style="width:9%">Installed</th></tr>${rs.map((r) => `<tr><td>${esc(r.slot)}</td><td><b>${esc(r.series)}</b> ${esc(r.sign)}<br><small>${location.host}/products/${esc(r.handle)}</small></td><td>${esc(r.scope)}</td><td>${r.qty}</td><td><span class="box"></span></td></tr>`).join('')}</table>`).join('')}
+      ${d.custom.length ? `<h2>Custom signs</h2><table><tr><th>Header</th><th>Wording</th><th>Area</th><th>Qty</th><th>Installed</th></tr>${d.custom.map((c) => `<tr><td>${esc(c.header)}</td><td>${esc(c.text)}</td><td>${esc(c.area || '')}</td><td>${c.qty}</td><td><span class="box"></span></td></tr>`).join('')}</table>` : ''}
+      <h2>Order summary</h2><p>${d.signs} signs at ${money(d.unit)} each = <b>${money(d.total)}</b> (8x12 aluminum). Reopen or order this plan: ${esc(d.url)}</p>`;
+    setTimeout(() => window.print(), 60);
+  }
+  function quoteDlg() {
+    const t = totals();
+    openDlg(`<h3>Request a quote or pay by PO</h3><p>We'll send a formal quote for these ${t.q} signs (est. ${money(t.total)}) and can invoice against your purchase order.</p>
+      <form id="sp-f"><div class="sp-2"><label class="sp-f"><span>Name</span><input name="name" required autocomplete="name"></label><label class="sp-f"><span>Company</span><input name="company" required autocomplete="organization"></label></div>
+      <div class="sp-2"><label class="sp-f"><span>Email</span><input type="email" name="email" required autocomplete="email"></label><label class="sp-f"><span>Phone</span><input name="phone" autocomplete="tel"></label></div>
+      <label class="sp-f"><span>PO number, ship-to address, deadline or changes (optional)</span><textarea name="note"></textarea></label>
+      <div class="sp-err" id="sp-e"></div><button class="sp-btn g" type="submit" style="width:100%">Send quote request</button></form>`);
+    $('#sp-f').addEventListener('submit', async (e) => {
+      e.preventDefault(); const fd = Object.fromEntries(new FormData(e.target));
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(fd.email)) { $('#sp-e').textContent = 'Enter a valid email.'; return; }
+      e.target.querySelector('button').disabled = true; e.target.querySelector('button').textContent = 'Sending...';
+      const ok = await lead('quote', fd);
+      dlg.innerHTML = `<button class="x" type="button" aria-label="Close">&times;</button><h3>Request received</h3><div class="sp-ok">${ok ? 'Thanks. We have your plan and will reply with a quote, usually within one business day.' : 'Thanks. If you do not hear back within one business day, email us with your plan link.'}</div><p style="margin-top:1.4rem">Your plan link: <a href="${esc(location.href)}">${esc(location.href.slice(0, 80))}...</a></p>`;
+      dlg.querySelector('.x').addEventListener('click', closeDlg);
+    });
+  }
+
+  function customDlg(area) {
+    const areaOpts = [['', 'General / anywhere'], ...Object.keys(st.areas).map((a) => [M.areas[a].label, M.areas[a].label])];
+    openDlg(`<h3>Design a custom sign</h3><p>Same ${money(BASE)} price and volume discounts as every sign. Tell us the wording and we'll lay it out to match our catalog style.</p>
+      <div class="sp-prev"><div class="h" id="cp-h" style="background:#C8102E">DANGER</div><div class="b" id="cp-b">Your wording here</div></div>
+      <form id="sp-f"><div class="sp-2"><label class="sp-f"><span>Header</span><select name="header" id="cf-h">${Object.keys(SER).map((s) => `<option>${s}</option>`).join('')}</select></label>
+      <label class="sp-f"><span>Quantity</span><input type="number" name="qty" min="1" max="500" value="1" required></label></div>
+      <label class="sp-f"><span>Sign wording</span><textarea name="text" id="cf-t" maxlength="180" required placeholder="e.g. Ammonia Compressor Room. Authorized Refrigeration Staff Only"></textarea></label>
+      <label class="sp-f"><span>Where it goes</span><select name="area">${areaOpts.map(([v, l]) => `<option value="${esc(v)}" ${v && M.areas[area] && M.areas[area].label === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label>
+      <label class="sp-f"><span>Notes for our designer (optional)</span><input name="note" placeholder="Symbol, language, arrow direction..."></label>
+      <div class="sp-err" id="sp-e"></div><button class="sp-btn" type="submit" style="width:100%">Add custom sign to my plan</button></form>`);
+    const ph = $('#cp-h'), pb = $('#cp-b');
+    const upd = () => { const c = SER[$('#cf-h').value]; ph.textContent = $('#cf-h').value; ph.style.background = c[0]; ph.style.color = c[1]; pb.textContent = $('#cf-t').value || 'Your wording here'; };
+    $('#cf-h').addEventListener('change', upd); $('#cf-t').addEventListener('input', upd);
+    $('#sp-f').addEventListener('submit', (e) => {
+      e.preventDefault(); const fd = Object.fromEntries(new FormData(e.target));
+      if (!String(fd.text || '').trim()) { $('#sp-e').textContent = 'Add the wording for your sign.'; return; }
+      st.custom.push({ header: fd.header, text: String(fd.text).trim(), area: fd.area, note: fd.note || '', qty: Math.max(1, Math.min(500, Number(fd.qty) || 1)) });
+      closeDlg(); if (st.step === 2) { renderCustom(); refresh(); } else show(2);
+    });
+  }
+  function renderCustom() {
+    const box = $('#sp-cust'), rows = $('#sp-cust-rows'); if (!box) return;
+    box.hidden = !st.custom.length;
+    rows.innerHTML = st.custom.map((c, i) => { const k = SER[c.header]; return `<div class="sp-row" data-c="${i}"><div class="sp-th"><span class="ph" style="background:${k[0]};color:${k[1]}">${esc(c.header)}</span></div><div class="sp-tx"><div class="k">Custom${c.area ? ' &middot; ' + esc(c.area) : ''}</div><a>${esc(c.text)}</a><div class="m"><span>We lay it out and send a proof</span><span>8x12 aluminum</span></div></div><div class="sp-qty"><button type="button" data-q="-1">&minus;</button><span>${c.qty}</span><button type="button" data-q="1">+</button></div><div class="sp-acts"><button class="sp-ic" type="button" data-rmc>Remove</button></div></div>`; }).join('');
+    rows.querySelectorAll('[data-c]').forEach((el) => { const c = st.custom[+el.dataset.c];
+      el.querySelectorAll('[data-q]').forEach((b) => b.addEventListener('click', () => { c.qty = Math.max(1, Math.min(500, c.qty + Number(b.dataset.q))); renderCustom(); refresh(); }));
+      el.querySelector('[data-rmc]').addEventListener('click', () => { st.custom.splice(+el.dataset.c, 1); renderCustom(); refresh(); }); });
+  }
+
+  async function toCart() {
+    const btn = $('#sp-cartbtn'); btn.disabled = true; btn.textContent = 'Adding...';
+    const live = st.rows.filter((r) => r.on && r.qty > 0);
+    await Promise.all(live.map(async (r) => { if (!r.v) { const p = await product(M.signs[r.alts[r.i]].h); const v = p && p.variants && p.variants.find((x) => x.available); r.v = v ? v.id : false; } }));
+    const items = live.filter((r) => r.v).map((r) => ({ id: r.v, quantity: r.qty, properties: { _site_plan: fac().name } }));
+    let missing = 0;
+    if (st.custom.length) {
+      const cp = CUSTOM ? await product(CUSTOM) : null; const cv = cp && cp.variants && cp.variants.find((x) => x.available);
+      if (cv) st.custom.forEach((c) => items.push({ id: cv.id, quantity: c.qty, properties: { Header: c.header, Wording: c.text, Location: c.area || 'General', 'Designer notes': c.note || '' } }));
+      else missing = st.custom.length;
+    }
+    try {
+      for (let i = 0; i < items.length; i += 40) { const r = await fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: items.slice(i, i + 40) }) }); if (!r.ok) throw new Error(await r.text()); }
+      if (missing) { openDlg(`<h3>Almost there</h3><p>Your catalog signs are in the cart. Custom signs can't be added online yet, so send them with a quote request and we'll invoice them with your order.</p><button class="sp-btn g" type="button" id="sp-q2">Send custom signs as a quote</button>`); $('#sp-q2').addEventListener('click', quoteDlg); return; }
+      location.href = '/cart';
+    } catch (e) {
+      openDlg(`<h3>Some signs couldn't be added</h3><p>Part of your plan may already be in the cart. Request a quote and we'll put the full order together for you.</p><button class="sp-btn g" type="button" id="sp-q2">Request a quote</button>`); $('#sp-q2').addEventListener('click', quoteDlg);
+    } finally { btn.disabled = false; refresh(); }
+  }
+  bar.addEventListener('click', (e) => { const a = e.target.closest('[data-act]'); if (!a) return; if (a.dataset.act === 'cart') toCart(); else if (a.dataset.act === 'quote') quoteDlg(); else pdfDlg(); });
+
+  fetch(API + '?action=plan').then((r) => r.json()).then((d) => {
+    if (!d || !d.facilities) throw new Error('no plan data');
+    M = d; readUrl(); if (st.step === 2) build(); show(st.step);
+  }).catch(() => { main.innerHTML = `<div class="sp-card"><h2>The plan builder is busy</h2><p class="s">Refresh in a moment, or <a href="/pages/contact">tell us about your site</a> and we'll build the plan for you.</p></div>`; });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "CGAP Site Sign Plan",
+  "tag": "section",
+  "class": "cgap-site-plan",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Site Sign Plan" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "We tell you which signs your site needs" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Answer two quick questions about your facility. We build a room-by-room sign list with quantities and placement, priced with automatic volume discounts. Order it, send it for a quote, or print it." },
+    { "type": "text", "id": "custom_handle", "label": "Custom sign product handle", "default": "custom-safety-sign-8x12-aluminum" },
+    { "type": "text", "id": "api_url", "label": "Plan API URL", "default": "https://esmwoaqemeukjrjaesby.supabase.co/functions/v1/sign-finder" }
+  ],
+  "presets": [{ "name": "CGAP Site Sign Plan" }]
+}
+{% endschema %}
