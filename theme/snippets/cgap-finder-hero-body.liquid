@@ -100,7 +100,8 @@
     </div>
     <div class="fh-art" aria-hidden="true">
       {%- assign shown = 0 -%}
-      {%- for h in section.settings.art_handles | split: ',' -%}
+      {%- assign art = section.settings.art_handles | split: ',' -%}
+      {%- for h in art -%}
         {%- assign p = all_products[h | strip] -%}
         {%- if p.featured_image and shown < 3 -%}
           <a class="fh-card" href="{{ p.url }}" tabindex="-1"><img src="{{ p.featured_image | image_url: width: 600 }}" alt="" width="600" height="{{ 600 | divided_by: p.featured_image.aspect_ratio | round }}" loading="eager"></a>
