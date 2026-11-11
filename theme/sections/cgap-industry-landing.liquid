@@ -57,6 +57,12 @@
   .il-card .t em{margin-top:auto;font-style:normal;font-weight:800;font-size:1.45rem;padding-top:.4rem}
   .il-more{display:inline-block;margin:2.6rem auto 0;background:var(--g);color:#fff;padding:1.4rem 3rem;text-decoration:none;font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:1.35rem}
   .il-center{text-align:center}
+  .il-area.il-best{border-top-color:var(--o);background:#fffaf5}
+  .il-other{max-width:1320px;margin:0 auto;padding:0 2rem 6rem}
+  .il-other h2{font-family:var(--font-heading-family);text-transform:uppercase;font-size:2.2rem;margin:0 0 1.4rem}
+  .il-other-g{display:flex;flex-wrap:wrap;gap:.8rem}
+  .il-other a{border:1.5px solid var(--line);background:#fff;padding:.9rem 1.4rem;font-size:1.35rem;font-weight:700;text-decoration:none;color:var(--ink);transition:border-color .15s,color .15s}
+  .il-other a:hover{border-color:var(--o);color:var(--o)}
   @media (max-width:749px){.il-grid{grid-template-columns:repeat(2,1fr);gap:1rem}.il-box input{font-size:1.6rem;padding:1.6rem 1rem}.il-box button{padding:0 1.6rem;font-size:1.4rem}.il-content{font-size:1.55rem}}
 </style>
 
@@ -73,13 +79,20 @@
     </div>
   </section>
 
-  <div class="il-main"><div class="il-content">{%- case page.handle -%}{%- when 'farm-grain-feed-safety-signs' -%}{%- render 'ilp-farm-grain-feed-safety-signs' -%}{%- when 'restaurant-commercial-kitchen-safety-signs' -%}{%- render 'ilp-restaurant-commercial-kitchen-safety-signs' -%}{%- when 'auto-repair-shop-safety-signs' -%}{%- render 'ilp-auto-repair-shop-safety-signs' -%}{%- when 'car-wash-safety-signs' -%}{%- render 'ilp-car-wash-safety-signs' -%}{%- when 'brewery-winery-safety-signs' -%}{%- render 'ilp-brewery-winery-safety-signs' -%}{%- when 'construction-site-safety-signs' -%}{%- render 'ilp-construction-site-safety-signs' -%}{%- when 'food-processing-plant-safety-signs' -%}{%- render 'ilp-food-processing-plant-safety-signs' -%}{%- when 'oil-gas-hydrogen-safety-signs' -%}{%- render 'ilp-oil-gas-hydrogen-safety-signs' -%}{%- when 'metal-fabrication-foundry-safety-signs' -%}{%- render 'ilp-metal-fabrication-foundry-safety-signs' -%}{%- when 'laboratory-biotech-pharma-safety-signs' -%}{%- render 'ilp-laboratory-biotech-pharma-safety-signs' -%}{%- else -%}{{ page.content }}{%- endcase -%}</div></div>
+  <div class="il-main"><div class="il-content">{%- case page.handle -%}{%- when 'farm-grain-feed-safety-signs' -%}{%- render 'ilp-farm-grain-feed-safety-signs' -%}{%- when 'restaurant-commercial-kitchen-safety-signs' -%}{%- render 'ilp-restaurant-commercial-kitchen-safety-signs' -%}{%- when 'auto-repair-shop-safety-signs' -%}{%- render 'ilp-auto-repair-shop-safety-signs' -%}{%- when 'car-wash-safety-signs' -%}{%- render 'ilp-car-wash-safety-signs' -%}{%- when 'brewery-winery-safety-signs' -%}{%- render 'ilp-brewery-winery-safety-signs' -%}{%- when 'construction-site-safety-signs' -%}{%- render 'ilp-construction-site-safety-signs' -%}{%- when 'food-processing-plant-safety-signs' -%}{%- render 'ilp-food-processing-plant-safety-signs' -%}{%- when 'oil-gas-hydrogen-safety-signs' -%}{%- render 'ilp-oil-gas-hydrogen-safety-signs' -%}{%- when 'metal-fabrication-foundry-safety-signs' -%}{%- render 'ilp-metal-fabrication-foundry-safety-signs' -%}{%- when 'laboratory-biotech-pharma-safety-signs' -%}{%- render 'ilp-laboratory-biotech-pharma-safety-signs' -%}{%- when 'cold-storage-ammonia-refrigeration-safety-signs' -%}{%- render 'ilp-cold-storage-ammonia-refrigeration-safety-signs' -%}{%- when 'sawmill-pulp-paper-mill-safety-signs' -%}{%- render 'ilp-sawmill-pulp-paper-mill-safety-signs' -%}{%- when 'propane-natural-gas-pipeline-safety-signs' -%}{%- render 'ilp-propane-natural-gas-pipeline-safety-signs' -%}{%- when 'school-shop-class-theater-safety-signs' -%}{%- render 'ilp-school-shop-class-theater-safety-signs' -%}{%- when 'data-center-server-room-safety-signs' -%}{%- render 'ilp-data-center-server-room-safety-signs' -%}{%- when 'lithium-battery-energy-storage-ev-safety-signs' -%}{%- render 'ilp-lithium-battery-energy-storage-ev-safety-signs' -%}{%- when 'park-shooting-range-venue-safety-signs' -%}{%- render 'ilp-park-shooting-range-venue-safety-signs' -%}{%- when 'chemical-plant-storage-safety-signs' -%}{%- render 'ilp-chemical-plant-storage-safety-signs' -%}{%- when 'waste-recycling-transfer-station-safety-signs' -%}{%- render 'ilp-waste-recycling-transfer-station-safety-signs' -%}{%- when 'mining-quarry-asphalt-plant-safety-signs' -%}{%- render 'ilp-mining-quarry-asphalt-plant-safety-signs' -%}{%- else -%}{{ page.content }}{%- endcase -%}</div></div>
 
   <section class="il-live" id="il-live">
     <div class="il-live-h"><h2 id="il-live-title">Browse every sign</h2><div class="il-chips" id="il-chips"></div></div>
     <div class="il-grid" id="il-grid"></div>
     <div class="il-center"><a class="il-more" id="il-more" href="/pages/sign-finder">Open the full Sign Finder</a></div>
   </section>
+  <nav class="il-other" aria-label="Signs for other industries">
+    <h2>Signs for other industries</h2>
+    <div class="il-other-g">
+      {%- assign inds = section.settings.industries | split: '|' -%}
+      {%- for x in inds -%}{%- assign pair = x | split: '=' -%}{%- assign t = pair[0] | strip -%}{%- assign u = pair[1] | strip -%}{%- if u != blank and u != request.path -%}<a href="{{ u }}">{{ t }}</a>{%- endif -%}{%- endfor -%}
+    </div>
+  </nav>
 </div>
 
 <script>
@@ -130,7 +143,8 @@
   "tag": "section",
   "class": "cgap-industry-landing",
   "settings": [
-    { "type": "text", "id": "api_url", "label": "Search API URL", "default": "https://esmwoaqemeukjrjaesby.supabase.co/functions/v1/sign-finder" }
+    { "type": "text", "id": "api_url", "label": "Search API URL", "default": "https://esmwoaqemeukjrjaesby.supabase.co/functions/v1/sign-finder" },
+    { "type": "textarea", "id": "industries", "label": "Other industries links (Label=URL, separated by |)", "default": "Water & Wastewater=/pages/industry-water-wastewater-utilities|Hospitals, Imaging & Labs=/pages/industry-healthcare-imaging-labs|Marinas & Waterfront=/pages/industry-marinas-waterfront|Warehousing & Logistics=/pages/industry-warehousing-logistics|Metal & Fab Shops=/pages/metal-fabrication-foundry-safety-signs|Batteries & EV=/pages/lithium-battery-energy-storage-ev-safety-signs|Property & Campuses=/pages/industry-property-management-multifamily|Parks, Ranges & Venues=/pages/park-shooting-range-venue-safety-signs|Construction=/pages/construction-site-safety-signs|Chemical Plants=/pages/chemical-plant-storage-safety-signs|Mining & Quarries=/pages/mining-quarry-asphalt-plant-safety-signs|Oil, Gas & Hydrogen=/pages/oil-gas-hydrogen-safety-signs|Electric & Telecom=/pages/industry-electric-telecom-utilities|Public Works=/pages/industry-municipalities-public-works|Manufacturing Plants=/pages/industry-manufacturing-industrial-plants|Farms & Grain=/pages/farm-grain-feed-safety-signs|Restaurants & Kitchens=/pages/restaurant-commercial-kitchen-safety-signs|Food Processing=/pages/food-processing-plant-safety-signs|Cold Storage & Ammonia=/pages/cold-storage-ammonia-refrigeration-safety-signs|Auto & Tire Shops=/pages/auto-repair-shop-safety-signs|Waste & Recycling=/pages/waste-recycling-transfer-station-safety-signs|Sawmills & Paper Mills=/pages/sawmill-pulp-paper-mill-safety-signs|Propane & Natural Gas=/pages/propane-natural-gas-pipeline-safety-signs|Schools & Theaters=/pages/school-shop-class-theater-safety-signs|Data Centers=/pages/data-center-server-room-safety-signs|Labs & Pharma=/pages/laboratory-biotech-pharma-safety-signs|Car Washes=/pages/car-wash-safety-signs|Breweries & Wineries=/pages/brewery-winery-safety-signs" }
   ],
   "presets": [{ "name": "CGAP Industry Landing" }]
 }
