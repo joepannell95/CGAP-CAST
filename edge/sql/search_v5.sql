@@ -267,3 +267,13 @@ end $$;
 
 select cron.schedule('finder-keepwarm', '*/4 * * * *', $$ select finder.keepwarm(); $$);
 select cron.schedule('finder-cache-trim', '17 9 * * *', $$delete from finder.search_cache where created_at < now() - interval '7 days'$$);
+
+-- 7) Free-plan housekeeping (500 MB database cap): compact the suggestion table once, then trim nightly.
+cluster finder.subj using subj_pkey;
+analyze finder.subj;
+select cron.schedule('finder-cache-trim', '17 9 * * *', $$
+  delete from finder.search_cache where created_at < now() - interval '7 days';
+  delete from finder.search_cache where key in (select key from finder.search_cache order by created_at desc offset 3000);
+  delete from finder.search_log where at < now() - interval '180 days';
+  delete from cron.job_run_details where end_time < now() - interval '7 days';
+$$);
