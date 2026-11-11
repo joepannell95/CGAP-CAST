@@ -1,0 +1,137 @@
+{%- comment -%} Industry landing page: SEO copy from page.content + live Sign Finder scoped to the industry {%- endcomment -%}
+<style>
+  .il{--g:#173F24;--g2:#0d2615;--o:#E0731A;--ink:#14181a;--mut:#5d6660;--line:#dfe2dc;font-family:var(--font-body-family);color:var(--ink)}
+  .il *{box-sizing:border-box}
+  .il-hero{background:linear-gradient(155deg,var(--g),var(--g2));color:#fff;position:relative;overflow:hidden}
+  .il-hero:before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.035) 0 14px,transparent 14px 28px)}
+  .il-hero:after{content:"";position:absolute;left:0;right:0;bottom:0;height:7px;background:repeating-linear-gradient(-45deg,#111 0 14px,#FFD100 14px 28px)}
+  .il-hin{position:relative;max-width:1100px;margin:0 auto;padding:3.6rem 2rem 4.4rem}
+  .il-crumb{font-size:1.25rem;letter-spacing:.14em;text-transform:uppercase;color:#f7c79f;font-weight:700}
+  .il-crumb a{color:inherit;text-decoration:none}
+  .il h1{font-family:var(--font-heading-family);text-transform:uppercase;font-size:clamp(3rem,4.2vw,5rem);line-height:1.02;margin:1rem 0 1.2rem;color:#fff}
+  .il-count{font-size:1.6rem;opacity:.9;margin:0 0 2.2rem}
+  .il-count b{color:#fff}
+  .il-box{display:flex;background:#fff;border-radius:8px;box-shadow:0 18px 50px rgba(0,0,0,.35);border:3px solid transparent;max-width:820px}
+  .il-box:focus-within{border-color:var(--o)}
+  .il-box input{flex:1;min-width:0;border:0;outline:0;font-size:1.9rem;padding:2rem 1.6rem;font-family:inherit;color:var(--ink);background:transparent}
+  .il-box button{border:0;background:var(--o);color:#fff;font-family:var(--font-heading-family);text-transform:uppercase;letter-spacing:.08em;font-size:1.6rem;padding:0 2.8rem;cursor:pointer;border-radius:0 5px 5px 0}
+  .il-main{max-width:1100px;margin:0 auto;padding:3.6rem 2rem 2rem}
+  .il-content{font-size:1.65rem;line-height:1.65}
+  .il-content h2{font-family:var(--font-heading-family);text-transform:uppercase;font-size:2.6rem;margin:3.6rem 0 1.2rem;letter-spacing:.02em;line-height:1.1}
+  .il-content h3{font-size:1.8rem;margin:0 0 .6rem;font-family:var(--font-body-family)}
+  .il-content p.lead{font-size:1.9rem;line-height:1.55;color:#2a312c}
+  .il-content [data-cgap-sector]{display:none}
+  .il-areas{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.6rem;margin-top:1.6rem}
+  .il-area{background:#fff;border:1px solid var(--line);border-top:5px solid var(--g);padding:1.8rem 1.8rem 1.6rem}
+  .il-area p{font-size:1.4rem;color:var(--mut);margin:0 0 1rem;line-height:1.5}
+  .il-area ul{list-style:none;margin:0;padding:0}
+  .il-area li{margin:.5rem 0;font-size:1.4rem;line-height:1.35}
+  .il-area li a{color:var(--ink);text-decoration:none;border-bottom:1px solid #cfd5cc}
+  .il-area li a:hover{color:var(--o);border-color:var(--o)}
+  .il-area li span{display:inline-block;font-size:.95rem;font-weight:800;letter-spacing:.08em;padding:.15rem .45rem;margin-right:.6rem;border-radius:2px;vertical-align:1px}
+  .il-faq details{border-bottom:1px solid var(--line);padding:1.4rem 0}
+  .il-faq summary{font-weight:700;font-size:1.7rem;cursor:pointer;list-style:none}
+  .il-faq summary::-webkit-details-marker{display:none}
+  .il-faq summary:after{content:"+";float:right;color:var(--o);font-size:2.2rem;line-height:1}
+  .il-faq details[open] summary:after{content:"–"}
+  .il-faq p{margin:1rem 0 0;color:#2a312c}
+  .il-live{max-width:1320px;margin:0 auto;padding:1rem 2rem 6rem}
+  .il-live-h{display:flex;flex-wrap:wrap;gap:1.4rem;align-items:flex-end;justify-content:space-between;margin:2rem 0 1.6rem}
+  .il-live-h h2{font-family:var(--font-heading-family);text-transform:uppercase;font-size:2.6rem;margin:0}
+  .il-chips{display:flex;flex-wrap:wrap;gap:.6rem}
+  .il-chips button{border:1.5px solid var(--line);background:#fff;padding:.6rem 1.2rem;font-size:1.25rem;font-weight:700;letter-spacing:.06em;cursor:pointer;font-family:inherit;display:flex;gap:.6rem;align-items:center}
+  .il-chips button i{width:10px;height:10px;border-radius:2px;display:block}
+  .il-chips button.on{border-color:var(--g);background:var(--g);color:#fff}
+  .il-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.6rem}
+  .il-card{background:#fff;border:1px solid var(--line);text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:box-shadow .18s,transform .18s}
+  .il-card:hover{box-shadow:0 14px 30px rgba(0,0,0,.12);transform:translateY(-2px)}
+  .il-card .m{aspect-ratio:1/1;background:#fff;position:relative;display:grid;place-items:center}
+  .il-card img{width:100%;height:100%;object-fit:contain;padding:6%;opacity:0;transition:opacity .3s;position:absolute;inset:0}
+  .il-card img.ok{opacity:1}
+  .il-card .mini{width:80%;border:1px solid #cfd3cc;font-family:Arial,sans-serif;text-align:center;text-transform:uppercase}
+  .il-card .mini b{display:block;padding:.5rem;font-size:1.3rem}
+  .il-card .mini div{padding:.6rem;font-size:.95rem;font-weight:800;line-height:1.25}
+  .il-card .t{padding:1.1rem 1.3rem 1.3rem;display:flex;flex-direction:column;gap:.4rem;flex:1}
+  .il-card .t b{font-size:1.45rem;line-height:1.3}
+  .il-card .t small{font-size:1.2rem;color:var(--mut);line-height:1.35}
+  .il-card .t em{margin-top:auto;font-style:normal;font-weight:800;font-size:1.45rem;padding-top:.4rem}
+  .il-more{display:inline-block;margin:2.6rem auto 0;background:var(--g);color:#fff;padding:1.4rem 3rem;text-decoration:none;font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:1.35rem}
+  .il-center{text-align:center}
+  @media (max-width:749px){.il-grid{grid-template-columns:repeat(2,1fr);gap:1rem}.il-box input{font-size:1.6rem;padding:1.6rem 1rem}.il-box button{padding:0 1.6rem;font-size:1.4rem}.il-content{font-size:1.55rem}}
+</style>
+
+<div class="il" id="il">
+  <section class="il-hero">
+    <div class="il-hin">
+      <div class="il-crumb"><a href="/pages/sign-finder">Sign Finder</a> &nbsp;/&nbsp; Industries</div>
+      <h1>{{ page.title }}</h1>
+      <p class="il-count" id="il-count">Every sign is written for a specific machine, task or install point in this industry.</p>
+      <form class="il-box" id="il-form" action="/search" role="search">
+        <input id="il-q" name="q" type="search" autocomplete="off" aria-label="Search signs in this industry" placeholder="Search a machine, room or hazard">
+        <button type="submit">Find signs</button>
+      </form>
+    </div>
+  </section>
+
+  <div class="il-main"><div class="il-content">{%- case page.handle -%}{%- when 'farm-grain-feed-safety-signs' -%}{%- render 'ilp-farm-grain-feed-safety-signs' -%}{%- when 'restaurant-commercial-kitchen-safety-signs' -%}{%- render 'ilp-restaurant-commercial-kitchen-safety-signs' -%}{%- when 'auto-repair-shop-safety-signs' -%}{%- render 'ilp-auto-repair-shop-safety-signs' -%}{%- when 'car-wash-safety-signs' -%}{%- render 'ilp-car-wash-safety-signs' -%}{%- when 'brewery-winery-safety-signs' -%}{%- render 'ilp-brewery-winery-safety-signs' -%}{%- when 'construction-site-safety-signs' -%}{%- render 'ilp-construction-site-safety-signs' -%}{%- when 'food-processing-plant-safety-signs' -%}{%- render 'ilp-food-processing-plant-safety-signs' -%}{%- when 'oil-gas-hydrogen-safety-signs' -%}{%- render 'ilp-oil-gas-hydrogen-safety-signs' -%}{%- when 'metal-fabrication-foundry-safety-signs' -%}{%- render 'ilp-metal-fabrication-foundry-safety-signs' -%}{%- when 'laboratory-biotech-pharma-safety-signs' -%}{%- render 'ilp-laboratory-biotech-pharma-safety-signs' -%}{%- else -%}{{ page.content }}{%- endcase -%}</div></div>
+
+  <section class="il-live" id="il-live">
+    <div class="il-live-h"><h2 id="il-live-title">Browse every sign</h2><div class="il-chips" id="il-chips"></div></div>
+    <div class="il-grid" id="il-grid"></div>
+    <div class="il-center"><a class="il-more" id="il-more" href="/pages/sign-finder">Open the full Sign Finder</a></div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const API = {{ section.settings.api_url | json }};
+  const SER = { 'DANGER': ['#C8102E', '#fff', '#111'], 'WARNING': ['#F47B20', '#111', '#F47B20'], 'CAUTION': ['#FFD100', '#111', '#FFD100'], 'NOTICE': ['#005EB8', '#fff', '#005EB8'], 'SAFETY FIRST': ['#00843D', '#fff', '#00843D'] };
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const tagEl = document.querySelector('[data-cgap-sector]');
+  const sector = tagEl ? tagEl.dataset.cgapSector : '';
+  const term = tagEl ? (tagEl.dataset.cgapTerm || '') : '';
+  document.querySelectorAll('.il-area li span[data-s]').forEach((s) => { const c = SER[s.dataset.s] || SER.NOTICE; s.style.background = c[0]; s.style.color = c[1]; });
+  const form = document.getElementById('il-form'), q = document.getElementById('il-q');
+  if (term) q.placeholder = 'Search ' + term + ' signs: a machine, room or hazard';
+  form.addEventListener('submit', (e) => { e.preventDefault(); const v = q.value.trim(); if (!v) { q.focus(); return; } location.href = '/search?q=' + encodeURIComponent(term && !v.toLowerCase().includes(term.toLowerCase().split(' ')[0]) ? v + ' ' + term : v); });
+  if (!sector) { document.getElementById('il-live').style.display = 'none'; return; }
+  document.getElementById('il-more').href = '/pages/sign-finder?sector=' + encodeURIComponent(sector);
+  let series = '';
+  const grid = document.getElementById('il-grid');
+  const prod = (h) => fetch('/products/' + h + '.js').then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  async function load() {
+    grid.innerHTML = '';
+    const u = new URL(API); u.searchParams.set('action', 'browse'); u.searchParams.set('sector', sector); if (series) u.searchParams.set('series', series);
+    const d = await (await fetch(u)).json();
+    document.getElementById('il-count').innerHTML = '<b>' + Number(d.total).toLocaleString() + '</b> signs written for ' + esc(term || sector) + ', each for a specific machine, task or install point.';
+    document.getElementById('il-live-title').textContent = 'Browse all ' + Number(d.total).toLocaleString() + ' signs';
+    d.results.slice(0, 24).forEach((r) => {
+      const c = SER[r.series] || SER.NOTICE;
+      const a = document.createElement('a'); a.className = 'il-card'; a.href = '/products/' + encodeURIComponent(r.handle);
+      a.innerHTML = `<div class="m"><div class="mini"><b style="background:${c[2]};color:${r.series === 'DANGER' ? '#fff' : c[1]}">${esc(r.series)}</b><div>${(r.lines || []).filter((l) => l && l.toUpperCase() !== r.series).slice(0, 4).map(esc).join('<br>')}</div></div><img alt="${esc(r.subject)} ${esc(r.series)} sign" loading="lazy"></div><div class="t"><b>${esc(r.subject)}</b>${r.install_point ? `<small>Post at: ${esc(r.install_point)}</small>` : ''}<em></em></div>`;
+      grid.appendChild(a);
+      prod(r.handle).then((p) => { if (!p) return; const im = a.querySelector('img'); if (p.featured_image) { im.onload = () => im.classList.add('ok'); im.src = p.featured_image + '?width=440'; } a.querySelector('em').textContent = '$' + (p.price / 100).toFixed(2); });
+    });
+  }
+  const chips = document.getElementById('il-chips');
+  ['', 'DANGER', 'WARNING', 'CAUTION', 'NOTICE', 'SAFETY FIRST'].forEach((s) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = s ? '' : 'on';
+    b.innerHTML = s ? `<i style="background:${SER[s][0]}"></i>${s}` : 'All types';
+    b.onclick = () => { series = s; chips.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); load(); };
+    chips.appendChild(b);
+  });
+  load();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "CGAP Industry Landing",
+  "tag": "section",
+  "class": "cgap-industry-landing",
+  "settings": [
+    { "type": "text", "id": "api_url", "label": "Search API URL", "default": "https://esmwoaqemeukjrjaesby.supabase.co/functions/v1/sign-finder" }
+  ],
+  "presets": [{ "name": "CGAP Industry Landing" }]
+}
+{% endschema %}
