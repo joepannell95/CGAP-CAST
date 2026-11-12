@@ -1,0 +1,23 @@
+K=lambda *a:['CGAP-'+x+'-812' for x in a]
+KITS=[
+("SUB","Electric Substation","distribution substations at electric cooperatives and municipal electric systems","on the gate, fence, steel structures, disconnect switches and yard roadway",
+ K("GEN079","GEN080","I06422","D-SUBSTATIONGATEBONDINGJ","D-SUBSTATIONGROUNDGRIDCO","D-SUBSTATIONSTEELSTRUCTU","D-SUBSTATIONDISCONNECTSW","D-SUBSTATIONEXCAVATION","N01274","I05007")),
+("PAD","Pad-Mounted Equipment","pad-mounted transformers and switchgear at commercial, school and subdivision sites","on the fence, bollards or nearby wall at each pad-mounted unit",
+ K("GEN081","N05180","GEN082","N05315")),
+("REG","Voltage Regulator and Recloser Station","fenced voltage regulator banks and recloser stations","on the station fence, regulator controls, recloser controls and bypass switches",
+ K("GEN079","D-VOLTAGEREGULATORBYPASS","D-VOLTAGEREGULATORCONTRO","D-RECLOSERCONTROL","D-RECLOSERBYPASSSWITCHES","D-HYDRAULICRECLOSERCLOSI")),
+("CAP","Capacitor Bank Yard","substation and pad capacitor bank yards","on the yard gate, capacitor racks, neutral, grounding switch and fence",
+ K("GEN079","D-CAPACITORBANKBULGEDUNI","D-CAPACITORBANKNEUTRAL","I01141","I03701","I03026")),
+("POLE","Pole and Material Yard","co-op pole yards, transformer storage and material yards","at the pole racks, loader work zone, unloading area and transformer rows",
+ K("D-UTILITYPOLESTORAGERACK","D-POLEYARDLOADERWORKZONE","W00207","D-DISTRIBUTIONTRANSSUCTA","N22050","GEN007")),
+("FLEET","Line Truck Garage","line truck garages and fleet shops","in the truck bays, parking row, wash pad, hot stick storage and shop",
+ K("D-BUCKETTRUCKBOOMSERVICE","I06154","N05009","D-DIGGERDERRICKAUGER","N05144","D-HOTSTICKSTORAGE","N01239","N01374")),
+("METER","Meter Shop","meter shops and meter test labs","on the shop door, test boards and test switches",
+ K("GEN083","D-METERSHOPTESTBOARD","D-METERTESTSWITCH","W11407")),
+("XFMR","Transformer Shop and Oil Storage","transformer repair shops and oil storage areas","at the oil fill station, transformer test area, drum storage and spill kit",
+ K("D-TRANSFORMEROILFILLING","D-PADMOUNTRELIEFVALVE","D-PADMOUNTBAYONETFUSE","N09084","N08749","N08614")),
+("SOLAR","Community Solar Site","co-op community solar and utility solar sites","on the perimeter fence, gate, access road and array rows",
+ K("D-SOLARFARMPERIMETERFENC","I15666","I16134","I22353","D-SOLARARRAYWASHING","I17799")),
+("VAULT","Underground Electric Vault","underground electric vaults and manholes","on or beside the vault lid and manhole opening",
+ K("D-UNDERGROUNDELECTRICVAU","GEN078","C07601","C09191")),
+]
