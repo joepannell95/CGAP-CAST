@@ -1,0 +1,452 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "cgap_finder_hero": {
+      "type": "cgap-finder-hero",
+      "settings": {
+        "art_handles": "danger-grain-bin-roof-manhole-sign-8x12-aluminum, caution-fryer-drain-valve-handle-sign-cgap-c01664-812, notice-wet-well-hatch-sign-cgap-n01001-812",
+        "stat1": "88,000+",
+        "stat2": "110+"
+      }
+    },
+    "17633206460ec792d8": {
+      "type": "_blocks",
+      "settings": {}
+    },
+    "1761578540c25443cd": {
+      "type": "_blocks",
+      "settings": {}
+    },
+    "image_banner_jVx7AR": {
+      "type": "image-banner",
+      "name": "t:sections.image-banner.presets.name",
+      "disabled": true,
+      "settings": {
+        "image": "shopify://shop_images/Grey_Simple_Photo_Room_Meeting_Zoom_Virtual_Background_ef92469c-09b1-466a-92ac-ee73b42b9a76.png",
+        "image_overlay_opacity": 0,
+        "image_height": "adapt",
+        "image_behavior": "none",
+        "desktop_content_position": "middle-center",
+        "desktop_content_alignment": "center",
+        "show_text_box": false,
+        "color_scheme": "",
+        "stack_images_on_mobile": true,
+        "mobile_content_alignment": "center",
+        "show_text_below": false
+      }
+    },
+    "hero_text_cgap": {
+      "type": "rich-text",
+      "disabled": true,
+      "blocks": {
+        "heading_hero": {
+          "type": "heading",
+          "settings": {
+            "heading": "Signs for the hazards nobody else makes signs for.",
+            "heading_size": "h1"
+          }
+        },
+        "text_hero": {
+          "type": "text",
+          "settings": {
+            "text": "<p><strong>Hyper-specific industrial safety signage on 8x12 rust-resistant aluminum. Made in the USA for facilities, utilities, municipalities, and contractors.</strong></p>"
+          }
+        },
+        "button_hero": {
+          "type": "button",
+          "settings": {
+            "button_label": "Shop All 8x12 Aluminum Signs",
+            "button_link": "shopify://collections/cgap-safety-8x12-aluminum-signs",
+            "button_style_secondary": false,
+            "button_label_2": "Shop Sign Kits",
+            "button_link_2": "shopify://collections/sign-kits",
+            "button_style_secondary_2": true
+          }
+        }
+      },
+      "block_order": [
+        "heading_hero",
+        "text_hero",
+        "button_hero"
+      ],
+      "name": "Hero text",
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 36,
+        "padding_bottom": 40
+      }
+    },
+    "cgap_proof": {
+      "type": "cgap-proof-bar",
+      "blocks": {
+        "stat_signs": {
+          "type": "stat",
+          "settings": {
+            "count": 88000,
+            "prefix": "",
+            "suffix": "+",
+            "label": "Hazard-specific sign designs"
+          }
+        },
+        "stat_size": {
+          "type": "stat",
+          "settings": {
+            "prefix": "8x12",
+            "suffix": "",
+            "label": "Standard size, rust-resistant aluminum"
+          }
+        },
+        "stat_guides": {
+          "type": "stat",
+          "settings": {
+            "count": 30,
+            "prefix": "",
+            "suffix": "",
+            "label": "Free safety signage guides"
+          }
+        },
+        "stat_uv": {
+          "type": "stat",
+          "settings": {
+            "prefix": "UV",
+            "suffix": "",
+            "label": "Stable inks, pre-drilled holes"
+          }
+        }
+      },
+      "block_order": [
+        "stat_signs",
+        "stat_size",
+        "stat_guides",
+        "stat_uv"
+      ],
+      "settings": {
+        "aria_label": "Why CGAP signs",
+        "show_stripe": true
+      }
+    },
+    "who_we_build_for": {
+      "type": "custom-liquid",
+      "name": "Who we build for",
+      "settings": {
+        "custom_liquid": "<style>.wb{max-width:1200px;margin:0 auto;padding:0 20px}.wb h2{text-align:center;font-size:1.6rem;margin:0 0 6px}.wb p.sub{text-align:center;color:#555;margin:0 auto 26px;max-width:62ch}.wb-grid{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:750px){.wb-grid{grid-template-columns:1fr 1fr}}@media(min-width:990px){.wb-grid{grid-template-columns:repeat(4,1fr)}}.wb a{display:block;padding:18px 18px 16px;border:1px solid #e3e3e3;border-top:4px solid #1c5e3a;text-decoration:none;color:#121212;background:#fff;transition:border-color .15s}.wb a:hover{border-color:#1c5e3a}.wb b{display:block;font-size:1.02rem;margin-bottom:6px}.wb span{display:block;font-size:.9rem;color:#555;line-height:1.45}.wb em{display:block;margin-top:10px;font-style:normal;font-size:.85rem;font-weight:700;color:#1c5e3a}</style><div class='wb'><h2>Who we build for</h2><p class='sub'>Each of these pages walks a site the way an inspector would: what has to be posted, under which standard, and which sign covers it.</p><div class='wb-grid'><a href='/pages/industry-electric-telecom-utilities'><b>Electric &amp; Telecom Utilities</b><span>Substations, buried plant, vaults, pedestals, battery rooms, towers. The industry we came from.</span><em>Read the page</em></a><a href='/pages/industry-water-wastewater-utilities'><b>Water &amp; Wastewater</b><span>Lift stations, H2S, chlorine rooms, digesters, basins, force mains. A confined space program and a chemical program on one site.</span><em>Read the page</em></a><a href='/pages/industry-municipalities-public-works'><b>Municipalities &amp; Public Works</b><span>Manholes, retention ponds, fleet yards, parks, right-of-way. Half the audience never saw the training.</span><em>Read the page</em></a><a href='/pages/industry-healthcare-imaging-labs'><b>Hospitals, Imaging &amp; Labs</b><span>MRI zones, radiation areas, infection control, hazardous drugs. Non-ferromagnetic by necessity.</span><em>Read the page</em></a><a href='/pages/industry-manufacturing-industrial-plants'><b>Manufacturing &amp; Plants</b><span>Machine guarding, LOTO, regulated areas, arc flash, and the process hazards generic catalogs skip.</span><em>Read the page</em></a><a href='/pages/industry-warehousing-logistics'><b>Warehousing &amp; Logistics</b><span>Dock edges, trailer creep, forklift lanes, charging areas, automation, cold storage.</span><em>Read the page</em></a><a href='/pages/industry-marinas-waterfront'><b>Marinas &amp; Waterfront</b><span>Electric shock drowning, drop-offs, intakes, mooring, fuel docks. Signs that live on a piling.</span><em>Read the page</em></a><a href='/pages/industry-property-management-multifamily'><b>Property Management &amp; Campuses</b><span>E-bike charging, pools, mechanical rooms, grounds, egress. Policy made visible.</span><em>Read the page</em></a></div></div>",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 24
+      }
+    },
+    "shop_by_hazard": {
+      "type": "custom-liquid",
+      "name": "Shop by Hazard",
+      "settings": {
+        "custom_liquid": "<style>.hz{max-width:1200px;margin:0 auto;padding:0 20px}.hz h2{text-align:center;font-size:1.6rem;margin:0 0 6px}.hz p.sub{text-align:center;color:#555;margin:0 0 28px}.hz-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}@media(min-width:750px){.hz-grid{grid-template-columns:repeat(4,1fr)}}@media(min-width:990px){.hz-grid{grid-template-columns:repeat(6,1fr)}}.hz a{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 10px;border:1px solid #e3e3e3;text-decoration:none;color:#121212;background:#fff;transition:border-color .15s}.hz a:hover{border-color:#C8102E}.hz svg{width:52px;height:52px;stroke:#C8102E;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}.hz span{font-size:.85rem;font-weight:600;text-align:center;line-height:1.2}</style><div class='hz'><h2>Shop by hazard</h2><p class='sub'>Every sign is 8x12 rust-resistant aluminum, UV-stable ink, pre-drilled. Made in the USA.</p><div class='hz-grid'><a href='/collections/water-waterfront-safety-signs'><svg viewBox='0 0 48 48'><path d='M4 34c4 0 4-3 8-3s4 3 8 3 4-3 8-3 4 3 8 3 4-3 8-3'/><path d='M4 41c4 0 4-3 8-3s4 3 8 3 4-3 8-3 4 3 8 3 4-3 8-3'/><circle cx='24' cy='14' r='4'/><path d='M24 18v8M16 22l8-4 8 4'/></svg><span>Water &amp; Waterfront</span></a><a href='/collections/mri-safety-signs'><svg viewBox='0 0 48 48'><circle cx='24' cy='24' r='17'/><circle cx='24' cy='24' r='8'/><path d='M24 7v6M24 35v6M7 24h6M35 24h6'/></svg><span>MRI Safety</span></a><a href='/collections/call-811-before-digging-signs'><svg viewBox='0 0 48 48'><path d='M4 20h40'/><path d='M8 30h32M8 38h32'/><path d='M14 20V9h20v11'/><path d='M19 9V5h10v4'/><text x='24' y='36' font-size='7' font-weight='700' text-anchor='middle' fill='#C8102E' stroke='none'>811</text></svg><span>Call 811 Buried Utility</span></a><a href='/collections/battery'><svg viewBox='0 0 48 48'><rect x='8' y='14' width='30' height='20' rx='2'/><path d='M38 20h4v8h-4'/><path d='M25 17l-5 8h6l-4 8'/></svg><span>Battery &amp; Energy Storage</span></a><a href='/collections/high-voltage-signs'><svg viewBox='0 0 48 48'><path d='M24 5L4 41h40z'/><path d='M26 17l-6 10h7l-5 9'/></svg><span>High Voltage</span></a><a href='/collections/arc-flash-signs'><svg viewBox='0 0 48 48'><path d='M24 6v8M24 34v8M6 24h8M34 24h8M11 11l6 6M31 31l6 6M37 11l-6 6M17 31l-6 6'/><circle cx='24' cy='24' r='5'/></svg><span>Arc Flash</span></a><a href='/collections/confined-space-signs'><svg viewBox='0 0 48 48'><ellipse cx='24' cy='12' rx='16' ry='5'/><path d='M8 12v22c0 3 7 5 16 5s16-2 16-5V12'/><path d='M24 18v14M19 27l5 5 5-5'/></svg><span>Confined Space</span></a><a href='/collections/loading-dock-warehouse-signs'><svg viewBox='0 0 48 48'><path d='M4 30h20V14h18v16'/><path d='M4 30v10h40V30'/><circle cx='12' cy='36' r='3'/><circle cx='34' cy='36' r='3'/><path d='M24 30l-6-6'/></svg><span>Loading Dock</span></a><a href='/collections/laser-safety-signs'><svg viewBox='0 0 48 48'><path d='M4 24h30'/><path d='M34 24l6-6M34 24l6 6M34 24l8 0M34 24l4-9M34 24l4 9'/><circle cx='34' cy='24' r='2'/></svg><span>Laser</span></a><a href='/collections/radiation-safety-signs'><svg viewBox='0 0 48 48'><circle cx='24' cy='24' r='4'/><path d='M24 8a16 16 0 0 1 14 8l-7 4a8 8 0 0 0-7-4z'/><path d='M10 16a16 16 0 0 1 14-8v8a8 8 0 0 0-7 4z'/><path d='M24 40a16 16 0 0 1-14-8l7-4a8 8 0 0 0 14 0l7 4a16 16 0 0 1-14 8z'/></svg><span>Radiation</span></a><a href='/collections/aerospace'><svg viewBox='0 0 48 48'><rect x='19' y='19' width='10' height='10' rx='2'/><path d='M19 19L10 10M29 19l9-9M19 29l-9 9M29 29l9 9'/><circle cx='9' cy='9' r='4'/><circle cx='39' cy='9' r='4'/><circle cx='9' cy='39' r='4'/><circle cx='39' cy='39' r='4'/></svg><span>Drone Operations</span></a><a href='/collections/cgap-safety-lockout-tagout'><svg viewBox='0 0 48 48'><rect x='10' y='22' width='28' height='20' rx='2'/><path d='M16 22v-6a8 8 0 0 1 16 0v6'/><circle cx='24' cy='31' r='3'/><path d='M24 34v4'/></svg><span>Lockout / Tagout</span></a></div></div>",
+        "color_scheme": "",
+        "padding_top": 36,
+        "padding_bottom": 20
+      }
+    },
+    "featured_collection_q96maP": {
+      "type": "featured-collection",
+      "name": "Water & Waterfront",
+      "settings": {
+        "collection": "water-waterfront-safety-signs",
+        "products_to_show": 8,
+        "title": "Water & Waterfront Safety Signs",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "standard",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "featured_collection_znenwc": {
+      "type": "featured-collection",
+      "name": "MRI Safety",
+      "settings": {
+        "collection": "mri-safety-signs",
+        "products_to_show": 8,
+        "title": "MRI Safety Signs",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "standard",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "featured_collection_zYzEfh": {
+      "type": "featured-collection",
+      "name": "Loading Dock & Warehouse",
+      "settings": {
+        "collection": "loading-dock-warehouse-signs",
+        "products_to_show": 8,
+        "title": "Loading Dock & Warehouse Signs",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "standard",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "featured_collection_KTtpwB": {
+      "type": "featured-collection",
+      "name": "Call 811 Before Digging",
+      "settings": {
+        "collection": "call-811-before-digging-signs",
+        "products_to_show": 8,
+        "title": "Call 811 Before Digging Signs",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "standard",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "featured_collection_zbTGaz": {
+      "type": "featured-collection",
+      "name": "Sign Kits & Bundles",
+      "settings": {
+        "collection": "sign-kits",
+        "products_to_show": 8,
+        "title": "Sign Kits: Every Sign One Area Needs",
+        "heading_size": "h1",
+        "description": "<p>585 ready-made kits across 110+ industries. Order by how many sites you have.</p>",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "standard",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "featured_collection_xNWHEW": {
+      "type": "featured-collection",
+      "name": "Sign Kits & Bundles",
+      "settings": {
+        "collection": "multi-packs",
+        "products_to_show": 8,
+        "title": "Multi-Packs: 2, 5 or 10 of One Sign",
+        "heading_size": "h1",
+        "description": "<p>Pick a pack size to post the same warning at every door, gate and hazard point. Packs are priced on the same quantity steps as the rest of the store, and ship free in the US.</p>",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "standard",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "cgap_stripe_guides": {
+      "type": "cgap-stripe",
+      "settings": {
+        "height": 10,
+        "full_width": false,
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "image_banner_YYyJRN": {
+      "type": "image-banner",
+      "blocks": {
+        "heading_J3wbh4": {
+          "type": "heading",
+          "settings": {
+            "heading": "See The Gap. Close The Gap.",
+            "heading_size": "h0"
+          }
+        },
+        "text_6PPLFE": {
+          "type": "text",
+          "settings": {
+            "text": "Thirty guides written against the actual standards, with diagrams of where the signage goes. Free, no email required.",
+            "text_style": "body"
+          }
+        },
+        "buttons_mc76Pj": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "Read the Safety Signage Guides",
+            "button_link_1": "shopify://pages/cgap-safety",
+            "button_style_secondary_1": false,
+            "button_label_2": "How Our Signs Are Made",
+            "button_link_2": "shopify://pages/how-our-signs-are-made",
+            "button_style_secondary_2": true
+          }
+        }
+      },
+      "block_order": [
+        "heading_J3wbh4",
+        "text_6PPLFE",
+        "buttons_mc76Pj"
+      ],
+      "name": "See The Gap. Close The Gap.",
+      "settings": {
+        "image": "shopify://shop_images/IMG_8187.jpg",
+        "image_2": "shopify://shop_images/american-flag-in-sun.jpg",
+        "image_overlay_opacity": 0,
+        "image_height": "adapt",
+        "image_behavior": "fixed",
+        "desktop_content_position": "middle-center",
+        "desktop_content_alignment": "center",
+        "show_text_box": true,
+        "color_scheme": "",
+        "stack_images_on_mobile": true,
+        "mobile_content_alignment": "center",
+        "show_text_below": true
+      }
+    },
+    "guides_grid": {
+      "type": "custom-liquid",
+      "name": "Niche Guides",
+      "settings": {
+        "custom_liquid": "<style>.gg{max-width:1200px;margin:0 auto;padding:0 20px}.gg h2{text-align:center;font-size:1.6rem;margin:0 0 6px}.gg p.sub{text-align:center;color:#555;margin:0 0 24px;max-width:60ch;margin-left:auto;margin-right:auto}.gg-grid{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:750px){.gg-grid{grid-template-columns:1fr 1fr}}.gg a{display:block;padding:16px 18px;border:1px solid #e3e3e3;border-left:4px solid #C8102E;text-decoration:none;color:#121212;background:#fff}.gg a:hover{background:#fbf7f7}.gg b{display:block;font-size:1rem;margin-bottom:3px}.gg span{font-size:.9rem;color:#555}.gg .all{text-align:center;margin-top:20px}.gg .all a{display:inline-block;border:none;padding:0;text-decoration:underline;font-weight:700;background:none}</style><div class='gg'><h2>Guides for the hazards we specialize in</h2><p class='sub'>Written against the governing standard, honest about what is required versus good practice, each with a diagram of where the signage goes.</p><div class='gg-grid'><a href='/pages/electric-shock-drowning-guide'><b>Electric Shock Drowning</b><span>What marinas and waterfront owners need to post, and what NEC 555 now requires</span></a><a href='/pages/mri-zone-signage-guide'><b>MRI Suite Signage</b><span>Zone I through Zone IV, with floor plan</span></a><a href='/pages/call-811-buried-utility-guide'><b>Call 811 and Buried Utility Marking</b><span>The color code, the tolerance zone, and where permanent markers belong</span></a><a href='/pages/battery-energy-storage-signage-guide'><b>Battery Energy Storage</b><span>NFPA 855 signage, with enclosure placement diagram</span></a><a href='/pages/loading-dock-safety-signage-guide'><b>Loading Dock Safety</b><span>Six hazards mapped, and what 1910.178 actually requires</span></a><a href='/pages/confined-space-signage-guide'><b>Permit-Required Confined Space</b><span>The one standard where posting is mandatory</span></a><a href='/pages/arc-flash-labeling-guide'><b>Arc Flash Field Marking</b><span>NFPA 70E and NEC 110.16, with boundary diagram</span></a><a href='/pages/ebike-lithium-battery-fire-signage-guide'><b>E-Bike and Lithium Battery Fires</b><span>For apartments, campuses, and property managers</span></a><a href='/pages/laser-controlled-area-signage-guide'><b>Laser Controlled Areas</b><span>ANSI Z136.1, laser classes, and the nominal hazard zone</span></a><a href='/pages/drone-operations-signage-guide'><b>Drone Operations</b><span>Part 107, and what a sign can legally control</span></a></div><p class='all'><a href='/pages/cgap-safety'>See all thirty guides, including the OSHA Top 10</a></p></div>",
+        "color_scheme": "",
+        "padding_top": 36,
+        "padding_bottom": 44
+      }
+    },
+    "featured_collection_pbQcyg": {
+      "type": "featured-collection",
+      "name": "Danger",
+      "settings": {
+        "collection": "danger",
+        "products_to_show": 8,
+        "title": "DANGER Signs",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "standard",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    }
+  },
+  "order": [
+    "cgap_finder_hero",
+    "17633206460ec792d8",
+    "1761578540c25443cd",
+    "image_banner_jVx7AR",
+    "hero_text_cgap",
+    "cgap_proof",
+    "who_we_build_for",
+    "shop_by_hazard",
+    "featured_collection_zbTGaz",
+    "featured_collection_znenwc",
+    "featured_collection_q96maP",
+    "featured_collection_zYzEfh",
+    "featured_collection_KTtpwB",
+    "featured_collection_xNWHEW",
+    "cgap_stripe_guides",
+    "image_banner_YYyJRN",
+    "guides_grid",
+    "featured_collection_pbQcyg"
+  ]
+}
