@@ -1,0 +1,34 @@
+{%- liquid
+  assign g = collection.metafields.custom.hazard_guide.value
+-%}
+{%- if g != blank and current_page == 1 -%}
+<style>
+  .cgap-hg{max-width:92rem;margin:0 auto;padding:1.2rem 1.5rem 4.8rem;font-size:1.6rem;line-height:1.6}
+  .cgap-hg h2{font-size:2.2rem;margin:3.2rem 0 1rem;line-height:1.25}
+  .cgap-hg h3{font-size:1.9rem;margin:0 0 .6rem}
+  .cgap-hg ul{padding-left:2.2rem;margin:.6rem 0 1.2rem}
+  .cgap-hg li{margin:.5rem 0}
+  .cgap-hg a{text-underline-offset:.2rem}
+  .cgap-hg__kits{background:#f6f6f4;border-left:4px solid #e8a200;border-radius:6px;padding:1.6rem 2rem;margin:3.2rem 0}
+  .cgap-hg__kits ul{margin-bottom:0}
+  .cgap-hg details{border:1px solid rgba(0,0,0,.15);border-radius:6px;padding:1.2rem 1.6rem;margin:.8rem 0;background:#fff}
+  .cgap-hg summary{font-weight:600;cursor:pointer;list-style-position:outside}
+  .cgap-hg details p{margin:.8rem 0 0}
+  .cgap-hg__cta{display:flex;flex-wrap:wrap;gap:1rem;margin:3.2rem 0 1.2rem}
+  .cgap-hg__cta .button{margin:0}
+  .cgap-hg__fine{font-size:1.4rem;opacity:.85;margin-top:2.4rem}
+  .cgap-hg__related{font-size:1.5rem;margin-top:1.2rem}
+  @media (max-width:749px){.cgap-hg{font-size:1.5rem}.cgap-hg h2{font-size:2rem}.cgap-hg__cta .button{flex:1 1 100%}}
+</style>
+<div class="cgap-hg">
+  {{ g }}
+  <div class="cgap-hg__cta">
+    <a class="button" href="/pages/request-a-quote">Request a quote</a>
+    <a class="button button--secondary" href="/pages/custom-safety-signs">Need custom wording?</a>
+  </div>
+  <p class="cgap-hg__fine">Every sign is 8x12 inch .065 rust-resistant aluminum with UV-stable inks and pre-drilled corners, made in the USA, and ships from Amory, Mississippi within 2 business days. Mix any signs for quantity pricing: 10% off at 5, 15% off at 10 and 20% off at 20 or more.</p>
+</div>
+{%- endif -%}
+{% schema %}
+{"name":"Hazard guide","tag":"section","class":"section","settings":[],"presets":[{"name":"Hazard guide"}]}
+{% endschema %}
