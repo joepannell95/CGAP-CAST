@@ -350,7 +350,7 @@
     const sum = $('#sp-sum'); if (sum) sum.innerHTML = `<div><b>${t.q}</b><small>Signs in plan</small></div><div><b>${Object.keys(st.areas).length}</b><small>Areas covered</small></div><div><b>${money(t.u)}</b><small>Price per sign</small></div><div><b>${money(t.total)}</b><small>${sv > 0 ? 'You save ' + money(sv) : 'Plan total'}</small></div>`;
     const nx = next(t.q), nd = $('#sp-nudge');
     if (nd) nd.innerHTML = (nx && t.q > 0 ? `<div class="sp-nudge">Add <b>${nx.need} more sign${nx.need === 1 ? '' : 's'}</b> and every sign in your order drops to <b>${money(nx.price)}</b>. <button class="sp-ic" type="button" id="sp-addmore">Add spares to my plan</button></div>` : '')
-      + (t.total > QUOTE_AT ? `<div class="sp-nudge">Over ${money(QUOTE_AT)}, most public buyers need a <b>written quote</b> on file. Download a formal PDF quote for this plan in one step. <button class="sp-ic" type="button" id="sp-qnudge">Download quote (PDF)</button></div>` : '');
+      + (t.total > QUOTE_AT ? `<div class="sp-nudge">Over $5,000, most public buyers need a <b>written quote</b> on file. Download a formal PDF quote for this plan in one step. <button class="sp-ic" type="button" id="sp-qnudge">Download quote (PDF)</button></div>` : '');
     const am = $('#sp-addmore'); if (am) am.addEventListener('click', () => { spares(nx.need); });
     const qn = $('#sp-qnudge'); if (qn) qn.addEventListener('click', quoteDlg);
     $('#sp-bt').textContent = money(t.total);
@@ -515,7 +515,7 @@
   }
   function quoteDlg() {
     const t = totals();
-    openDlg(`<h3>Get a formal quote (PDF)</h3><p>A written quote for these ${t.q} signs (${money(t.total)}) downloads right away, ready for your purchasing file or PO. Prices hold for 30 days and we get a copy too.${t.total > QUOTE_AT ? ' Orders over ' + money(QUOTE_AT) + ' usually need a written quote, so this is the one to file.' : ''}</p>
+    openDlg(`<h3>Get a formal quote (PDF)</h3><p>A written quote for these ${t.q} signs (${money(t.total)}) downloads right away, ready for your purchasing file or PO. Prices hold for 30 days and we get a copy too.${t.total > QUOTE_AT ? ' Orders over $5,000 usually need a written quote, so this is the one to file.' : ''}</p>
       <form id="sp-f"><div class="sp-2"><label class="sp-f"><span>Name</span><input name="name" required autocomplete="name"></label><label class="sp-f"><span>Organization</span><input name="company" required autocomplete="organization"></label></div>
       <div class="sp-2"><label class="sp-f"><span>Email</span><input type="email" name="email" required autocomplete="email"></label><label class="sp-f"><span>Phone</span><input name="phone" autocomplete="tel"></label></div>
       <label class="sp-f"><span>Ship-to address, PO number or deadline (optional, printed on the quote)</span><textarea name="note"></textarea></label>
