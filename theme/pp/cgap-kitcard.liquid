@@ -6,7 +6,9 @@
   <div class="cgap-kitcard__ind">
     <div class="cgap-kitcard__eyebrow">Signing a whole site?</div>
     <p class="cgap-kitcard__lead">{{ kl }} sign kits put every sign one area needs in one order, at 10 to 15% under single-sign prices.</p>
-    <ul>{%- for k in collections[kh].products limit: 3 -%}<li><a href="{{ k.url }}">{{ k.title | split: ' Safety Sign Kit' | first }} kit</a> <span>{{ k.price | money }}</span></li>{%- endfor -%}</ul>
+    {%- assign pt = product.title | upcase -%}{%- assign shown = '' -%}{%- assign n = 0 -%}<ul>
+    {%- for k in collections[kh].products limit: 40 -%}{%- assign kn = k.title | split: ' Safety Sign Kit' | first -%}{%- assign w = kn | split: ' ' | first | upcase -%}{%- if w.size > 2 and pt contains w and n < 3 -%}{%- assign n = n | plus: 1 -%}{%- assign shown = shown | append: '|' | append: k.handle -%}<li><a href="{{ k.url }}">{{ kn }} kit</a> <span>{{ k.price | money }}</span></li>{%- endif -%}{%- endfor -%}
+    {%- for k in collections[kh].products limit: 12 -%}{%- if n < 3 -%}{%- assign key = '|' | append: k.handle -%}{%- unless shown contains key -%}{%- assign n = n | plus: 1 -%}<li><a href="{{ k.url }}">{{ k.title | split: ' Safety Sign Kit' | first }} kit</a> <span>{{ k.price | money }}</span></li>{%- endunless -%}{%- endif -%}{%- endfor -%}</ul>
     <a class="cgap-kitcard__all" href="{{ collections[kh].url }}">All {{ collections[kh].products_count }} {{ kl }} kits</a>
   </div>
   {%- endif -%}
