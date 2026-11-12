@@ -1,0 +1,402 @@
+{
+ "CGAP-D-LIFTSTATIONHATCH-812": {
+  "sku": "CGAP-D-LIFTSTATIONHATCH-812",
+  "series": "DANGER",
+  "subject": "Lift Station Hatch",
+  "lines": "LIFT STATION HATCH / OPEN HATCH FALL HAZARD / KEEP HATCH CLOSED AND LATCHED / GUARD OPENING BEFORE ENTRY",
+  "handle": "danger-lift-station-hatch-sign-8x12-aluminum"
+ },
+ "CGAP-D-SODIUMHYPOCHLORITEFILL-812": {
+  "sku": "CGAP-D-SODIUMHYPOCHLORITEFILL-812",
+  "series": "DANGER",
+  "subject": "Sodium Hypochlorite Fill Connection",
+  "lines": "SODIUM HYPOCHLORITE FILL / CORROSIVE LIQUID / NEVER CONNECT ACID HERE / MIXING RELEASES CHLORINE GAS",
+  "handle": "danger-sodium-hypochlorite-fill-connection-sign-8x12-aluminum"
+ },
+ "CGAP-D-AERATIONBASIN-812": {
+  "sku": "CGAP-D-AERATIONBASIN-812",
+  "series": "DANGER",
+  "subject": "Aeration Basin",
+  "lines": "AERATION BASIN / AERATED WATER WILL NOT FLOAT YOU / FALLING IN MEANS DROWNING / STAY BEHIND GUARDRAIL",
+  "handle": "danger-aeration-basin-sign-8x12-aluminum"
+ },
+ "CGAP-D-CLARIFIERCOLLECTORDRIV-812": {
+  "sku": "CGAP-D-CLARIFIERCOLLECTORDRIV-812",
+  "series": "DANGER",
+  "subject": "Clarifier Collector Drive",
+  "lines": "ROTATING COLLECTOR MECHANISM / RAKE ARM AND SKIMMER MOVE / CRUSH POINT AT BRIDGE / LOCK OUT BEFORE SERVICING",
+  "handle": "danger-clarifier-collector-drive-sign-8x12-aluminum"
+ },
+ "CGAP-D-ANAEROBICDIGESTER-812": {
+  "sku": "CGAP-D-ANAEROBICDIGESTER-812",
+  "series": "DANGER",
+  "subject": "Anaerobic Digester",
+  "lines": "ANAEROBIC DIGESTER / EXPLOSIVE METHANE GAS / NO SMOKING OR HOT WORK / NO IGNITION SOURCES",
+  "handle": "danger-anaerobic-digester-sign-8x12-aluminum"
+ },
+ "CGAP-D-LIFTSTATIONSUBMERSIBLE-812": {
+  "sku": "CGAP-D-LIFTSTATIONSUBMERSIBLE-812",
+  "series": "DANGER",
+  "subject": "Lift Station Submersible Pumps",
+  "lines": "SUBMERSIBLE PUMPS / START AUTOMATICALLY ON LEVEL / LOCK OUT AT CONTROL PANEL / BEFORE PULLING A PUMP",
+  "handle": "danger-lift-station-submersible-pumps-sign-8x12-aluminum"
+ },
+ "CGAP-D-LIFTSTATIONCONTROLPANE-812": {
+  "sku": "CGAP-D-LIFTSTATIONCONTROLPANE-812",
+  "series": "DANGER",
+  "subject": "Lift Station Control Panel",
+  "lines": "LIFT STATION CONTROL PANEL / ARC FLASH AND SHOCK INSIDE / QUALIFIED PERSONS ONLY / LOCK OUT AND TEST BEFORE WORK",
+  "handle": "danger-lift-station-control-panel-sign-8x12-aluminum"
+ },
+ "CGAP-D-WETWELLENTRY-812": {
+  "sku": "CGAP-D-WETWELLENTRY-812",
+  "series": "DANGER",
+  "subject": "Wet Well Entry",
+  "lines": "WET WELL ENTRY / INFLOW KEEPS COMING / WITH PUMPS LOCKED OUT / PLUG OR BYPASS FLOW FIRST",
+  "handle": "danger-wet-well-entry-sign-8x12-aluminum"
+ },
+ "CGAP-D-LIFTSTATIONSITEENTRANC-812": {
+  "sku": "CGAP-D-LIFTSTATIONSITEENTRANC-812",
+  "series": "DANGER",
+  "subject": "Lift Station Site Entrance",
+  "lines": "SEWAGE LIFT STATION / TOXIC GAS AND REMOTE PUMPS / OPERATORS ONLY PAST GATE / CALL OPERATIONS BEFORE ENTRY",
+  "handle": "danger-lift-station-site-entrance-sign-8x12-aluminum"
+ },
+ "CGAP-D-PRESSUREREDUCINGVALVEV-812": {
+  "sku": "CGAP-D-PRESSUREREDUCINGVALVEV-812",
+  "series": "DANGER",
+  "subject": "Pressure Reducing Valve Vault",
+  "lines": "PRV VAULT / VALVE OR PIPE FAILURE / CAN FLOOD VAULT FAST / KEEP ATTENDANT AT HATCH",
+  "handle": "danger-pressure-reducing-valve-vault-sign-8x12-aluminum"
+ },
+ "CGAP-D-WATERBOOSTERPUMPSTATIO-812": {
+  "sku": "CGAP-D-WATERBOOSTERPUMPSTATIO-812",
+  "series": "DANGER",
+  "subject": "Water Booster Pump Station",
+  "lines": "BOOSTER PUMPS / START AUTOMATICALLY / ON LOW PRESSURE SIGNAL / SET TO OFF AND LOCK BREAKER",
+  "handle": "danger-water-booster-pump-station-sign-8x12-aluminum"
+ },
+ "CGAP-D-WATERMETERVAULT-812": {
+  "sku": "CGAP-D-WATERMETERVAULT-812",
+  "series": "DANGER",
+  "subject": "Water Meter Vault",
+  "lines": "METER VAULT / OXYGEN CAN BE TOO LOW / RUSTING PIPE USES UP AIR / TEST AIR BEFORE YOU ENTER",
+  "handle": "danger-water-meter-vault-sign-8x12-aluminum"
+ },
+ "CGAP-D-BARSCREENENCLOSURE-812": {
+  "sku": "CGAP-D-BARSCREENENCLOSURE-812",
+  "series": "DANGER",
+  "subject": "Bar Screen Enclosure",
+  "lines": "SCREEN ENCLOSURE / H2S BUILDS UP UNDER COVERS / STAND BACK WHEN OPENING / WEAR A GAS MONITOR",
+  "handle": "danger-bar-screen-enclosure-sign-8x12-aluminum"
+ },
+ "CGAP-D-HEADWORKSBUILDING-812": {
+  "sku": "CGAP-D-HEADWORKSBUILDING-812",
+  "series": "DANGER",
+  "subject": "Headworks Building",
+  "lines": "HEADWORKS BUILDING / H2S AND EXPLOSIVE GAS / VENTILATION MUST BE RUNNING / CARRY GAS MONITOR INSIDE",
+  "handle": "danger-headworks-building-sign-8x12-aluminum"
+ },
+ "CGAP-D-FLOATINGLAGOONAERATOR-812": {
+  "sku": "CGAP-D-FLOATINGLAGOONAERATOR-812",
+  "series": "DANGER",
+  "subject": "Floating Lagoon Aerator",
+  "lines": "FLOATING AERATOR / ENERGIZED CABLE IN WATER / IMPELLER STARTS AUTOMATICALLY / LOCK OUT AT SHORE DISCONNECT",
+  "handle": "danger-floating-lagoon-aerator-sign-8x12-aluminum"
+ },
+ "CGAP-D-LINEDWASTEWATERLAGOON-812": {
+  "sku": "CGAP-D-LINEDWASTEWATERLAGOON-812",
+  "series": "DANGER",
+  "subject": "Lined Wastewater Lagoon",
+  "lines": "LINED LAGOON / SLICK LINER SLOPE / YOU CANNOT CLIMB OUT / STAY OFF THE LINER",
+  "handle": "danger-lined-wastewater-lagoon-sign-8x12-aluminum"
+ },
+ "CGAP-D-FILTERGALLERYPIPING-812": {
+  "sku": "CGAP-D-FILTERGALLERYPIPING-812",
+  "series": "DANGER",
+  "subject": "Filter Gallery Piping",
+  "lines": "FILTER GALLERY PIPING / WATER UNDER PRESSURE / SPOOL CAN BLOW APART / DRAIN TO ZERO BEFORE UNBOLTING",
+  "handle": "danger-filter-gallery-piping-sign-8x12-aluminum"
+ },
+ "CGAP-D-CHEMICALMETERINGPUMP-812": {
+  "sku": "CGAP-D-CHEMICALMETERINGPUMP-812",
+  "series": "DANGER",
+  "subject": "Chemical Metering Pump",
+  "lines": "METERING PUMP / NEVER RUN AGAINST CLOSED VALVE / LINE CAN BURST AND SPRAY / OPEN DISCHARGE BEFORE START",
+  "handle": "danger-chemical-metering-pump-sign-8x12-aluminum"
+ },
+ "CGAP-D-FLOCCULATORPADDLES-812": {
+  "sku": "CGAP-D-FLOCCULATORPADDLES-812",
+  "series": "DANGER",
+  "subject": "Flocculator Paddles",
+  "lines": "FLOCCULATOR / SLOW PADDLES HAVE HIGH TORQUE / CAN PIN YOU UNDERWATER / LOCK OUT BEFORE BASIN ENTRY",
+  "handle": "danger-flocculator-paddles-sign-8x12-aluminum"
+ },
+ "CGAP-D-CLEARWELLACCESSHATCH-812": {
+  "sku": "CGAP-D-CLEARWELLACCESSHATCH-812",
+  "series": "DANGER",
+  "subject": "Clearwell Access Hatch",
+  "lines": "CLEARWELL HATCH / DEEP WATER UNDER ROOF / NO WAY OUT IF YOU FALL IN / KEEP HATCH CLOSED AND LOCKED",
+  "handle": "danger-clearwell-access-hatch-sign-8x12-aluminum"
+ },
+ "CGAP-D-WATERSTORAGETANKROOFHA-812": {
+  "sku": "CGAP-D-WATERSTORAGETANKROOFHA-812",
+  "series": "DANGER",
+  "subject": "Water Storage Tank Roof Hatch",
+  "lines": "TANK ROOF HATCH / OPEN HATCH OVER DEEP WATER / FALL IN CAN DROWN YOU / TIE OFF BEFORE OPENING",
+  "handle": "danger-water-storage-tank-roof-hatch-sign-8x12-aluminum"
+ },
+ "CGAP-D-HIGHSERVICEVERTICALTUR-812": {
+  "sku": "CGAP-D-HIGHSERVICEVERTICALTUR-812",
+  "series": "DANGER",
+  "subject": "High Service Vertical Turbine Pump",
+  "lines": "VERTICAL TURBINE PUMP / SHAFT CAN SPIN BACKWARD / AS WATER COLUMN DRAINS / CLOSE DISCHARGE AND LOCK OUT",
+  "handle": "danger-high-service-vertical-turbine-pump-sign-8x12-aluminum"
+ },
+ "CGAP-D-WELLPIT-812": {
+  "sku": "CGAP-D-WELLPIT-812",
+  "series": "DANGER",
+  "subject": "Well Pit",
+  "lines": "WELL PIT / LOW OXYGEN AND GAS INSIDE / CAN KILL IN MINUTES / TEST AIR BEFORE ENTRY",
+  "handle": "danger-well-pit-sign-8x12-aluminum"
+ },
+ "CGAP-D-GASCHLORINEROOMDOOR-812": {
+  "sku": "CGAP-D-GASCHLORINEROOMDOOR-812",
+  "series": "DANGER",
+  "subject": "Gas Chlorine Room Door",
+  "lines": "CHLORINE GAS ROOM / START EXHAUST FAN FIRST / CHECK ALARM BEFORE ENTERING / NEVER ENTER ALONE",
+  "handle": "danger-gas-chlorine-room-door-sign-8x12-aluminum"
+ },
+ "CGAP-D-CHLORINECYLINDERVALVE-812": {
+  "sku": "CGAP-D-CHLORINECYLINDERVALVE-812",
+  "series": "DANGER",
+  "subject": "Chlorine Cylinder Valve",
+  "lines": "CHLORINE CYLINDER VALVE / USE ONLY THE VALVE WRENCH / NO CHEATER BARS OR HAMMERS / BROKEN VALVE RELEASES GAS",
+  "handle": "danger-chlorine-cylinder-valve-sign-8x12-aluminum"
+ },
+ "CGAP-D-DRAINEDSTORAGETANKINTE-812": {
+  "sku": "CGAP-D-DRAINEDSTORAGETANKINTE-812",
+  "series": "DANGER",
+  "subject": "Drained Storage Tank Interior",
+  "lines": "DRAINED TANK / INLET CAN REFILL TANK / LOCK INLET VALVE CLOSED / BEFORE ANYONE ENTERS",
+  "handle": "danger-drained-storage-tank-interior-sign-8x12-aluminum"
+ },
+ "CGAP-D-SODIUMHYPOCHLORITETOTE-812": {
+  "sku": "CGAP-D-SODIUMHYPOCHLORITETOTE-812",
+  "series": "DANGER",
+  "subject": "Sodium Hypochlorite Tote",
+  "lines": "HYPOCHLORITE TOTE / SEALED TOTE BUILDS PRESSURE / USE VENTED CAP / OPEN SLOWLY, FACE SHIELD",
+  "handle": "danger-sodium-hypochlorite-tote-sign-8x12-aluminum"
+ },
+ "CGAP-D-CHLORINECONTACTTANK-812": {
+  "sku": "CGAP-D-CHLORINECONTACTTANK-812",
+  "series": "DANGER",
+  "subject": "Chlorine Contact Tank",
+  "lines": "CHLORINE CONTACT TANK / FAST FLOW IN CHANNELS / FALL IN CAN DROWN YOU / STAY BEHIND RAILING",
+  "handle": "danger-chlorine-contact-tank-sign-8x12-aluminum"
+ },
+ "CGAP-D-BACKFLOWPREVENTERPIT-812": {
+  "sku": "CGAP-D-BACKFLOWPREVENTERPIT-812",
+  "series": "DANGER",
+  "subject": "Backflow Preventer Pit",
+  "lines": "BACKFLOW PREVENTER PIT / RELIEF VALVE CAN DUMP WATER / AND FLOOD THE PIT FAST / PERMIT ENTRY NEVER ALONE",
+  "handle": "danger-backflow-preventer-pit-sign-8x12-aluminum"
+ },
+ "CGAP-D-CHLORINEROOMEXHAUSTSWI-812": {
+  "sku": "CGAP-D-CHLORINEROOMEXHAUSTSWI-812",
+  "series": "DANGER",
+  "subject": "Chlorine Room Exhaust Switch",
+  "lines": "CHLORINE ROOM EXHAUST SWITCH / CHLORINE COLLECTS NEAR FLOOR / RUN FAN AND CHECK DETECTOR / LEAVE IF LEAK ALARM SOUNDS",
+  "handle": "danger-chlorine-room-exhaust-switch-sign-8x12-aluminum"
+ },
+ "CGAP-D-CHLORINEEMERGENCYKITCA-812": {
+  "sku": "CGAP-D-CHLORINEEMERGENCYKITCA-812",
+  "series": "DANGER",
+  "subject": "Chlorine Emergency Kit Cabinet",
+  "lines": "CHLORINE EMERGENCY KIT / FOR TRAINED RESPONDERS ONLY / SCBA REQUIRED TO APPLY KIT / NEVER RESPOND ALONE",
+  "handle": "danger-chlorine-emergency-kit-cabinet-sign-8x12-aluminum"
+ },
+ "CGAP-D-LAGOONBERMROAD-812": {
+  "sku": "CGAP-D-LAGOONBERMROAD-812",
+  "series": "DANGER",
+  "subject": "Lagoon Berm Road",
+  "lines": "LAGOON BERM ROAD / SOFT EDGE CAN GIVE WAY / VEHICLE CAN SLIDE IN / STAY ON MARKED TRAVEL LANE",
+  "handle": "danger-lagoon-berm-road-sign-8x12-aluminum"
+ },
+ "CGAP-D-ELEVATEDTANKRISEROPENI-812": {
+  "sku": "CGAP-D-ELEVATEDTANKRISEROPENI-812",
+  "series": "DANGER",
+  "subject": "Elevated Tank Riser Opening",
+  "lines": "TANK FLOOR RISER OPENING / OPEN RISER DROPS DOWN / THE TOWER COLUMN / COVER OR GUARD BEFORE WORK",
+  "handle": "danger-elevated-tank-riser-opening-sign-8x12-aluminum"
+ },
+ "CGAP-N22483-812": {
+  "sku": "CGAP-N22483-812",
+  "series": "NOTICE",
+  "subject": "Fluoride Acid Fill Connection",
+  "lines": "FLUOROSILICIC ACID FILL / FLUORIDE ONLY / OPERATOR VERIFIES GRADE AND TANK / RINSE HOSE TO SUMP",
+  "handle": "notice-fluoride-acid-fill-connection-sign-cgap-n22483-812"
+ },
+ "CGAP-N06321-812": {
+  "sku": "CGAP-N06321-812",
+  "series": "NOTICE",
+  "subject": "Lift Station Gate",
+  "lines": "LIFT STATION GATE / CLOSE AND LOCK ON LEAVING / CONTRACTORS CHECK IN / WITH OPERATIONS FIRST",
+  "handle": "notice-lift-station-gate-sign-cgap-n06321-812"
+ },
+ "CGAP-W13957-812": {
+  "sku": "CGAP-W13957-812",
+  "series": "WARNING",
+  "subject": "Pump Station Mcc Room",
+  "lines": "PUMP STATION MCC ROOM / STORED ELECTRICAL ENERGY / CAPACITORS CAN RETAIN VOLTAGE / FOLLOW VERIFIED DISCHARGE METHOD / TEST BEFORE INTERNAL CONTACT",
+  "handle": "warning-pump-station-mcc-room-sign-cgap-w13957-812"
+ },
+ "CGAP-I11236-812": {
+  "sku": "CGAP-I11236-812",
+  "series": "SAFETY FIRST",
+  "subject": "Pump Coupling Guard",
+  "lines": "PUMP COUPLING GUARD / REPLACE THE GUARD / BEFORE RESTARTING / CHECK ALL BOLTS TIGHT",
+  "handle": "safety-first-pump-coupling-guard-sign-cgap-i11236-812"
+ },
+ "CGAP-I20076-812": {
+  "sku": "CGAP-I20076-812",
+  "series": "SAFETY FIRST",
+  "subject": "Pond Ring Buoy",
+  "lines": "POND RING BUOY / KEEP RING AND LINE / READY AT THE FOREBAY",
+  "handle": "safety-first-pond-ring-buoy-sign-cgap-i20076-812"
+ },
+ "CGAP-I03720-812": {
+  "sku": "CGAP-I03720-812",
+  "series": "SAFETY FIRST",
+  "subject": "Eyewash Station",
+  "lines": "EYEWASH STATION / PUSH PADDLE TO START / HOLD EYELIDS OPEN AND RINSE / CALL FOR HELP",
+  "handle": "safety-first-eyewash-station-sign-cgap-i03720-812"
+ },
+ "CGAP-I08613-812": {
+  "sku": "CGAP-I08613-812",
+  "series": "SAFETY FIRST",
+  "subject": "Belt Filter Press",
+  "lines": "BELT FILTER PRESS / LOCK OUT BEFORE CLEARING / CONFIRM BELT HAS STOPPED MOVING / USE YOUR OWN LOCK AND TAG",
+  "handle": "safety-first-belt-filter-press-sign-cgap-i08613-812"
+ },
+ "CGAP-GEN067-812": {
+  "sku": "CGAP-GEN067-812",
+  "series": "NOTICE",
+  "subject": "Public Water System Authorized Personnel Only",
+  "lines": "PUBLIC WATER SYSTEM / AUTHORIZED PERSONNEL / ONLY / REPORT TAMPERING",
+  "handle": null
+ },
+ "CGAP-GEN068-812": {
+  "sku": "CGAP-GEN068-812",
+  "series": "WARNING",
+  "subject": "Pumps Start Automatically",
+  "lines": "PUMPS START / AUTOMATICALLY / WITHOUT WARNING / LOCK OUT BEFORE SERVICING",
+  "handle": null
+ },
+ "CGAP-GEN069-812": {
+  "sku": "CGAP-GEN069-812",
+  "series": "WARNING",
+  "subject": "Generator Starts Automatically",
+  "lines": "GENERATOR STARTS / AUTOMATICALLY / WITHOUT WARNING",
+  "handle": null
+ },
+ "CGAP-GEN070-812": {
+  "sku": "CGAP-GEN070-812",
+  "series": "NOTICE",
+  "subject": "Chemical Handling PPE Required",
+  "lines": "GOGGLES, FACE SHIELD / AND GLOVES REQUIRED / WHEN HANDLING / CHEMICALS",
+  "handle": null
+ },
+ "CGAP-GEN071-812": {
+  "sku": "CGAP-GEN071-812",
+  "series": "NOTICE",
+  "subject": "Wastewater Treatment Plant Entrance",
+  "lines": "WASTEWATER / TREATMENT PLANT / AUTHORIZED PERSONNEL ONLY / VISITORS CHECK IN AT OFFICE",
+  "handle": null
+ },
+ "CGAP-GEN072-812": {
+  "sku": "CGAP-GEN072-812",
+  "series": "NOTICE",
+  "subject": "Water Treatment Plant Entrance",
+  "lines": "WATER / TREATMENT PLANT / AUTHORIZED PERSONNEL ONLY / VISITORS CHECK IN AT OFFICE",
+  "handle": null
+ },
+ "CGAP-GEN073-812": {
+  "sku": "CGAP-GEN073-812",
+  "series": "WARNING",
+  "subject": "Raw Sewage Biohazard",
+  "lines": "RAW SEWAGE / BIOHAZARD / WASH HANDS BEFORE / EATING OR DRINKING",
+  "handle": null
+ },
+ "CGAP-GEN074-812": {
+  "sku": "CGAP-GEN074-812",
+  "series": "DANGER",
+  "subject": "Wastewater Lagoon No Trespassing",
+  "lines": "WASTEWATER LAGOON / NO TRESPASSING / NO SWIMMING OR FISHING",
+  "handle": null
+ },
+ "CGAP-GEN075-812": {
+  "sku": "CGAP-GEN075-812",
+  "series": "DANGER",
+  "subject": "Water Tower No Climbing",
+  "lines": "WATER TOWER / NO CLIMBING / AUTHORIZED PERSONNEL ONLY",
+  "handle": null
+ },
+ "CGAP-GEN076-812": {
+  "sku": "CGAP-GEN076-812",
+  "series": "DANGER",
+  "subject": "Chemical Feed Room",
+  "lines": "CHEMICAL FEED ROOM / CORROSIVE AND TOXIC / CHEMICALS / AUTHORIZED OPERATORS ONLY",
+  "handle": null
+ },
+ "CGAP-GEN077-812": {
+  "sku": "CGAP-GEN077-812",
+  "series": "DANGER",
+  "subject": "Sewer Gas Hydrogen Sulfide",
+  "lines": "SEWER GAS / HYDROGEN SULFIDE (H2S) / CAN KILL WITHOUT WARNING / CARRY A GAS MONITOR",
+  "handle": null
+ },
+ "CGAP-GEN078-812": {
+  "sku": "CGAP-GEN078-812",
+  "series": "DANGER",
+  "subject": "Permit-Required Confined Space",
+  "lines": "PERMIT-REQUIRED / CONFINED SPACE / DO NOT ENTER",
+  "handle": null
+ },
+ "CGAP-GEN006-812": {
+  "sku": "CGAP-GEN006-812",
+  "series": "NOTICE",
+  "subject": "Hearing Protection Required",
+  "lines": "HEARING PROTECTION / REQUIRED IN / THIS AREA"
+ },
+ "CGAP-GEN014-812": {
+  "sku": "CGAP-GEN014-812",
+  "series": "DANGER",
+  "subject": "Lock Out Before Servicing",
+  "lines": "LOCK OUT EQUIPMENT / BEFORE SERVICING / OR CLEANING"
+ },
+ "CGAP-GEN027-812": {
+  "sku": "CGAP-GEN027-812",
+  "series": "NOTICE",
+  "subject": "Safety Data Sheets",
+  "lines": "SAFETY DATA SHEETS / LOCATED HERE"
+ },
+ "CGAP-GEN031-812": {
+  "sku": "CGAP-GEN031-812",
+  "series": "CAUTION",
+  "subject": "High Noise Area",
+  "lines": "HIGH NOISE AREA / HEARING PROTECTION / REQUIRED"
+ },
+ "CGAP-GEN033-812": {
+  "sku": "CGAP-GEN033-812",
+  "series": "WARNING",
+  "subject": "Fall Protection Required",
+  "lines": "FALL PROTECTION / REQUIRED BEYOND / THIS POINT"
+ },
+ "CGAP-GEN054-812": {
+  "sku": "CGAP-GEN054-812",
+  "series": "DANGER",
+  "subject": "Energized Equipment",
+  "lines": "ENERGIZED EQUIPMENT / AUTHORIZED / PERSONNEL ONLY"
+ }
+}
