@@ -439,7 +439,7 @@
     doc.setTextColor(255); doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.text(clean(STORE).toUpperCase(), M, 42);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
     doc.text('Facility safety signs, made to order in Amory, Mississippi', M, 60);
-    doc.text(location.host + '   Info@cgapindustries.com', M, 74);
+    doc.text(location.host + '   Info@cgapenterprises.com', M, 74);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.text('QUOTATION', W - M, 42, { align: 'right' });
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
     doc.text('Quote no. ' + qn, W - M, 60, { align: 'right' }); doc.text('Date: ' + fdt(now), W - M, 74, { align: 'right' });
@@ -495,7 +495,7 @@
       'Payment by purchase order (net 30 for government agencies and approved accounts), credit card or purchasing card. Tax-exempt orders welcome with a certificate.',
       'Every order ships within 2 business days of order from Amory, Mississippi. Shipping is included.',
       'Each sign: 8 x 12 in, .065 rust-resistant aluminum, UV-stable print, pre-drilled corners. Five-year outdoor warranty.',
-      'To order: email your PO to Info@cgapindustries.com with quote no. ' + qn + ', or order online from your plan link below.',
+      'To order: email your PO to Info@cgapenterprises.com with quote no. ' + qn + ', or order online from your plan link below.',
     ];
     if (y + 150 > H - 60) { doc.addPage(); y = 50; }
     color(G); doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.text('TERMS', M, y); y += 14;
@@ -529,8 +529,8 @@
       let made = true;
       try { await quotePdf(fd, qn); } catch (err) { made = false; }
       const ok = await sent;
-      dlg.innerHTML = `<button class="x" type="button" aria-label="Close">&times;</button><h3>${made ? 'Quote ' + esc(qn) + ' downloaded' : 'Quote request received'}</h3><div class="sp-ok">${made ? 'Your PDF quote is in your downloads. ' : 'The PDF could not be built on this device, so we will email your quote instead. '}${ok ? 'We have a copy and can invoice against your PO.' : 'If you need anything changed, email Info@cgapindustries.com with the quote number.'}</div>
-        <p style="margin-top:1.4rem">To order, email your PO to <a href="mailto:Info@cgapindustries.com?subject=PO%20for%20quote%20${esc(qn)}">Info@cgapindustries.com</a> or <button class="sp-link" type="button" id="sp-q2c">add the plan to your cart</button>.</p>`;
+      dlg.innerHTML = `<button class="x" type="button" aria-label="Close">&times;</button><h3>${made ? 'Quote ' + esc(qn) + ' downloaded' : 'Quote request received'}</h3><div class="sp-ok">${made ? 'Your PDF quote is in your downloads. ' : 'The PDF could not be built on this device, so we will email your quote instead. '}${ok ? 'We have a copy and can invoice against your PO.' : 'If you need anything changed, email Info@cgapenterprises.com with the quote number.'}</div>
+        <p style="margin-top:1.4rem">To order, email your PO to <a href="mailto:Info@cgapenterprises.com?subject=PO%20for%20quote%20${esc(qn)}">Info@cgapenterprises.com</a> or <button class="sp-link" type="button" id="sp-q2c">add the plan to your cart</button>.</p>`;
       dlg.querySelector('.x').addEventListener('click', closeDlg);
       $('#sp-q2c').addEventListener('click', () => { closeDlg(); toCart(); });
     });
