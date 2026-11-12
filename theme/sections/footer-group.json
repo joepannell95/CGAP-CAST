@@ -1,0 +1,153 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.footer.name",
+  "type": "footer",
+  "sections": {
+    "cgap-badge-strip": {
+      "type": "cgap-badge-strip",
+      "blocks": {
+        "b1": {
+          "type": "badge",
+          "settings": {
+            "label": "Made in the USA"
+          }
+        },
+        "b2": {
+          "type": "badge",
+          "settings": {
+            "label": ".065 aluminum"
+          }
+        },
+        "b3": {
+          "type": "badge",
+          "settings": {
+            "label": "5-year outdoor warranty"
+          }
+        },
+        "b4": {
+          "type": "badge",
+          "settings": {
+            "label": "Ships in 2 business days"
+          }
+        },
+        "b5": {
+          "type": "badge",
+          "settings": {
+            "label": "POs & tax-exempt accepted"
+          }
+        },
+        "b6": {
+          "type": "badge",
+          "settings": {
+            "label": "SAM.gov registered"
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "b4",
+        "b5",
+        "b6"
+      ],
+      "settings": {
+        "bg": "#F3F4F1",
+        "card": "#FFFFFF",
+        "rule": "#D3D8D2",
+        "fg": "#152018",
+        "accent": "#E0731A"
+      }
+    },
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "brand_information_C4rpGG": {
+          "type": "brand_information",
+          "settings": {
+            "show_social": true
+          }
+        },
+        "ll_products": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Products",
+            "menu": "footer-products"
+          }
+        },
+        "ll_industries": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Industries",
+            "menu": "footer-industries"
+          }
+        },
+        "ll_resources": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Resources",
+            "menu": "footer-resources"
+          }
+        },
+        "ll_company": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Company",
+            "menu": "footer-company"
+          }
+        },
+        "ll_support": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Partners & Support",
+            "menu": "footer-support"
+          }
+        }
+      },
+      "block_order": [
+        "brand_information_C4rpGG",
+        "ll_products",
+        "ll_industries",
+        "ll_resources",
+        "ll_company",
+        "ll_support"
+      ],
+      "settings": {
+        "color_scheme": "scheme-1",
+        "newsletter_enable": true,
+        "newsletter_heading": "Get the free OSHA compliance checklists",
+        "enable_follow_on_shop": false,
+        "show_social": false,
+        "enable_country_selector": false,
+        "enable_language_selector": false,
+        "payment_enable": true,
+        "show_policy": true,
+        "margin_top": 0,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "cgap-kit-dir": {
+      "type": "custom-liquid",
+      "settings": {
+        "custom_liquid": "{%- assign kits = nil -%}{%- for l in linklists['main-menu-v2'].links -%}{%- if l.title == 'Sign Kits' -%}{%- assign kits = l -%}{%- endif -%}{%- endfor -%}{%- if kits and kits.links.size > 0 -%}<div class='page-width cgap-kitdir'><style>.cgap-kitdir{padding-top:8px}.cgap-kitdir h2{font-size:1.7rem;margin:0 0 1.4rem}.cgap-kitdir h2 a{color:inherit;text-decoration:none}.cgap-kitdir .g{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1.6rem 2.4rem}.cgap-kitdir h3{font-size:1.3rem;font-weight:700;margin:0 0 .6rem;letter-spacing:.02em}.cgap-kitdir ul{list-style:none;margin:0;padding:0;font-size:1.25rem;line-height:1.75}.cgap-kitdir a{color:rgba(var(--color-foreground),.75);text-decoration:none}.cgap-kitdir a:hover{color:rgb(var(--color-foreground));text-decoration:underline}</style><h2><a href='{{ kits.url }}'>Sign kits by industry</a></h2><div class='g'>{%- for g in kits.links -%}<div><h3>{{ g.title }}</h3><ul>{%- for x in g.links -%}<li><a href='{{ x.url }}'>{{ x.title }}</a></li>{%- endfor -%}</ul></div>{%- endfor -%}</div></div>{%- endif -%}",
+        "color_scheme": "scheme-1",
+        "padding_top": 32,
+        "padding_bottom": 8
+      }
+    }
+  },
+  "order": [
+    "cgap-badge-strip",
+    "cgap-kit-dir",
+    "footer"
+  ]
+}
