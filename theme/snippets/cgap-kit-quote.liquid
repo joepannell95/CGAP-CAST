@@ -1,0 +1,205 @@
+{%- comment -%} CGAP kit quote: on sign kit pages, live kit-quantity pricing plus a downloadable PDF quote. Rendered by the product template for product.type 'Safety Sign Kit'. {%- endcomment -%}
+<style>
+  .cgap-kq{margin:1.2rem 0 .4rem;border:1px solid rgba(var(--color-foreground),.15);border-radius:4px;padding:1.2rem 1.4rem;background:rgba(var(--color-foreground),.03)}
+  .cgap-kq__line{font-size:1.45rem;line-height:1.45;margin:0 0 1rem}
+  .cgap-kq__line b{font-weight:700}
+  .cgap-kq__hint{display:block;font-size:1.25rem;color:rgba(var(--color-foreground),.7);margin-top:.3rem}
+  .cgap-kq__dlg{border:0;border-radius:10px;padding:0;max-width:520px;width:calc(100% - 2.4rem);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  .cgap-kq__dlg::backdrop{background:rgba(10,20,14,.55)}
+  .cgap-kq__in{padding:2.4rem;position:relative}
+  .cgap-kq__in h3{margin:0 0 .6rem;font-size:2rem;color:#173F24;text-transform:uppercase}
+  .cgap-kq__in p{font-size:1.4rem;color:rgba(var(--color-foreground),.75);margin:0 0 1.4rem}
+  .cgap-kq__x{all:unset;cursor:pointer;position:absolute;right:1.4rem;top:1rem;font-size:2.6rem;line-height:1}
+  .cgap-kq__f{display:block;margin:0 0 1rem}
+  .cgap-kq__f span{display:block;font-weight:700;font-size:1.25rem;margin:0 0 .3rem}
+  .cgap-kq__f input,.cgap-kq__f textarea{width:100%;box-sizing:border-box;border:1px solid #cfd4cc;border-radius:6px;padding:1rem 1.1rem;font:inherit;font-size:1.5rem}
+  .cgap-kq__f textarea{min-height:70px}
+  .cgap-kq__2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  .cgap-kq__err{color:#b3261e;font-size:1.3rem;min-height:1.6rem;margin:0 0 .6rem}
+  .cgap-kq__ok{background:#eef4ef;border:1px solid #bcd3c1;border-radius:8px;padding:1.2rem;font-size:1.4rem;color:#173F24;font-weight:700}
+  @media (max-width:600px){.cgap-kq__2{grid-template-columns:1fr}}
+</style>
+<div class="cgap-kq" id="cgap-kq">
+  <div class="cgap-kq__line" id="cgap-kq-line"></div>
+  <button type="button" class="button button--secondary button--full-width" id="cgap-kq-open">Download a quote (PDF)</button>
+</div>
+<dialog class="cgap-kq__dlg" id="cgap-kq-dlg"><div class="cgap-kq__in" id="cgap-kq-in"></div></dialog>
+<script type="application/json" id="cgap-kq-data">{
+  "title": {{ product.title | json }},
+  "url": {{ shop.url | append: product.url | json }},
+  "store": {{ shop.name | json }},
+  "desc": {{ product.description | json }},
+  "variants": [{%- for v in product.variants -%}{"id": {{ v.id | json }}, "title": {{ v.title | json }}, "price": {{ v.price | json }}, "sku": {{ v.sku | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]
+}</script>
+<script>
+(() => {
+  const D = JSON.parse(document.getElementById('cgap-kq-data').textContent);
+  const TIERS = [[20, 0.20], [10, 0.15], [5, 0.10]];
+  const QUOTE_AT = 5000;
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const money = (n) => '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const r2 = (n) => Math.round(n * 100 + 1e-6) / 100;
+  const box = $('#cgap-kq'); if (!box) return;
+  const form = box.closest('section, .product') ? (box.closest('section, .product').querySelector('form[action*="/cart/add"]') || document.querySelector('form[action*="/cart/add"]')) : document.querySelector('form[action*="/cart/add"]');
+
+  // Current selection, read from the product form so it follows the theme's variant picker and quantity box.
+  function state() {
+    const idEl = form && form.querySelector('[name="id"]');
+    const id = idEl ? Number(idEl.value) : D.variants[0].id;
+    const v = D.variants.find((x) => x.id === id) || D.variants[0];
+    const qEl = document.querySelector('input[name="quantity"]');
+    const q = Math.max(1, Math.min(9999, parseInt(qEl && qEl.value, 10) || 1));
+    const price = v.price / 100;
+    const tier = TIERS.find(([min]) => q >= min);
+    const pct = tier ? tier[1] : 0;
+    const list = r2(q * price), total = r2(q * price * (1 - pct));
+    const next = [...TIERS].reverse().find(([min]) => min > q);
+    return { v, q, price, pct, list, total, each: total / q, next };
+  }
+  const vname = (v) => (v.title && v.title !== 'Default Title' ? v.title : '');
+
+  function paint() {
+    const s = state();
+    const kits = s.q === 1 ? '1 kit' : s.q + ' kits';
+    let html = `<b>${kits}</b>${vname(s.v) ? ' (' + esc(vname(s.v)) + ')' : ''}: <b>${money(s.total)}</b>`;
+    if (s.pct) html += ` with ${Math.round(s.pct * 100)}% off, about ${money(s.each)} per kit.`;
+    else html += '.';
+    const hints = [];
+    if (s.next) hints.push(`Order ${s.next[0]} or more kits, in any mix, for ${Math.round(s.next[1] * 100)}% off.`);
+    if (s.total > QUOTE_AT) hints.push('Over $5,000, most public buyers need a written quote on file. Download one below.');
+    else hints.push('Need it on paper for a PO or purchasing file? Download a formal quote.');
+    $('#cgap-kq-line').innerHTML = html + hints.map((h) => `<span class="cgap-kq__hint">${h}</span>`).join('');
+  }
+  document.addEventListener('input', (e) => { if (e.target.name === 'quantity') paint(); });
+  document.addEventListener('change', () => setTimeout(paint, 60));
+  document.addEventListener('click', (e) => { if (e.target.closest('quantity-input button, .quantity__button, variant-selects, variant-radios')) setTimeout(paint, 80); });
+  paint();
+
+  // Signs in the selected pack, read from the kit description.
+  function signs(v) {
+    const t = document.createElement('div'); t.innerHTML = D.desc || '';
+    const h = [...t.querySelectorAll('h3')].find((x) => /signs in this kit/i.test(x.textContent));
+    const ul = h ? h.nextElementSibling : null;
+    let names = ul ? [...ul.querySelectorAll('li')].map((li) => li.textContent.replace(/\s+/g, ' ').trim().split(':')[0]) : [];
+    const vt = (v.title || '').toLowerCase();
+    if (vt.includes('starter')) return names.slice(0, 4).map((n) => [n, 1]);
+    if (vt.includes('crew')) return names.map((n, i) => [n, i < 4 ? 2 : 1]);
+    return names.map((n) => [n, 1]);
+  }
+
+  const loadPdf = () => window.jspdf ? Promise.resolve(window.jspdf) : new Promise((ok, bad) => {
+    const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.onload = () => (window.jspdf ? ok(window.jspdf) : bad(new Error('pdf lib'))); s.onerror = bad; document.head.appendChild(s);
+  });
+  const quoteNo = () => { const d = new Date(), p = (n) => String(n).padStart(2, '0'); return 'Q' + String(d.getFullYear()).slice(2) + p(d.getMonth() + 1) + p(d.getDate()) + '-' + Math.random().toString(36).slice(2, 6).toUpperCase(); };
+
+  async function pdf(info, qn, s) {
+    const { jsPDF } = await loadPdf();
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+    const W = 612, H = 792, M = 40, G = [23, 63, 36], O = [224, 115, 26], INK = [20, 24, 26], MUT = [93, 102, 96];
+    const now = new Date(), until = new Date(now.getTime() + 30 * 864e5);
+    const fdt = (x) => x.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const clean = (t) => String(t ?? '').replace(/[–—]/g, '-').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[^\x20-\x7E\xA0-\xFF]/g, '');
+    const color = (c) => doc.setTextColor(c[0], c[1], c[2]);
+    doc.setFillColor(...G); doc.rect(0, 0, W, 88, 'F'); doc.setFillColor(...O); doc.rect(0, 88, W, 4, 'F');
+    doc.setTextColor(255); doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.text(clean(D.store).toUpperCase(), M, 42);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+    doc.text('Facility safety signs, made to order in Amory, Mississippi', M, 60);
+    doc.text(location.host + '   Info@cgapindustries.com', M, 74);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.text('QUOTATION', W - M, 42, { align: 'right' });
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+    doc.text('Quote no. ' + qn, W - M, 60, { align: 'right' }); doc.text('Date: ' + fdt(now), W - M, 74, { align: 'right' });
+    let y = 118;
+    color(MUT); doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.text('PREPARED FOR', M, y); doc.text('QUOTE DETAILS', 330, y);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); color(INK);
+    const who = [info.name, info.company, info.email, info.phone].filter(Boolean).map(clean);
+    who.forEach((l, i) => doc.text(l, M, y + 16 + i * 14));
+    const det = [['Valid through', fdt(until)], ['Kits', String(s.q)], ['Kit price', money(s.price)], ['Quantity discount', s.pct ? Math.round(s.pct * 100) + '%' : 'None']];
+    det.forEach(([k, v], i) => { color(MUT); doc.text(k, 330, y + 16 + i * 14); color(INK); doc.text(v, W - M, y + 16 + i * 14, { align: 'right' }); });
+    y += 16 + Math.max(who.length, det.length) * 14 + 4;
+    if (info.note) { const nl = doc.splitTextToSize('Notes: ' + clean(info.note), W - 2 * M); color(MUT); doc.setFontSize(9); doc.text(nl, M, y + 6); y += nl.length * 12 + 6; }
+    // Line item
+    y += 14;
+    doc.setFillColor(238, 244, 239); doc.rect(M, y, W - 2 * M, 20, 'F');
+    color(G); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+    doc.text('ITEM', M + 6, y + 13); doc.text('QTY', M + 400, y + 13, { align: 'right' }); doc.text('UNIT', M + 462, y + 13, { align: 'right' }); doc.text('AMOUNT', W - M, y + 13, { align: 'right' });
+    y += 34; doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); color(INK);
+    const title = clean(D.title) + (vname(s.v) ? ' - ' + clean(vname(s.v)) : '');
+    const tl = doc.splitTextToSize(title, 340); doc.text(tl, M + 6, y);
+    doc.text(String(s.q), M + 400, y, { align: 'right' }); doc.text(money(s.price), M + 462, y, { align: 'right' }); doc.text(money(s.list), W - M, y, { align: 'right' });
+    y += tl.length * 12;
+    color(MUT); doc.setFontSize(7.5); doc.text(clean(D.url).slice(0, 90) + (s.v.sku ? '   SKU ' + clean(s.v.sku) : ''), M + 6, y); y += 14;
+    const sg = signs(s.v);
+    if (sg.length) {
+      doc.setFontSize(8.5); color(MUT); doc.text('Each kit includes:', M + 6, y); y += 12; color(INK);
+      sg.forEach(([n, c]) => { if (y > H - 220) return; doc.text((c > 1 ? c + ' x ' : '1 x ') + clean(n), M + 16, y); y += 11; });
+    }
+    y += 6; doc.setDrawColor(227, 230, 224); doc.line(M, y, W - M, y); y += 18;
+    // Totals
+    doc.setFontSize(9.5);
+    const tot = [['List price (' + s.q + ' x ' + money(s.price) + ')', money(s.list)], ...(s.pct ? [[Math.round(s.pct * 100) + '% quantity discount (' + s.q + ' kits)', '-' + money(r2(s.list - s.total))]] : []), ['Shipping', 'Included'], ['Sales tax', 'Not included; exempt orders welcome']];
+    tot.forEach(([k, v]) => { color(MUT); doc.text(k, 300, y); color(INK); doc.text(v, W - M, y, { align: 'right' }); y += 15; });
+    doc.setFillColor(...G); doc.rect(290, y - 6, W - M - 290, 26, 'F');
+    doc.setTextColor(255); doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
+    doc.text('Quote total', 300, y + 11); doc.text(money(s.total), W - M - 8, y + 11, { align: 'right' });
+    y += 42;
+    const terms = [
+      'Prices are firm for 30 days, through ' + fdt(until) + '.',
+      'Payment by purchase order (net 30 for government agencies and approved accounts), credit card or purchasing card. Tax-exempt orders welcome with a certificate.',
+      'Every order ships within 2 business days of order from Amory, Mississippi. Shipping is included.',
+      'Each sign: 8 x 12 in, .065 rust-resistant aluminum, UV-stable print, pre-drilled corners. Five-year outdoor warranty.',
+      'To order: email your PO to Info@cgapindustries.com with quote no. ' + qn + ', or order online at the product link above.',
+    ];
+    if (y + 150 > H - 50) { doc.addPage(); y = 50; }
+    color(G); doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.text('TERMS', M, y); y += 14;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); color(INK);
+    terms.forEach((tx) => { const l = doc.splitTextToSize(tx, W - 2 * M - 12); doc.text('-', M, y); doc.text(l, M + 12, y); y += l.length * 12 + 3; });
+    y += 18; doc.line(M, y, M + 200, y); doc.line(M + 230, y, M + 360, y); doc.line(M + 390, y, W - M, y);
+    color(MUT); doc.setFontSize(8); doc.text('Accepted by', M, y + 11); doc.text('Date', M + 230, y + 11); doc.text('PO number', M + 390, y + 11);
+    const n = doc.getNumberOfPages();
+    for (let p = 1; p <= n; p++) { doc.setPage(p); doc.setFontSize(7.5); color(MUT); doc.text(`Quote ${qn}   Page ${p} of ${n}`, W - M, H - 28, { align: 'right' }); }
+    doc.save(`CGAP-Safety-Quote-${qn}.pdf`);
+  }
+
+  // Copy to the owner through the store contact form.
+  function notify(info, qn, s) {
+    const fd = new FormData();
+    fd.append('form_type', 'contact'); fd.append('utf8', '✓');
+    fd.append('contact[email]', info.email); if (info.name) fd.append('contact[name]', info.name);
+    if (info.phone) fd.append('contact[phone]', info.phone);
+    fd.append('contact[body]', `[KIT QUOTE ${qn} - PDF downloaded by buyer]\n` + (info.company ? 'Organization: ' + info.company + '\n' : '') + (info.note ? 'Notes: ' + info.note + '\n' : '') +
+      `\n${s.q} x ${D.title}${vname(s.v) ? ' (' + vname(s.v) + ')' : ''} at ${money(s.price)}` + (s.pct ? `, ${Math.round(s.pct * 100)}% off` : '') + `\nQuote total: ${money(s.total)}\n${D.url}`);
+    return fetch('/contact#contact_form', { method: 'POST', body: fd, credentials: 'same-origin' }).then((r) => r.ok).catch(() => false);
+  }
+
+  const dlg = $('#cgap-kq-dlg'), inner = $('#cgap-kq-in');
+  function open() {
+    const s = state();
+    inner.innerHTML = `<button class="cgap-kq__x" type="button" aria-label="Close">&times;</button><h3>Quote for ${s.q} kit${s.q === 1 ? '' : 's'}</h3>
+      <p>A written quote for ${s.q} x ${esc(D.title.split(',')[0])}${vname(s.v) ? ' (' + esc(vname(s.v)) + ')' : ''}, ${money(s.total)} total, downloads right away. Change the quantity on the page first if you need a different count. Prices hold for 30 days.</p>
+      <form id="cgap-kq-f"><div class="cgap-kq__2"><label class="cgap-kq__f"><span>Name</span><input name="name" required autocomplete="name"></label><label class="cgap-kq__f"><span>Organization</span><input name="company" required autocomplete="organization"></label></div>
+      <div class="cgap-kq__2"><label class="cgap-kq__f"><span>Email</span><input type="email" name="email" required autocomplete="email"></label><label class="cgap-kq__f"><span>Phone</span><input name="phone" autocomplete="tel"></label></div>
+      <label class="cgap-kq__f"><span>Ship-to address, PO number or deadline (optional, printed on the quote)</span><textarea name="note"></textarea></label>
+      <div class="cgap-kq__err" id="cgap-kq-e"></div><button class="button button--full-width" type="submit">Download quote PDF</button></form>`;
+    inner.querySelector('.cgap-kq__x').addEventListener('click', () => dlg.close());
+    $('#cgap-kq-f').addEventListener('submit', async (e) => {
+      e.preventDefault(); const fd = Object.fromEntries(new FormData(e.target));
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(fd.email)) { $('#cgap-kq-e').textContent = 'Enter a valid email.'; return; }
+      const btn = e.target.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = 'Building your quote...';
+      const qn = quoteNo(), st = state();
+      const sent = notify(fd, qn, st);
+      let made = true; try { await pdf(fd, qn, st); } catch (err) { made = false; }
+      await sent;
+      inner.innerHTML = `<button class="cgap-kq__x" type="button" aria-label="Close">&times;</button><h3>${made ? 'Quote ' + esc(qn) + ' downloaded' : 'Quote request received'}</h3>
+        <div class="cgap-kq__ok">${made ? 'Your PDF quote is in your downloads. We have a copy and can invoice against your PO.' : 'The PDF could not be built on this device, so we will email your quote instead.'}</div>
+        <p style="margin-top:1.4rem">To order, email your PO to <a href="mailto:Info@cgapindustries.com?subject=PO%20for%20quote%20${esc(qn)}">Info@cgapindustries.com</a>, or close this and add the kits to your cart.</p>`;
+      inner.querySelector('.cgap-kq__x').addEventListener('click', () => dlg.close());
+    });
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+    setTimeout(() => { const f = inner.querySelector('input'); if (f) f.focus(); }, 30);
+  }
+  $('#cgap-kq-open').addEventListener('click', open);
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+})();
+</script>
