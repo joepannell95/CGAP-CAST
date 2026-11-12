@@ -1,0 +1,231 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "judgeme_badge": {
+          "type": "shopify://apps/judge-me-reviews/blocks/preview_badge/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "bulk_note": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{% assign p = product.selected_or_first_available_variant.price %}{% assign p10 = p | times: 0.9 | round %}{% assign p25 = p | times: 0.85 | round %}{% assign p50 = p | times: 0.8 | round %}<style>.cgap-ladder{margin:1.2rem 0 .4rem;border:1px solid rgba(var(--color-foreground),.15);border-radius:4px;overflow:hidden}.cgap-ladder summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between}.cgap-ladder summary::-webkit-details-marker{display:none}.cgap-ladder summary:after{content:'+';font-size:1.6rem;line-height:1}.cgap-ladder[open] summary:after{content:'\\2212'}.cgap-ladder__title{font-size:1.2rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600;padding:.7rem 1.2rem;background:rgba(var(--color-foreground),.04)}.cgap-ladder table{width:100%;border-collapse:collapse;font-size:1.4rem;margin:0}.cgap-ladder td{padding:.6rem 1.2rem;border-top:1px solid rgba(var(--color-foreground),.08)}.cgap-ladder td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}.cgap-ladder td span{font-weight:400;color:rgba(var(--color-foreground),.65);margin-left:.6rem;font-size:1.2rem}.cgap-ladder__note{font-size:1.2rem;color:rgba(var(--color-foreground),.7);padding:.6rem 1.2rem .9rem}</style><details class='cgap-ladder'><summary class='cgap-ladder__title'>Quantity pricing, any mix of {% if product.type == 'Safety Sign Kit' %}kits{% else %}signs{% endif %}: save up to 20%</summary><table><tr><td>1 to 4</td><td>{{ p | money }}</td></tr><tr><td>5 to 9</td><td>{{ p10 | money }}<span>10% off</span></td></tr><tr><td>10 to 19</td><td>{{ p25 | money }}<span>15% off</span></td></tr><tr><td>20 or more</td><td>{{ p50 | money }}<span>20% off</span></td></tr><tr><td>Large order or PO</td><td><a href='/pages/request-a-quote?product={{ product.title | url_encode }}&amp;sku={{ product.selected_or_first_available_variant.sku | url_encode }}'>Request a quote</a></td></tr></table><div class='cgap-ladder__note'>Applied automatically at checkout. Quantity orders ship free.</div></details>"
+          }
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button",
+            "swatch_shape": "circle"
+          }
+        },
+        "quantity_selector": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true,
+            "show_gift_card_recipient": false
+          }
+        },
+        "quote_button": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "<a class='button button--secondary button--full-width' style='margin-top:1rem' href='/pages/request-a-quote?product={{ product.title | url_encode }}&amp;sku={{ product.selected_or_first_available_variant.sku | url_encode }}'>Add to quote</a>\n"
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {}
+        },
+        "guide_link": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{% assign g = blank %}{% assign t = blank %}{% for c in product.collections %}{% case c.handle %}{% when 'water-waterfront-safety-signs' %}{% assign g = '/pages/electric-shock-drowning-guide' %}{% assign t = 'Electric Shock Drowning: what marinas and waterfront owners need to post' %}{% when 'mri-safety-signs' %}{% assign g = '/pages/mri-zone-signage-guide' %}{% assign t = 'MRI suite signage, Zone I through Zone IV' %}{% when 'call-811-before-digging-signs' %}{% assign g = '/pages/call-811-buried-utility-guide' %}{% assign t = 'Call 811 and buried utility marking' %}{% when 'battery' %}{% assign g = '/pages/battery-energy-storage-signage-guide' %}{% assign t = 'Battery energy storage and lithium-ion signage under NFPA 855' %}{% when 'loading-dock-warehouse-signs' %}{% assign g = '/pages/loading-dock-safety-signage-guide' %}{% assign t = 'Loading dock safety: six hazards mapped' %}{% when 'confined-space-signs' %}{% assign g = '/pages/confined-space-signage-guide' %}{% assign t = 'Permit-required confined space posting under 1910.146' %}{% when 'arc-flash-signs' %}{% assign g = '/pages/arc-flash-labeling-guide' %}{% assign t = 'Arc flash field marking under NFPA 70E' %}{% when 'high-voltage-signs' %}{% assign g = '/pages/arc-flash-labeling-guide' %}{% assign t = 'Arc flash and electrical hazard marking under NFPA 70E' %}{% when 'laser-safety-signs' %}{% assign g = '/pages/laser-controlled-area-signage-guide' %}{% assign t = 'Laser controlled area signage under ANSI Z136.1' %}{% when 'aerospace' %}{% assign g = '/pages/drone-operations-signage-guide' %}{% assign t = 'Drone operations signage and what a sign can legally control' %}{% when 'cgap-safety-lockout-tagout' %}{% assign g = '/pages/lockout-tagout-guide' %}{% assign t = 'Lockout/Tagout compliance' %}{% when 'cgap-safety-machine-guarding' %}{% assign g = '/pages/machine-guarding-guide' %}{% assign t = 'Machine guarding compliance' %}{% when 'cgap-safety-respiratory-protection' %}{% assign g = '/pages/respiratory-protection-guide' %}{% assign t = 'Respiratory protection compliance' %}{% when 'cgap-safety-scaffolding-safety' %}{% assign g = '/pages/scaffolding-safety-guide' %}{% assign t = 'Scaffolding safety compliance' %}{% endcase %}{% if g != blank %}{% break %}{% endif %}{% endfor %}{% if g != blank %}<div style='margin:18px 0 6px;padding:14px 16px;border-left:3px solid #E0731A;background:rgba(var(--color-foreground),.04)'><div style='font-size:1.2rem;letter-spacing:.06em;text-transform:uppercase;color:rgba(var(--color-foreground),.7);margin-bottom:4px'>Where this sign goes, and why</div><a href='{{ g }}' style='font-weight:700;text-decoration:underline'>Read the guide: {{ t }}</a></div>{% endif %}"
+          }
+        },
+        "spec_tab": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{% assign hs = product.collections | map: 'handle' %}{% unless hs contains 'lineman-mouse-pads' %}{% assign t = product.title | upcase %}{% assign sw = '' %}{% if t contains 'DANGER' %}{% assign sw = 'DANGER' %}{% elsif t contains 'WARNING' %}{% assign sw = 'WARNING' %}{% elsif t contains 'CAUTION' %}{% assign sw = 'CAUTION' %}{% elsif t contains 'NOTICE' %}{% assign sw = 'NOTICE' %}{% endif %}{% assign std = 'ANSI Z535.2, OSHA 1910.145' %}{% if hs contains 'confined-space-signs' %}{% assign std = std | append: ', OSHA 1910.146' %}{% endif %}{% if hs contains 'arc-flash-signs' %}{% assign std = std | append: ', NFPA 70E, NEC 110.16' %}{% elsif hs contains 'high-voltage-signs' or hs contains 'electrical-hazards' %}{% assign std = std | append: ', OSHA 1910 Subpart S, NFPA 70E' %}{% endif %}{% if hs contains 'cgap-safety-lockout-tagout' %}{% assign std = std | append: ', OSHA 1910.147' %}{% endif %}{% if hs contains 'cgap-safety-machine-guarding' %}{% assign std = std | append: ', OSHA 1910.212' %}{% endif %}{% if hs contains 'loading-dock-warehouse-signs' %}{% assign std = std | append: ', OSHA 1910.178, OSHA 1910.28' %}{% endif %}{% if hs contains 'battery' %}{% assign std = std | append: ', NFPA 855' %}{% endif %}{% if hs contains 'laser-safety-signs' %}{% assign std = std | append: ', ANSI Z136.1' %}{% endif %}{% if hs contains 'mri-safety-signs' %}{% assign std = std | append: ', ACR MRI safety guidance' %}{% endif %}{% if hs contains 'danger-regulated-area' %}{% assign std = std | append: ', OSHA substance-specific standard' %}{% endif %}{% if hs contains 'cgap-safety-hazard-communication' %}{% assign std = std | append: ', OSHA 1910.1200' %}{% endif %}{% if hs contains 'radiation-safety-signs' %}{% assign std = std | append: ', 10 CFR 20' %}{% endif %}{% if hs contains 'call-811-before-digging-signs' %}{% assign std = std | append: ', state one-call law' %}{% endif %}{% assign v = product.selected_or_first_available_variant %}<style>.cgap-spec{width:100%;border-collapse:collapse;font-size:1.4rem;margin:0}.cgap-spec td{padding:.7rem 0;border-bottom:1px solid rgba(var(--color-foreground),.12);vertical-align:top}.cgap-spec td:first-child{color:rgba(var(--color-foreground),.7);width:40%;padding-right:1rem}.cgap-spec tr:last-child td{border-bottom:0}</style><div class='product__accordion accordion'><details id='Details-spec-{{ section.id }}'><summary><div class='summary__title'>{% render 'icon-accordion', icon: 'ruler' %}<h2 class='h4 accordion__title inline-richtext'>Specifications</h2></div><span class='svg-wrapper'>{{ 'icon-caret.svg' | inline_asset_content }}</span></summary><div class='accordion__content rte'><table class='cgap-spec'><tr><td>Size</td><td>8 x 12 in (203 x 305 mm), landscape</td></tr><tr><td>Material</td><td>.065 in (1.65 mm) aluminum, rust-resistant</td></tr><tr><td>Print</td><td>UV-stable, fade-resistant inks, image sealed into the coating</td></tr><tr><td>Corners</td><td>Rounded</td></tr><tr><td>Mounting</td><td>Four pre-drilled 3/16 in holes, about 3/8 in from each edge</td></tr><tr><td>Weight</td><td>About 0.6 lb per sign</td></tr><tr><td>Use</td><td>Indoor or outdoor</td></tr>{% if sw != '' %}<tr><td>Signal word</td><td>{{ sw }}</td></tr>{% endif %}<tr><td>Standards referenced</td><td>{{ std }}</td></tr>{% if v.sku != blank %}<tr><td>SKU</td><td>{{ v.sku }}</td></tr>{% endif %}<tr><td>Warranty</td><td><a href='/pages/quality-and-warranty'>Five-year outdoor warranty</a></td></tr><tr><td>Origin</td><td>Made in the USA, Amory, Mississippi</td></tr></table><p><a href='https://cdn.shopify.com/s/files/1/0788/2771/6852/files/CGAP-Safety-8x12-Spec-Sheet.pdf' target='_blank' rel='noopener'>Download the spec sheet (PDF)</a> \u00b7 <a href='https://cdn.shopify.com/s/files/1/0788/2771/6852/files/CGAP-Safety-Mounting-Guide.pdf' target='_blank' rel='noopener'>Mounting guide (PDF)</a></p></div></details></div>{% endunless %}"
+          }
+        },
+        "shipping_tab": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Shipping",
+            "icon": "truck",
+            "content": "<p>Every order is guaranteed to ship within 2 business days from Amory, Mississippi. Domestic orders of $35 or more ship free, and quantity orders always ship free.</p><p>Need a delivery date confirmed before you order, or shipping to multiple sites? <a href='/pages/how-to-buy'>How to Buy</a> covers it, or <a href='/pages/contact'>contact us</a>.</p>",
+            "page": ""
+          }
+        },
+        "warranty_tab": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Five-year warranty",
+            "icon": "check_mark",
+            "content": "<p>Every sign is warranted for five years against fading that reduces legibility, peeling or delamination, and rust. If it fails under normal indoor or outdoor conditions, we replace it, shipping included. <a href='/pages/quality-and-warranty'>Quality &amp; Warranty</a> has the terms and the claim steps.</p>",
+            "page": ""
+          }
+        },
+        "b2b_tab": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Quantity pricing, purchase orders & tax-exempt",
+            "icon": "box",
+            "content": "<p><strong>Quantity pricing is automatic.</strong> 5 to 9 signs, 10% off. 10 to 19, 15% off. 20 or more, 20% off. Sign kits already include pack savings, then take another 10%, 15% or 20% when you order 5, 10 or 20 kits. Any mix, applied at checkout, and quantity orders ship free. For large orders, <a href='/pages/request-a-quote'>request a quote</a>.</p><p><strong>Buying for a facility, municipality, or contracting business?</strong> We take purchase orders, net-30 terms, tax-exempt purchasing, and written quotes. <a href='/pages/how-to-buy'>How to Buy</a> covers every option, and government buyers have their own <a href='/pages/government'>page</a>.</p>",
+            "page": ""
+          }
+        },
+        "custom_tab": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Need a sign we do not make?",
+            "icon": "question_mark",
+            "content": "<p>Hyper-specific signage is what we do. Most of our catalog exists because someone had a hazard that generic sign companies do not cover.</p><p>If you cannot find the right sign anywhere, <a href='/pages/custom-safety-signs'>describe the hazard and the wording you need</a>. Custom and short-run work is normal for us, with no minimum.</p>",
+            "page": ""
+          }
+        },
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "Share"
+          }
+        },
+        "bundler_bundler_target_element_FqURRp": {
+          "type": "shopify://apps/bundler-bundles-app/blocks/bundler-target-element/7a6ae1b8-3b16-449b-8429-8bb89a62c664",
+          "settings": {}
+        },
+        "shipby": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{% render 'cgap-shipby' %}"
+          }
+        },
+        "kitcard": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{% render 'cgap-kitcard', product: product %}"
+          }
+        }
+      },
+      "block_order": [
+        "title",
+        "judgeme_badge",
+        "price",
+        "variant_picker",
+        "quantity_selector",
+        "buy_buttons",
+        "shipby",
+        "quote_button",
+        "bulk_note",
+        "kitcard",
+        "description",
+        "guide_link",
+        "spec_tab",
+        "shipping_tab",
+        "warranty_tab",
+        "b2b_tab",
+        "custom_tab",
+        "share",
+        "bundler_bundler_target_element_FqURRp"
+      ],
+      "settings": {
+        "enable_sticky_info": true,
+        "color_scheme": "scheme-1",
+        "media_size": "large",
+        "constrain_to_viewport": true,
+        "media_fit": "contain",
+        "gallery_layout": "stacked",
+        "mobile_thumbnails": "hide",
+        "media_position": "left",
+        "image_zoom": "lightbox",
+        "hide_variants": true,
+        "enable_video_looping": false,
+        "padding_top": 36,
+        "padding_bottom": 12
+      }
+    },
+    "17624469589161d1ce": {
+      "type": "apps",
+      "blocks": {
+        "bundler_custom_bundle_fN3Txc": {
+          "type": "shopify://apps/bundler-bundles-app/blocks/custom-bundle/7a6ae1b8-3b16-449b-8429-8bb89a62c664",
+          "settings": {
+            "shortcode": ""
+          }
+        }
+      },
+      "block_order": [
+        "bundler_custom_bundle_fN3Txc"
+      ],
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "judgeme_reviews": {
+      "type": "apps",
+      "blocks": {
+        "judgeme_review_widget": {
+          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "review_data": "sample_data",
+            "max_width": 1200,
+            "show_shop_reviews": false,
+            "empty_state": "empty_widget"
+          }
+        }
+      },
+      "block_order": [
+        "judgeme_review_widget"
+      ],
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "related-products": {
+      "type": "related-products",
+      "settings": {
+        "heading": "Signs often bought together",
+        "heading_size": "h2",
+        "products_to_show": 4,
+        "columns_desktop": 4,
+        "columns_mobile": "2",
+        "color_scheme": "scheme-1",
+        "image_ratio": "square",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "show_vendor": false,
+        "show_rating": false,
+        "padding_top": 36,
+        "padding_bottom": 28
+      }
+    }
+  },
+  "order": [
+    "main",
+    "17624469589161d1ce",
+    "judgeme_reviews",
+    "related-products"
+  ]
+}
