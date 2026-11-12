@@ -154,7 +154,7 @@
 <div class="sp-bar" id="sp-bar"><div class="sp-bar-in">
   <div class="tot"><b id="sp-bt">$0.00</b><small id="sp-bs"></small></div>
   <button class="sp-btn w" type="button" data-act="pdf">Save or print plan</button>
-  <button class="sp-btn g" type="button" data-act="quote">Request quote / PO</button>
+  <button class="sp-btn g" type="button" data-act="quote">Get quote (PDF)</button>
   <button class="sp-btn" type="button" data-act="cart" id="sp-cartbtn">Add all to cart</button>
 </div></div>
 
@@ -171,8 +171,9 @@
   const API = {{ section.settings.api_url | json }};
   const CUSTOM = {{ section.settings.custom_handle | json }};
   const STORE = {{ shop.name | json }};
-  const TIERS = [[50, 14.99], [25, 15.99], [10, 17.99], [4, 19.99], [2, 26.99], [1, 29.99]];
+  const TIERS = [[20, 23.99], [10, 25.49], [5, 26.99], [1, 29.99]];
   const BASE = 29.99;
+  const QUOTE_AT = 5000;
   const SER = { 'DANGER': ['#C8102E', '#fff'], 'WARNING': ['#F47B20', '#111'], 'CAUTION': ['#FFD100', '#111'], 'NOTICE': ['#005EB8', '#fff'], 'SAFETY FIRST': ['#00843D', '#fff'] };
   const CORE = ['emergency', 'ppe', 'visitor', 'electrical'];
   const SCOPE = { site: 'One for the site', entrance: 'One at each entrance', area: 'One at each area' };
@@ -348,8 +349,10 @@
     const t = totals(); const sv = t.list - t.total;
     const sum = $('#sp-sum'); if (sum) sum.innerHTML = `<div><b>${t.q}</b><small>Signs in plan</small></div><div><b>${Object.keys(st.areas).length}</b><small>Areas covered</small></div><div><b>${money(t.u)}</b><small>Price per sign</small></div><div><b>${money(t.total)}</b><small>${sv > 0 ? 'You save ' + money(sv) : 'Plan total'}</small></div>`;
     const nx = next(t.q), nd = $('#sp-nudge');
-    if (nd) nd.innerHTML = nx && t.q > 0 ? `<div class="sp-nudge">Add <b>${nx.need} more sign${nx.need === 1 ? '' : 's'}</b> and every sign in your order drops to <b>${money(nx.price)}</b>. <button class="sp-ic" type="button" id="sp-addmore">Add spares to my plan</button></div>` : '';
+    if (nd) nd.innerHTML = (nx && t.q > 0 ? `<div class="sp-nudge">Add <b>${nx.need} more sign${nx.need === 1 ? '' : 's'}</b> and every sign in your order drops to <b>${money(nx.price)}</b>. <button class="sp-ic" type="button" id="sp-addmore">Add spares to my plan</button></div>` : '')
+      + (t.total > QUOTE_AT ? `<div class="sp-nudge">Over ${money(QUOTE_AT)}, most public buyers need a <b>written quote</b> on file. Download a formal PDF quote for this plan in one step. <button class="sp-ic" type="button" id="sp-qnudge">Download quote (PDF)</button></div>` : '');
     const am = $('#sp-addmore'); if (am) am.addEventListener('click', () => { spares(nx.need); });
+    const qn = $('#sp-qnudge'); if (qn) qn.addEventListener('click', quoteDlg);
     $('#sp-bt').textContent = money(t.total);
     $('#sp-bs').textContent = `${t.q} signs at ${money(t.u)} each` + (t.list > t.total ? ` (list ${money(t.list)})` : '') + '. Volume price applies in cart.';
     $('#sp-cartbtn').textContent = `Add all ${t.q} to cart`;
@@ -416,20 +419,120 @@
       <h2>Order summary</h2><p>${d.signs} signs at ${money(d.unit)} each = <b>${money(d.total)}</b> (8x12 aluminum). Reopen or order this plan: ${esc(d.url)}</p>`;
     setTimeout(() => window.print(), 60);
   }
+  // Formal written quote, built in the browser as a PDF so a buyer can file it or attach it to a PO request.
+  const loadPdf = () => window.jspdf ? Promise.resolve(window.jspdf) : new Promise((ok, bad) => {
+    const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.onload = () => (window.jspdf ? ok(window.jspdf) : bad(new Error('pdf lib'))); s.onerror = bad; document.head.appendChild(s);
+  });
+  const quoteNo = () => { const d = new Date(), p = (n) => String(n).padStart(2, '0'); return 'Q' + String(d.getFullYear()).slice(2) + p(d.getMonth() + 1) + p(d.getDate()) + '-' + Math.random().toString(36).slice(2, 6).toUpperCase(); };
+  async function quotePdf(info, qn) {
+    const { jsPDF } = await loadPdf();
+    const d = planData(), t = totals(), u = t.u;
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+    const W = 612, H = 792, M = 40, G = [23, 63, 36], O = [224, 115, 26], INK = [20, 24, 26], MUT = [93, 102, 96];
+    const now = new Date(), until = new Date(now.getTime() + 30 * 864e5);
+    const fdt = (x) => x.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const clean = (s) => String(s ?? '').replace(/[–—]/g, '-').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[^\x20-\x7E\xA0-\xFF]/g, '');
+    const color = (c) => doc.setTextColor(c[0], c[1], c[2]);
+    // Header band
+    doc.setFillColor(...G); doc.rect(0, 0, W, 88, 'F'); doc.setFillColor(...O); doc.rect(0, 88, W, 4, 'F');
+    doc.setTextColor(255); doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.text(clean(STORE).toUpperCase(), M, 42);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+    doc.text('Facility safety signs, made to order in Amory, Mississippi', M, 60);
+    doc.text(location.host + '   Info@cgapindustries.com', M, 74);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.text('QUOTATION', W - M, 42, { align: 'right' });
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+    doc.text('Quote no. ' + qn, W - M, 60, { align: 'right' }); doc.text('Date: ' + fdt(now), W - M, 74, { align: 'right' });
+    // Prepared for / quote details
+    let y = 118;
+    color(MUT); doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.text('PREPARED FOR', M, y); doc.text('QUOTE DETAILS', 330, y);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); color(INK);
+    const who = [info.name, info.company, info.email, info.phone].filter(Boolean).map(clean);
+    who.forEach((l, i) => doc.text(l, M, y + 16 + i * 14));
+    const det = [['Valid through', fdt(until)], ['Site plan', clean(d.facility)], ['Signs', String(t.q)], ['Price per sign', money(u)]];
+    det.forEach(([k, v], i) => { color(MUT); doc.text(k, 330, y + 16 + i * 14); color(INK); doc.text(v, W - M, y + 16 + i * 14, { align: 'right' }); });
+    y += 16 + Math.max(who.length, det.length) * 14 + 4;
+    if (info.note) { const nl = doc.splitTextToSize('Notes: ' + clean(info.note), W - 2 * M); color(MUT); doc.setFontSize(9); doc.text(nl, M, y + 6); y += nl.length * 12 + 6; doc.setFontSize(10); }
+    // Line items
+    const items = [
+      ...d.rows.map((r) => ({ item: `${r.series} ${r.sign} Sign, 8x12 aluminum`, sub: `${location.host}/products/${r.handle}`, area: `${r.area}: ${r.slot}`, qty: r.qty })),
+      ...d.custom.map((c) => ({ item: `${c.header} custom sign: ${c.text}`, sub: 'Made to your wording, proof before production', area: c.area || 'General', qty: c.qty })),
+    ];
+    const C = { n: M, item: M + 22, area: M + 290, qty: M + 432, unit: M + 480, amt: W - M };
+    const head = () => {
+      doc.setFillColor(238, 244, 239); doc.rect(M, y, W - 2 * M, 20, 'F');
+      color(G); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+      doc.text('#', C.n + 4, y + 13); doc.text('ITEM', C.item, y + 13); doc.text('AREA', C.area, y + 13);
+      doc.text('QTY', C.qty, y + 13, { align: 'right' }); doc.text('UNIT', C.unit, y + 13, { align: 'right' }); doc.text('AMOUNT', C.amt, y + 13, { align: 'right' });
+      y += 26; doc.setFont('helvetica', 'normal');
+    };
+    y += 14; head();
+    items.forEach((it, i) => {
+      doc.setFontSize(9.5);
+      const il = doc.splitTextToSize(clean(it.item), 260), al = doc.splitTextToSize(clean(it.area), 128);
+      const hgt = Math.max(il.length * 12 + 11, al.length * 11) + 8;
+      if (y + hgt > H - 70) { doc.addPage(); y = 50; head(); doc.setFontSize(9.5); }
+      color(MUT); doc.text(String(i + 1), C.n + 4, y + 2);
+      color(INK); doc.text(il, C.item, y + 2);
+      color(MUT); doc.setFontSize(7.5); doc.text(clean(it.sub).slice(0, 70), C.item, y + 2 + il.length * 12);
+      doc.setFontSize(8.5); doc.text(al, C.area, y + 2);
+      doc.setFontSize(9.5); color(INK);
+      doc.text(String(it.qty), C.qty, y + 2, { align: 'right' }); doc.text(money(u), C.unit, y + 2, { align: 'right' }); doc.text(money(it.qty * u), C.amt, y + 2, { align: 'right' });
+      y += hgt; doc.setDrawColor(227, 230, 224); doc.line(M, y - 8, W - M, y - 8);
+    });
+    // Totals
+    if (y + 110 > H - 70) { doc.addPage(); y = 50; }
+    const tot = [['List price (' + t.q + ' x ' + money(BASE) + ')', money(t.list)], ...(t.list > t.total ? [['Volume pricing, ' + t.q + ' signs at ' + money(u) + ' each', '-' + money(t.list - t.total)]] : []), ['Shipping', 'Included'], ['Sales tax', 'Not included; exempt orders welcome']];
+    doc.setFontSize(9.5);
+    tot.forEach(([k, v]) => { color(MUT); doc.text(k, 330, y + 4); color(INK); doc.text(v, W - M, y + 4, { align: 'right' }); y += 15; });
+    doc.setFillColor(...G); doc.rect(320, y - 2, W - M - 320, 26, 'F');
+    doc.setTextColor(255); doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
+    doc.text('Quote total', 330, y + 15); doc.text(money(t.total), W - M - 8, y + 15, { align: 'right' });
+    y += 46;
+    // Terms
+    const terms = [
+      'Prices are firm for 30 days, through ' + fdt(until) + '.',
+      'Payment by purchase order (net 30 for government agencies and approved accounts), credit card or purchasing card. Tax-exempt orders welcome with a certificate.',
+      'Every order ships within 2 business days of order from Amory, Mississippi. Shipping is included.',
+      'Each sign: 8 x 12 in, .065 rust-resistant aluminum, UV-stable print, pre-drilled corners. Five-year outdoor warranty.',
+      'To order: email your PO to Info@cgapindustries.com with quote no. ' + qn + ', or order online from your plan link below.',
+    ];
+    if (y + 150 > H - 60) { doc.addPage(); y = 50; }
+    color(G); doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.text('TERMS', M, y); y += 14;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); color(INK);
+    terms.forEach((tx) => { const l = doc.splitTextToSize(tx, W - 2 * M - 12); doc.text('-', M, y); doc.text(l, M + 12, y); y += l.length * 12 + 3; });
+    y += 18; color(INK); doc.setFontSize(9.5);
+    doc.line(M, y, M + 200, y); doc.line(M + 230, y, M + 360, y); doc.line(M + 390, y, W - M, y);
+    color(MUT); doc.setFontSize(8); doc.text('Accepted by', M, y + 11); doc.text('Date', M + 230, y + 11); doc.text('PO number', M + 390, y + 11);
+    // Footer on every page
+    const n = doc.getNumberOfPages();
+    for (let p = 1; p <= n; p++) {
+      doc.setPage(p); doc.setFontSize(7.5); color(MUT);
+      doc.text(doc.splitTextToSize('Plan link: ' + d.url, W - 2 * M - 90)[0], M, H - 28);
+      doc.text(`Quote ${qn}   Page ${p} of ${n}`, W - M, H - 28, { align: 'right' });
+    }
+    doc.save(`CGAP-Safety-Quote-${qn}.pdf`);
+  }
   function quoteDlg() {
     const t = totals();
-    openDlg(`<h3>Request a quote or pay by PO</h3><p>We'll send a formal quote for these ${t.q} signs (est. ${money(t.total)}) and can invoice against your purchase order.</p>
-      <form id="sp-f"><div class="sp-2"><label class="sp-f"><span>Name</span><input name="name" required autocomplete="name"></label><label class="sp-f"><span>Company</span><input name="company" required autocomplete="organization"></label></div>
+    openDlg(`<h3>Get a formal quote (PDF)</h3><p>A written quote for these ${t.q} signs (${money(t.total)}) downloads right away, ready for your purchasing file or PO. Prices hold for 30 days and we get a copy too.${t.total > QUOTE_AT ? ' Orders over ' + money(QUOTE_AT) + ' usually need a written quote, so this is the one to file.' : ''}</p>
+      <form id="sp-f"><div class="sp-2"><label class="sp-f"><span>Name</span><input name="name" required autocomplete="name"></label><label class="sp-f"><span>Organization</span><input name="company" required autocomplete="organization"></label></div>
       <div class="sp-2"><label class="sp-f"><span>Email</span><input type="email" name="email" required autocomplete="email"></label><label class="sp-f"><span>Phone</span><input name="phone" autocomplete="tel"></label></div>
-      <label class="sp-f"><span>PO number, ship-to address, deadline or changes (optional)</span><textarea name="note"></textarea></label>
-      <div class="sp-err" id="sp-e"></div><button class="sp-btn g" type="submit" style="width:100%">Send quote request</button></form>`);
+      <label class="sp-f"><span>Ship-to address, PO number or deadline (optional, printed on the quote)</span><textarea name="note"></textarea></label>
+      <div class="sp-err" id="sp-e"></div><button class="sp-btn g" type="submit" style="width:100%">Download quote PDF</button></form>`);
     $('#sp-f').addEventListener('submit', async (e) => {
       e.preventDefault(); const fd = Object.fromEntries(new FormData(e.target));
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(fd.email)) { $('#sp-e').textContent = 'Enter a valid email.'; return; }
-      e.target.querySelector('button').disabled = true; e.target.querySelector('button').textContent = 'Sending...';
-      const ok = await lead('quote', fd);
-      dlg.innerHTML = `<button class="x" type="button" aria-label="Close">&times;</button><h3>Request received</h3><div class="sp-ok">${ok ? 'Thanks. We have your plan and will reply with a quote, usually within one business day.' : 'Thanks. If you do not hear back within one business day, email us with your plan link.'}</div><p style="margin-top:1.4rem">Your plan link: <a href="${esc(location.href)}">${esc(location.href.slice(0, 80))}...</a></p>`;
+      const btn = e.target.querySelector('button'); btn.disabled = true; btn.textContent = 'Building your quote...';
+      const qn = quoteNo();
+      const sent = lead('quote', { ...fd, note: `Quote ${qn} (PDF downloaded by buyer). ` + (fd.note || '') });
+      let made = true;
+      try { await quotePdf(fd, qn); } catch (err) { made = false; }
+      const ok = await sent;
+      dlg.innerHTML = `<button class="x" type="button" aria-label="Close">&times;</button><h3>${made ? 'Quote ' + esc(qn) + ' downloaded' : 'Quote request received'}</h3><div class="sp-ok">${made ? 'Your PDF quote is in your downloads. ' : 'The PDF could not be built on this device, so we will email your quote instead. '}${ok ? 'We have a copy and can invoice against your PO.' : 'If you need anything changed, email Info@cgapindustries.com with the quote number.'}</div>
+        <p style="margin-top:1.4rem">To order, email your PO to <a href="mailto:Info@cgapindustries.com?subject=PO%20for%20quote%20${esc(qn)}">Info@cgapindustries.com</a> or <button class="sp-link" type="button" id="sp-q2c">add the plan to your cart</button>.</p>`;
       dlg.querySelector('.x').addEventListener('click', closeDlg);
+      $('#sp-q2c').addEventListener('click', () => { closeDlg(); toCart(); });
     });
   }
 
