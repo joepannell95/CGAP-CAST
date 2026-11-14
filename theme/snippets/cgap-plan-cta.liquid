@@ -61,6 +61,45 @@
       assign pf = 'retail'
     endif
     endif
+    if pf == ''
+      for t in product.tags
+        if t contains 'Industry: '
+          case t
+            when 'Industry: Restaurants and Bars'
+              assign pf = 'kitchen'
+            when 'Industry: Hospitals and Healthcare'
+              assign pf = 'lab'
+            when 'Industry: Labs and Research'
+              assign pf = 'lab'
+            when 'Industry: Schools and Universities'
+              assign pf = 'school'
+            when 'Industry: Apartments and Residential'
+              assign pf = 'school'
+            when 'Industry: Agriculture and Farms'
+              assign pf = 'farm'
+            when 'Industry: Automotive and Fleet'
+              assign pf = 'auto'
+            when 'Industry: Warehouses and Logistics'
+              assign pf = 'warehouse'
+            when 'Industry: Construction and Trades'
+              assign pf = 'construction'
+            when 'Industry: Manufacturing and Industrial'
+              assign pf = 'mfg'
+            when 'Industry: Food and Beverage Production'
+              assign pf = 'mfg'
+            when 'Industry: Oil Gas Mining and Chemical'
+              assign pf = 'oil_chem'
+            when 'Industry: Energy Utilities and Telecom'
+              assign pf = 'utility'
+            when 'Industry: Offices and Commercial Property'
+              assign pf = 'office'
+            when 'Industry: Retail and Personal Services'
+              assign pf = 'retail'
+          endcase
+          break
+        endif
+      endfor
+    endif
   else
     assign keys = collection.handle
   endif
