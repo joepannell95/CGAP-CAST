@@ -108,9 +108,37 @@
   .sp-res button{all:unset;cursor:pointer;display:block;width:100%;box-sizing:border-box;padding:1rem 1.2rem;border-bottom:1px solid #eef0ec;font-size:1.4rem}
   .sp-res button:hover{background:#f6f7f4}
   .sp-res small{display:block;color:var(--mut);font-size:1.15rem}
+  .sp-h3{font-family:var(--font-heading-family);text-transform:uppercase;font-size:1.6rem;letter-spacing:.04em;color:var(--g);margin:2.6rem 0 1rem}
+  .sp-h3:first-of-type{margin-top:0}
+  .sp-goals{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem}
+  .sp-goals button,.sp-chips button{all:unset;cursor:pointer;box-sizing:border-box;border:2px solid var(--ln);border-radius:8px;padding:1.3rem 1.4rem;background:#fff;transition:all .15s}
+  .sp-goals button b{display:block;font-size:1.5rem;line-height:1.3}
+  .sp-goals button small{display:block;color:var(--mut);font-size:1.25rem;line-height:1.4;margin-top:.3rem}
+  .sp-goals button:hover,.sp-chips button:hover{border-color:var(--o)}
+  .sp-goals button[aria-pressed=true],.sp-chips button[aria-pressed=true]{border-color:var(--g);background:#eef4ef;box-shadow:inset 0 0 0 1px var(--g)}
+  .sp-chips{display:flex;flex-wrap:wrap;gap:.8rem}
+  .sp-chips button{padding:1rem 1.6rem;font-weight:700;font-size:1.4rem;border-radius:40px}
+  .sp-qs{display:grid;grid-template-columns:repeat(2,1fr);gap:.9rem}
+  .sp-q{display:flex;align-items:center;gap:1.2rem;border:1px solid var(--ln);border-radius:8px;padding:1.1rem 1.3rem;background:#fff}
+  .sp-q>span{flex:1;font-weight:700;font-size:1.42rem;line-height:1.3}
+  .sp-q small{display:block;font-weight:400;color:var(--mut);font-size:1.2rem;line-height:1.4;margin-top:.2rem}
+  .sp-yn{display:inline-flex;border:1px solid #cfd4cc;border-radius:6px;overflow:hidden;flex:none}
+  .sp-yn button{all:unset;cursor:pointer;padding:.7rem 1.3rem;font-weight:700;font-size:1.3rem;color:var(--g)}
+  .sp-yn button[aria-pressed=true]{background:var(--g);color:#fff}
+  .sp-pri{font-size:1rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .6rem;border-radius:2px;border:1px solid}
+  .sp-pri.p1{background:#fdecea;color:#9b1c13;border-color:#f2b8b3}
+  .sp-pri.p2{background:#eef4ef;color:var(--g);border-color:#bcd3c1}
+  .sp-pri.p3{background:#f4f4f1;color:#5d6660;border-color:#dcdfd8}
+  .sp-why{grid-column:1/-1;background:#f9faf7;border-left:3px solid var(--o);padding:.9rem 1.2rem;font-size:1.3rem;line-height:1.5;color:#333;border-radius:0 6px 6px 0}
+  .sp-why b{color:var(--g)}
+  .sp-tools{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;margin:0 0 1.6rem;font-size:1.35rem;color:var(--mut)}
+  .sp-banner{background:#eef4ef;border:1px solid #bcd3c1;border-radius:8px;padding:1.3rem 1.6rem;margin:0 0 1.6rem;font-size:1.45rem;line-height:1.5}
+  .sp-banner b{color:var(--g)}
   #sp-print{display:none}
   @media (max-width:989px){
     .sp-fac{grid-template-columns:1fr 1fr}
+    .sp-goals,.sp-qs{grid-template-columns:1fr}
+    .sp-q{flex-wrap:wrap}
     .sp-areas{grid-template-columns:1fr}
     .sp-sum{grid-template-columns:1fr 1fr}
     .sp-row{grid-template-columns:72px minmax(0,1fr);gap:1rem;padding:1.2rem}
@@ -144,7 +172,7 @@
       <div class="sp-eb"><i></i>{{ section.settings.eyebrow }}</div>
       <h1>{{ section.settings.heading }}</h1>
       <p>{{ section.settings.subheading }}</p>
-      <div class="sp-steps" id="sp-steps"><span data-s="0">1. Your site</span><span data-s="1">2. Your areas</span><span data-s="2">3. Your sign plan</span></div>
+      <div class="sp-steps" id="sp-steps"><span data-s="0">1. Your site</span><span data-s="1">2. Site details</span><span data-s="2">3. Your areas</span><span data-s="3">4. Your sign plan</span></div>
     </div>
     <div class="sp-stripe"></div>
   </header>
@@ -175,7 +203,6 @@
   const BASE = 29.99;
   const QUOTE_AT = 5000;
   const SER = { 'DANGER': ['#C8102E', '#fff'], 'WARNING': ['#F47B20', '#111'], 'CAUTION': ['#FFD100', '#111'], 'NOTICE': ['#005EB8', '#fff'], 'SAFETY FIRST': ['#00843D', '#fff'] };
-  const CORE = ['emergency', 'ppe', 'visitor', 'electrical'];
   const SCOPE = { site: 'One for the site', entrance: 'One at each entrance', area: 'One at each area' };
   const $ = (s, r = document) => r.querySelector(s);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -189,33 +216,87 @@
   const ADMIN = window.CGAP_PIN || null;
   let M = null, PINS = new Set();
   const pinKey = (f, k, sku) => f + '|' + k + '|' + sku;
-  const st = { step: 0, fac: null, areas: {}, entrances: 1, rows: [], custom: [] };
+  const GOALS = [
+    ['new', 'Outfitting a new or empty site', 'Every sign the site needs, from the door in.'],
+    ['inspect', 'Getting ready for an inspection', 'Code-cited signs first. Extras start switched off.'],
+    ['audit', 'Fixing audit or insurance findings', 'Close the gaps with code-cited and recommended signs.'],
+    ['replace', 'Replacing faded or missing signs', 'A full list to check against what is on the walls.'],
+    ['expand', 'Adding a new area or line', 'Plan just the new space. Uncheck the rest next step.'],
+  ];
+  const BUDGETS = [[0, 'No limit'], [500, 'Under $500 (P-card)'], [2500, 'Under $2,500'], [5000, 'Under $5,000']];
+  const PRI = { 1: ['p1', 'Code-cited'], 2: ['p2', 'Recommended'], 3: ['p3', 'Good practice'] };
+  const st = { step: 0, fac: null, goal: 'new', budget: 0, ans: {}, areas: {}, entrances: 1, rows: [], custom: [], cut: 0, onlyReq: false };
 
-  // URL state so a plan can be shared or reopened: ?f=warehouse&a=forklift.2,dock.3&e=2
+  // URL state so a plan can be shared or reopened: ?f=warehouse&g=inspect&b=500&q=ext.6,dock.4&a=forklift.2,dock.3&e=2
   function readUrl() {
     const u = new URLSearchParams(location.search);
-    const f = u.get('f'); if (f && M.facilities.some((x) => x.code === f)) { st.fac = f; st.step = 1; }
+    const f = u.get('f'); if (f && M.facilities.some((x) => x.code === f)) { st.fac = f; st.step = 1; defaults(); }
+    const g = u.get('g'); if (g && GOALS.some((x) => x[0] === g)) st.goal = g;
+    const b = Number(u.get('b')); if (BUDGETS.some((x) => x[0] === b)) st.budget = b;
+    const q = u.get('q'); if (q && st.fac) q.split(',').forEach((p) => { const [k, n] = p.split('.'); if (qsFor().some((x) => x.code === k)) st.ans[k] = Math.max(0, Math.min(999, Number(n) || 0)); });
     const a = u.get('a');
-    if (a && st.fac) { st.areas = {}; a.split(',').forEach((p) => { const [k, n] = p.split('.'); if (M.areas[k]) st.areas[k] = Math.max(1, Math.min(50, Number(n) || 1)); }); st.step = 2; }
-    else if (st.fac) defaults();
+    if (a && st.fac) { st.areas = {}; a.split(',').forEach((p) => { const [k, n] = p.split('.'); if (M.areas[k]) st.areas[k] = Math.max(1, Math.min(50, Number(n) || 1)); }); st.step = 3; }
+    else if (q && st.fac) st.step = 2;
     const e = Number(u.get('e')); if (e) st.entrances = Math.max(1, Math.min(20, e));
   }
   function writeUrl() {
     const u = new URLSearchParams();
     if (st.fac) u.set('f', st.fac);
-    if (st.step >= 2) { u.set('a', Object.entries(st.areas).map(([k, n]) => k + '.' + n).join(',')); u.set('e', st.entrances); }
+    if (st.step >= 2) { u.set('g', st.goal); if (st.budget) u.set('b', st.budget); u.set('q', Object.entries(st.ans).map(([k, n]) => k + '.' + n).join(',')); u.set('e', st.entrances); }
+    if (st.step >= 3) u.set('a', Object.entries(st.areas).map(([k, n]) => k + '.' + n).join(','));
     history.replaceState(null, '', location.pathname + (u.toString() ? '?' + u : ''));
   }
   const fac = () => M.facilities.find((x) => x.code === st.fac);
-  function defaults() { st.areas = {}; (fac()?.areas || []).forEach((a) => { st.areas[a] = 1; }); }
+  const qsFor = () => (M.questions || []).filter((q) => !q.facs || q.facs.includes(st.fac));
+  const qDef = (q) => (q.fdef && st.fac in q.fdef ? q.fdef[st.fac] : (q.def || 0));
+  function defaults() {
+    st.areas = {}; (fac()?.areas || []).forEach((a) => { st.areas[a] = 1; });
+    st.ans = {}; qsFor().forEach((q) => { st.ans[q.code] = qDef(q); });
+  }
+  // Answers switch areas on or off: a yes or a count above zero turns the area on, zero turns it off.
+  function applyAnswers() {
+    qsFor().forEach((q) => { if (!q.area || !M.areas[q.area]) return; if ((st.ans[q.code] || 0) > 0) st.areas[q.area] = st.areas[q.area] || 1; else delete st.areas[q.area]; });
+  }
 
   function steps() { document.querySelectorAll('#sp-steps span').forEach((s) => { const i = +s.dataset.s; s.className = i === st.step ? 'on' : i < st.step ? 'done' : ''; }); }
-  function show(step) { st.step = step; steps(); writeUrl(); bar.classList.toggle('on', step === 2); [view0, view1, view2][step](); window.scrollTo({ top: Math.max(0, $('#sp').offsetTop - 20), behavior: 'smooth' }); }
+  function show(step) { st.step = step; steps(); writeUrl(); bar.classList.toggle('on', step === 3); [view0, viewQ, view1, view2][step](); window.scrollTo({ top: Math.max(0, $('#sp').offsetTop - 20), behavior: 'smooth' }); }
 
   function view0() {
-    main.innerHTML = `<div class="sp-card"><h2>What kind of site is it?</h2><p class="s">Pick the closest match. You can add any area in the next step.</p>
+    main.innerHTML = `<div class="sp-card"><h2>What kind of site is it?</h2><p class="s">Pick the closest match. You can add any area later.</p>
       <div class="sp-fac">${M.facilities.map((f) => `<button type="button" data-f="${esc(f.code)}" aria-pressed="${f.code === st.fac}"><i></i>${esc(f.name)}</button>`).join('')}</div></div>`;
-    main.querySelectorAll('[data-f]').forEach((b) => b.addEventListener('click', () => { st.fac = b.dataset.f; defaults(); show(1); }));
+    main.querySelectorAll('[data-f]').forEach((b) => b.addEventListener('click', () => { if (st.fac !== b.dataset.f) { st.fac = b.dataset.f; defaults(); } show(1); }));
+  }
+
+  const counter = (id, n) => `<div class="sp-qty" data-qid="${esc(id)}"><button type="button" data-d="-1" aria-label="Fewer">&minus;</button><span>${n}</span><button type="button" data-d="1" aria-label="More">+</button></div>`;
+  const yesno = (id, on) => `<div class="sp-yn" data-yn="${esc(id)}"><button type="button" data-v="1" aria-pressed="${!!on}">Yes</button><button type="button" data-v="0" aria-pressed="${!on}">No</button></div>`;
+  function viewQ() {
+    const f = fac(), qs = qsFor();
+    const site = qs.filter((q) => !q.facs), mine = qs.filter((q) => q.facs);
+    const qHtml = (q) => `<div class="sp-q"><span>${esc(q.label)}<small>${esc(q.help || '')}</small></span>${q.kind === 'yesno' ? yesno(q.code, st.ans[q.code] > 0) : counter(q.code, st.ans[q.code] || 0)}</div>`;
+    main.innerHTML = `<div class="sp-card"><h2>${esc(f.name)}: tell us about it</h2><p class="s">A few counts let us size the plan to your site instead of guessing. Best guesses are fine. You can change every number on the plan.</p>
+      <h3 class="sp-h3">What's driving this?</h3>
+      <div class="sp-goals">${GOALS.map(([c, t, d]) => `<button type="button" data-g="${c}" aria-pressed="${st.goal === c}"><b>${esc(t)}</b><small>${esc(d)}</small></button>`).join('')}</div>
+      <h3 class="sp-h3">Budget</h3>
+      <div class="sp-chips">${BUDGETS.map(([v, l]) => `<button type="button" data-b="${v}" aria-pressed="${st.budget === v}">${esc(l)}</button>`).join('')}</div>
+      <h3 class="sp-h3">${esc(f.name)} specifics</h3>
+      <div class="sp-qs"><div class="sp-q"><span>Entrances, gates and building doors<small>Visitor, PPE and keep-out signs go at each one people use.</small></span>${counter('__ent', st.entrances)}</div>${mine.map(qHtml).join('')}</div>
+      <h3 class="sp-h3">Emergency gear, exits and people</h3>
+      <div class="sp-qs">${site.map(qHtml).join('')}</div>
+      <div class="sp-nav"><button class="sp-link" type="button" id="sp-back">&larr; Change site type</button><button class="sp-btn" type="button" id="sp-next">Next: check my areas &rarr;</button></div></div>`;
+    main.querySelectorAll('[data-g]').forEach((b) => b.addEventListener('click', () => { st.goal = b.dataset.g; main.querySelectorAll('[data-g]').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); }));
+    main.querySelectorAll('[data-b]').forEach((b) => b.addEventListener('click', () => { st.budget = Number(b.dataset.b); main.querySelectorAll('[data-b]').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); }));
+    main.querySelectorAll('[data-qid]').forEach((el) => {
+      const id = el.dataset.qid, q = qs.find((x) => x.code === id), max = id === '__ent' ? 20 : (q && q.max) || 99;
+      el.querySelectorAll('[data-d]').forEach((b) => b.addEventListener('click', () => {
+        if (id === '__ent') { st.entrances = Math.max(1, Math.min(max, st.entrances + Number(b.dataset.d))); el.querySelector('span').textContent = st.entrances; return; }
+        st.ans[id] = Math.max(0, Math.min(max, (st.ans[id] || 0) + Number(b.dataset.d))); el.querySelector('span').textContent = st.ans[id];
+      }));
+    });
+    main.querySelectorAll('[data-yn]').forEach((el) => el.querySelectorAll('[data-v]').forEach((b) => b.addEventListener('click', () => {
+      st.ans[el.dataset.yn] = Number(b.dataset.v); el.querySelectorAll('[data-v]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    })));
+    $('#sp-back').addEventListener('click', () => show(0));
+    $('#sp-next').addEventListener('click', () => { applyAnswers(); show(2); });
   }
 
   function areaRow(code) {
@@ -226,55 +307,73 @@
   }
   function view1() {
     const f = fac(); const mine = f.areas; const rest = Object.keys(M.areas).filter((k) => !mine.includes(k)).sort((x, y) => M.areas[x].ord - M.areas[y].ord);
-    main.innerHTML = `<div class="sp-card"><h2>${esc(f.name)}: which areas do you have?</h2><p class="s">We checked the areas most ${esc(f.name.toLowerCase())}s have. Uncheck what you don't have and set how many of each.</p>
-      <div class="sp-site"><div><span>Entrances and gates<small>Visitor, PPE and keep-out signs go at each</small></span><div class="sp-qty" id="sp-ent"><button type="button" data-d="-1" aria-label="Fewer">&minus;</button><span>${st.entrances}</span><button type="button" data-d="1" aria-label="More">+</button></div></div></div>
+    main.innerHTML = `<div class="sp-card"><h2>${esc(f.name)}: which areas do you have?</h2><p class="s">We checked the areas your answers point to. Uncheck what you don't have and set how many of each. Equipment you counted on the last step is already sized.</p>
       <div class="sp-areas" id="sp-mine">${mine.map(areaRow).join('')}</div>
       <details class="sp-more" ${rest.some((k) => k in st.areas) ? 'open' : ''}><summary>+ Add other areas (${rest.length})</summary><div class="sp-areas">${rest.map(areaRow).join('')}</div></details>
-      <div class="sp-nav"><button class="sp-link" type="button" id="sp-back">&larr; Change site type</button><button class="sp-btn" type="button" id="sp-build">Build my sign plan &rarr;</button></div></div>`;
+      <div class="sp-nav"><button class="sp-link" type="button" id="sp-back">&larr; Site details</button><button class="sp-btn" type="button" id="sp-build">Build my sign plan &rarr;</button></div></div>`;
     main.querySelectorAll('.sp-area').forEach((el) => {
       const code = el.dataset.a, cb = el.querySelector('input');
       cb.addEventListener('change', () => { if (cb.checked) st.areas[code] = st.areas[code] || 1; else delete st.areas[code]; el.classList.toggle('on', cb.checked); upd(); });
       el.querySelectorAll('[data-d]').forEach((b) => b.addEventListener('click', () => { st.areas[code] = Math.max(1, Math.min(50, (st.areas[code] || 1) + Number(b.dataset.d))); el.querySelector('.sp-qty span').textContent = st.areas[code]; }));
     });
-    $('#sp-ent').querySelectorAll('[data-d]').forEach((b) => b.addEventListener('click', () => { st.entrances = Math.max(1, Math.min(20, st.entrances + Number(b.dataset.d))); $('#sp-ent span').textContent = st.entrances; }));
     const upd = () => { $('#sp-build').disabled = !Object.keys(st.areas).length; };
     upd();
-    $('#sp-back').addEventListener('click', () => show(0));
-    $('#sp-build').addEventListener('click', () => { build(); show(2); });
+    $('#sp-back').addEventListener('click', () => show(1));
+    $('#sp-build').addEventListener('click', () => { build(); show(3); });
   }
 
   // Turn answers into rows: one per sign slot, best pick first, never the same sign twice.
+  // Quantities come from the counts asked on the details step when there is one, otherwise from the slot's scope.
   function build() {
     const picks = (M.picks[st.fac] || {}), any = M.picks.any || {};
+    const set = {}, add = {};
+    qsFor().forEach((q) => { const n = st.ans[q.code] || 0; (q.slots || []).forEach((k) => { set[k] = (set[k] || 0) + n; }); (q.adds || []).forEach((k) => { add[k] = (add[k] || 0) + n; }); });
     const used = new Set(); const rows = [];
     const order = Object.keys(st.areas).sort((x, y) => (fac().areas.indexOf(x) + 1 || 99) - (fac().areas.indexOf(y) + 1 || 99) || M.areas[x].ord - M.areas[y].ord);
     for (const a of order) for (const k of (M.areas[a].slots || [])) {
       const alts = [...(picks[k] || []), ...(any[k] || [])].filter((s, i, arr) => M.signs[s] && arr.indexOf(s) === i);
       if (!alts.length) continue;
       const sl = M.slots[k];
-      const qty = sl.scope === 'site' ? 1 : sl.scope === 'entrance' ? st.entrances : st.areas[a];
+      let qty = k in set ? set[k] : (sl.scope === 'site' ? 1 : sl.scope === 'entrance' ? st.entrances : st.areas[a]);
+      qty += add[k] || 0;
+      if (qty <= 0) continue;
       const i = Math.max(0, alts.findIndex((s) => !used.has(s)));
       used.add(alts[i]);
-      rows.push({ area: a, k, alts, i, qty, on: true, v: null, price: null });
+      const pri = sl.pri || 2;
+      // For inspections and audits, good-practice signs start switched off so the list leads with what gets cited.
+      const off = pri === 3 && (st.goal === 'inspect' || st.goal === 'audit');
+      rows.push({ area: a, k, alts, i, qty, on: !off, opt: off, pri, v: null, price: null });
     }
-    st.rows = rows;
+    rows.sort((x, y) => order.indexOf(x.area) - order.indexOf(y.area) || x.pri - y.pri);
+    st.rows = rows; st.cut = 0;
+    fit();
+  }
+  // Keep the plan under the chosen budget by switching off whole lines, good practice first, then recommended. Code-cited signs always stay.
+  function fit() {
+    if (!st.budget) return;
+    for (const p of [3, 2]) {
+      const pool = st.rows.filter((r) => r.on && r.pri === p).sort((x, y) => y.qty - x.qty);
+      for (const r of pool) { if (totals().total <= st.budget) return; r.on = false; r.cut = true; st.cut++; }
+    }
   }
 
   const totals = () => {
     const live = st.rows.filter((r) => r.on && r.qty > 0 && r.v !== false);
     const q = live.reduce((s, r) => s + r.qty, 0) + st.custom.reduce((s, c) => s + c.qty, 0);
     const u = unit(q);
-    return { q, u, total: q * u, list: q * BASE, lines: live.length + st.custom.length };
+    return { q, u, total: q * u, list: q * BASE, lines: live.length + st.custom.length, req: live.filter((r) => r.pri === 1).reduce((s, r) => s + r.qty, 0) };
   };
 
   function rowHtml(r, idx) {
-    const s = M.signs[r.alts[r.i]] || {}, sl = M.slots[r.k], c = SER[s.c] || SER.NOTICE;
-    return `<div class="sp-row${r.on ? '' : ' off'}" data-r="${idx}">
+    const s = M.signs[r.alts[r.i]] || {}, sl = M.slots[r.k], c = SER[s.c] || SER.NOTICE, pr = PRI[r.pri] || PRI[2];
+    const hide = st.onlyReq && r.pri !== 1;
+    return `<div class="sp-row${r.on ? '' : ' off'}" data-r="${idx}"${hide ? ' hidden' : ''}>
       <div class="sp-th"><img alt="" data-h="${esc(s.h)}"><span class="ph" style="background:${c[0]};color:${c[1]}">${esc(s.c)}</span></div>
       <div class="sp-tx"><div class="k">${esc(sl.label)}</div><a href="/products/${encodeURIComponent(s.h)}" target="_blank" rel="noopener">${esc(s.s)} Sign</a>
-        <div class="m"><span class="sp-tag" style="background:${c[0]};color:${c[1]}">${esc(s.c)}</span><span>${esc(SCOPE[sl.scope])}</span><span>8x12 aluminum</span></div></div>
+        <div class="m"><span class="sp-pri ${pr[0]}">${pr[1]}</span><span class="sp-tag" style="background:${c[0]};color:${c[1]}">${esc(s.c)}</span><span>${esc(SCOPE[sl.scope])}</span>${r.cut ? '<span>Left out to fit budget</span>' : r.opt && !r.on ? '<span>Optional</span>' : ''}</div></div>
       <div class="sp-qty"><button type="button" data-q="-1" aria-label="Fewer">&minus;</button><span>${r.on ? r.qty : 0}</span><button type="button" data-q="1" aria-label="More">+</button></div>
-      <div class="sp-acts">${r.alts.length > 1 ? `<button class="sp-ic" type="button" data-sw>Swap (${r.alts.length - 1} more)</button>` : ''}<button class="sp-ic" type="button" data-rm>${r.on ? 'Remove' : 'Add back'}</button></div>${ADMIN ? adminBar(r) : ''}</div>`;
+      <div class="sp-acts"><button class="sp-ic" type="button" data-why aria-expanded="${!!r.why}">Why</button>${r.alts.length > 1 ? `<button class="sp-ic" type="button" data-sw>Swap (${r.alts.length - 1} more)</button>` : ''}<button class="sp-ic" type="button" data-rm>${r.on ? 'Remove' : 'Add back'}</button></div>
+      ${r.why ? `<div class="sp-why"><b>${pr[1]}.</b> ${esc(sl.why || (r.pri === 3 ? 'Not required, but it heads off common problems in this area.' : 'Commonly expected in this area by inspectors and insurers.'))}${s.p ? `<br><b>Where it goes:</b> ${esc(s.p)}` : ''}</div>` : ''}${ADMIN ? adminBar(r) : ''}</div>`;
   }
   function adminBar(r) {
     const sku = r.alts[r.i], pf = PINS.has(pinKey(st.fac, r.k, sku)), pa = PINS.has(pinKey('any', r.k, sku));
@@ -307,12 +406,21 @@
   function view2() {
     const f = fac();
     const groups = [...new Set(st.rows.map((r) => r.area))];
-    main.innerHTML = `${ADMIN ? '<div class="sp-adm-bn"><b>Admin mode.</b> Pin the sign you want shown first for each need, for this site type or for every site. Draft signs stay hidden from shoppers until you activate them.</div>' : ''}<div class="sp-sum" id="sp-sum"></div><div id="sp-nudge"></div>
+    const GB = { new: 'Full plan for a new or empty site. Every area you checked is covered, from the door in.', inspect: 'Inspection-ready list. <b>Code-cited</b> signs are the ones inspectors look for first. Good-practice signs start switched off; add back any you want.', audit: 'Audit and insurance list. Code-cited and recommended signs are on. Match each line to a finding and remove what you already have.', replace: 'Replacement checklist. Print the plan, walk the site, and remove anything still in good shape before you order.', expand: 'Plan for the new space only. Remove anything the rest of the site already has.' };
+    const tr = totals();
+    main.innerHTML = `${ADMIN ? '<div class="sp-adm-bn"><b>Admin mode.</b> Pin the sign you want shown first for each need, for this site type or for every site. Draft signs stay hidden from shoppers until you activate them.</div>' : ''}<div class="sp-banner">${GB[st.goal] || GB.new}</div>
+      ${st.cut ? `<div class="sp-nudge">To stay under ${money(st.budget).replace('.00', '')}, we left out <b>${st.cut} lower-priority line${st.cut === 1 ? '' : 's'}</b>. Code-cited signs always stay in. <button class="sp-ic" type="button" id="sp-uncut">Add them back</button></div>` : ''}
+      ${st.budget && tr.total > st.budget && st.rows.every((r) => !r.on || r.pri === 1) ? `<div class="sp-nudge">Code-cited signs alone come to <b>${money(tr.total)}</b>, over your budget. Order these first, or download a quote to split across two purchases.</div>` : ''}
+      ${st.ans.spanish ? `<div class="sp-nudge">Crews that read Spanish first: any sign can be made <b>bilingual, English and Spanish</b>, as a custom sign at the same ${money(BASE)}. <button class="sp-ic" type="button" data-cu="">Make a bilingual sign</button></div>` : ''}
+      <div class="sp-sum" id="sp-sum"></div><div id="sp-nudge"></div>
+      <div class="sp-tools"><span>Show:</span><div class="sp-chips"><button type="button" data-only="0" aria-pressed="${!st.onlyReq}">Whole plan</button><button type="button" data-only="1" aria-pressed="${st.onlyReq}">Code-cited only</button></div></div>
       ${groups.map((a) => { const rs = st.rows.map((r, i) => [r, i]).filter(([r]) => r.area === a); return `<section class="sp-grp"><div class="sp-grp-h"><h3>${esc(M.areas[a].label)}</h3><span>${st.areas[a] > 1 ? st.areas[a] + ' areas' : '1 area'}</span></div>${rs.map(([r, i]) => rowHtml(r, i)).join('')}
         <div class="sp-custom"><span>Need wording we don't have for this area?</span><button class="sp-ic" type="button" data-cu="${esc(a)}">Design a custom sign, ${money(BASE)}</button></div></section>`; }).join('')}
       <section class="sp-grp" id="sp-cust" ${st.custom.length ? '' : 'hidden'}><div class="sp-grp-h"><h3>Custom signs</h3><span>Made to your wording</span></div><div id="sp-cust-rows"></div></section>
       <div class="sp-nav"><button class="sp-link" type="button" id="sp-back">&larr; Change areas</button><button class="sp-ic" type="button" data-cu="">+ Add a custom sign</button></div>`;
-    $('#sp-back').addEventListener('click', () => show(1));
+    const uc = $('#sp-uncut'); if (uc) uc.addEventListener('click', () => { st.rows.forEach((r) => { if (r.cut) { r.on = true; r.cut = false; } }); st.cut = 0; view2(); });
+    main.querySelectorAll('[data-only]').forEach((b) => b.addEventListener('click', () => { st.onlyReq = b.dataset.only === '1'; view2(); }));
+    $('#sp-back').addEventListener('click', () => show(2));
     main.querySelectorAll('[data-cu]').forEach((b) => b.addEventListener('click', () => customDlg(b.dataset.cu)));
     main.querySelectorAll('.sp-row').forEach(bindRow);
     renderCustom(); refresh(); resolve();
@@ -321,7 +429,8 @@
     const r = st.rows[+el.dataset.r];
     el.querySelectorAll('[data-q]').forEach((b) => b.addEventListener('click', () => { r.qty = Math.max(0, Math.min(500, (r.on ? r.qty : 0) + Number(b.dataset.q))); r.on = r.qty > 0; redraw(el); }));
     const sw = el.querySelector('[data-sw]'); if (sw) sw.addEventListener('click', () => { r.i = (r.i + 1) % r.alts.length; r.v = null; redraw(el); });
-    el.querySelector('[data-rm]').addEventListener('click', () => { r.on = !r.on; if (r.on && !r.qty) r.qty = 1; redraw(el); });
+    el.querySelector('[data-rm]').addEventListener('click', () => { r.on = !r.on; if (r.on && !r.qty) r.qty = 1; if (r.on && r.cut) { r.cut = false; st.cut = Math.max(0, st.cut - 1); } redraw(el); });
+    el.querySelector('[data-why]').addEventListener('click', () => { r.why = !r.why; redraw(el); });
     el.querySelectorAll('[data-pin]').forEach((b) => b.addEventListener('click', () => pin(r, b.dataset.pin, el)));
     const fd = el.querySelector('[data-find]'); if (fd) fd.addEventListener('click', () => findDlg(r, el));
   }
@@ -347,7 +456,7 @@
 
   function refresh() {
     const t = totals(); const sv = t.list - t.total;
-    const sum = $('#sp-sum'); if (sum) sum.innerHTML = `<div><b>${t.q}</b><small>Signs in plan</small></div><div><b>${Object.keys(st.areas).length}</b><small>Areas covered</small></div><div><b>${money(t.u)}</b><small>Price per sign</small></div><div><b>${money(t.total)}</b><small>${sv > 0 ? 'You save ' + money(sv) : 'Plan total'}</small></div>`;
+    const sum = $('#sp-sum'); if (sum) sum.innerHTML = `<div><b>${t.q}</b><small>Signs in plan</small></div><div><b>${t.req}</b><small>Code-cited signs</small></div><div><b>${money(t.u)}</b><small>Price per sign</small></div><div><b>${money(t.total)}</b><small>${sv > 0 ? 'You save ' + money(sv) : 'Plan total'}</small></div>`;
     const nx = next(t.q), nd = $('#sp-nudge');
     if (nd) nd.innerHTML = (nx && t.q > 0 ? `<div class="sp-nudge">Add <b>${nx.need} more sign${nx.need === 1 ? '' : 's'}</b> and every sign in your order drops to <b>${money(nx.price)}</b>. <button class="sp-ic" type="button" id="sp-addmore">Add spares to my plan</button></div>` : '')
       + (t.total > QUOTE_AT ? `<div class="sp-nudge">Over $5,000, most public buyers need a <b>written quote</b> on file. Download a formal PDF quote for this plan in one step. <button class="sp-ic" type="button" id="sp-qnudge">Download quote (PDF)</button></div>` : '');
@@ -360,7 +469,7 @@
   }
   // Spares go to the signs most likely to be needed in more places: entrance and area signs first.
   function spares(n) {
-    const pool = st.rows.filter((r) => r.on && M.slots[r.k].scope !== 'site');
+    const pool = st.rows.filter((r) => r.on && M.slots[r.k].scope !== 'site').sort((x, y) => x.pri - y.pri);
     for (let i = 0; i < n && pool.length; i++) pool[i % pool.length].qty++;
     view2();
   }
@@ -368,8 +477,8 @@
   function planData() {
     const f = fac(); const t = totals();
     return { facility: f.name, code: st.fac, entrances: st.entrances, areas: st.areas, total: t.total, unit: t.u, signs: t.q,
-      rows: st.rows.filter((r) => r.on && r.qty > 0).map((r) => { const s = M.signs[r.alts[r.i]]; return { area: M.areas[r.area].label, slot: M.slots[r.k].label, scope: SCOPE[M.slots[r.k].scope], sign: s.s, series: s.c, handle: s.h, qty: r.qty }; }),
-      custom: st.custom, url: location.href };
+      rows: st.rows.filter((r) => r.on && r.qty > 0 && r.v !== false).map((r) => { const s = M.signs[r.alts[r.i]]; return { area: M.areas[r.area].label, slot: M.slots[r.k].label, scope: SCOPE[M.slots[r.k].scope], sign: s.s, series: s.c, handle: s.h, qty: r.qty, pri: r.pri, why: M.slots[r.k].why || '', place: s.p || '' }; }),
+      custom: st.custom, url: location.href, goal: st.goal, budget: st.budget, answers: st.ans };
   }
   function planText(d) {
     const lines = [`Site sign plan: ${d.facility}`, `Plan link: ${d.url}`, `${d.signs} signs, ${money(d.unit)} each, est. ${money(d.total)}`, ''];
@@ -413,8 +522,8 @@
     const d = planData(); const dt = new Date().toLocaleDateString();
     const by = {}; d.rows.forEach((r) => { (by[r.area] = by[r.area] || []).push(r); });
     $('#sp-print').innerHTML = `<h1>Site Safety Sign Plan</h1><p class="meta"><b>${esc(d.facility)}</b>${info && info.company ? ' &middot; ' + esc(info.company) : ''} &middot; Prepared ${dt} by ${esc(STORE)} &middot; ${d.signs} signs, ${d.entrances} entrance${d.entrances === 1 ? '' : 's'}</p>
-      <p class="meta">Use this list to order, place and check off each sign. Walk the site to confirm locations and add anything specific to your equipment.</p>
-      ${Object.entries(by).map(([a, rs]) => `<h2>${esc(a)}</h2><table><tr><th style="width:24%">Need</th><th>Sign</th><th style="width:18%">Placement</th><th style="width:6%">Qty</th><th style="width:9%">Installed</th></tr>${rs.map((r) => `<tr><td>${esc(r.slot)}</td><td><b>${esc(r.series)}</b> ${esc(r.sign)}<br><small>${location.host}/products/${esc(r.handle)}</small></td><td>${esc(r.scope)}</td><td>${r.qty}</td><td><span class="box"></span></td></tr>`).join('')}</table>`).join('')}
+      <p class="meta">Use this list to order, place and check off each sign. Code-cited lines point to the rule behind them. Walk the site to confirm locations and add anything specific to your equipment.</p>
+      ${Object.entries(by).map(([a, rs]) => `<h2>${esc(a)}</h2><table><tr><th style="width:20%">Need</th><th>Sign</th><th style="width:26%">Where it goes</th><th style="width:6%">Qty</th><th style="width:8%">Installed</th></tr>${rs.map((r) => `<tr><td>${esc(r.slot)}<br><small>${esc((PRI[r.pri] || PRI[2])[1])}</small></td><td><b>${esc(r.series)}</b> ${esc(r.sign)}<br><small>${location.host}/products/${esc(r.handle)}</small>${r.why ? `<br><small>${esc(r.why)}</small>` : ''}</td><td>${esc(r.place || r.scope)}</td><td>${r.qty}</td><td><span class="box"></span></td></tr>`).join('')}</table>`).join('')}
       ${d.custom.length ? `<h2>Custom signs</h2><table><tr><th>Header</th><th>Wording</th><th>Area</th><th>Qty</th><th>Installed</th></tr>${d.custom.map((c) => `<tr><td>${esc(c.header)}</td><td>${esc(c.text)}</td><td>${esc(c.area || '')}</td><td>${c.qty}</td><td><span class="box"></span></td></tr>`).join('')}</table>` : ''}
       <h2>Order summary</h2><p>${d.signs} signs at ${money(d.unit)} each = <b>${money(d.total)}</b> (8x12 aluminum). Reopen or order this plan: ${esc(d.url)}</p>`;
     setTimeout(() => window.print(), 60);
@@ -553,7 +662,7 @@
       e.preventDefault(); const fd = Object.fromEntries(new FormData(e.target));
       if (!String(fd.text || '').trim()) { $('#sp-e').textContent = 'Add the wording for your sign.'; return; }
       st.custom.push({ header: fd.header, text: String(fd.text).trim(), area: fd.area, note: fd.note || '', qty: Math.max(1, Math.min(500, Number(fd.qty) || 1)) });
-      closeDlg(); if (st.step === 2) { renderCustom(); refresh(); } else show(2);
+      closeDlg(); if (st.step === 3) { renderCustom(); refresh(); } else { if (!st.rows.length) build(); show(3); }
     });
   }
   function renderCustom() {
@@ -589,7 +698,7 @@
   const planUrl = API + '?action=plan' + (ADMIN ? '&cid=' + ADMIN.cid + '&ts=' + ADMIN.ts + '&sig=' + ADMIN.sig : '');
   fetch(planUrl).then((r) => r.json()).then((d) => {
     if (!d || !d.facilities) throw new Error('no plan data');
-    M = d; (d.pins || []).forEach((x) => PINS.add(pinKey(x.fac, x.k, x.sku))); readUrl(); if (st.step === 2) build(); show(st.step);
+    M = d; (d.pins || []).forEach((x) => PINS.add(pinKey(x.fac, x.k, x.sku))); readUrl(); if (st.step === 3) build(); show(st.step);
   }).catch(() => { main.innerHTML = `<div class="sp-card"><h2>The plan builder is busy</h2><p class="s">Refresh in a moment, or <a href="/pages/contact">tell us about your site</a> and we'll build the plan for you.</p></div>`; });
 })();
 </script>
@@ -602,7 +711,7 @@
   "settings": [
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Site Sign Plan" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "We tell you which signs your site needs" },
-    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Answer two quick questions about your facility. We build a room-by-room sign list with quantities and placement, priced with automatic volume discounts. Order it, send it for a quote, or print it." },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Answer a few questions about your facility and equipment. We build a room-by-room sign list sized to your site, marked by what codes require, with placement and automatic volume pricing. Order it, get a quote, or print it." },
     { "type": "text", "id": "admin_secret", "label": "Pin admin key (do not share)", "info": "Lets store customers tagged cgap-admin pin signs on this page." },
     { "type": "text", "id": "custom_handle", "label": "Custom sign product handle", "default": "custom-safety-sign-8x12-aluminum" },
     { "type": "text", "id": "api_url", "label": "Plan API URL", "default": "https://esmwoaqemeukjrjaesby.supabase.co/functions/v1/sign-finder" }

@@ -129,7 +129,7 @@
             {%- assign facs = section.settings.plan_facilities | split: '|' -%}
             {%- for x in facs -%}{%- assign pair = x | split: '=' -%}{%- assign lbl = pair[1] | strip -%}{%- assign code = pair[0] | strip -%}<a href="{{ section.settings.plan_url }}?f={{ code }}"><i></i>{{ lbl }}</a>{%- endfor -%}
           </div>
-          <div class="fh-pfoot"><span>Takes about 60 seconds. Every sign from $29.99, with automatic volume pricing.</span><a class="fh-start" href="{{ section.settings.plan_url }}">Start my plan</a></div>
+          <div class="fh-pfoot"><span>Takes about two minutes. Sized to your site, marked by what codes require, with automatic volume pricing.</span><a class="fh-start" href="{{ section.settings.plan_url }}">Start my plan</a></div>
         </div>
       </div>
       <div class="fh-stats">
