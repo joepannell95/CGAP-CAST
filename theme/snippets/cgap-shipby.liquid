@@ -31,9 +31,12 @@
 <div id="cgap-plan-slot">{%- render 'cgap-plan-cta', mode: 'product', product: product -%}</div>
 <script>
 (function(){
-  var s=document.getElementById('cgap-plan-slot'); if(!s||!s.firstElementChild) return;
-  var d=document.querySelector('.product__info-container .product__description');
-  if(d&&d.parentNode){ d.parentNode.insertBefore(s, d.nextSibling); }
+  function mv(){
+    var s=document.getElementById('cgap-plan-slot'); if(!s||!s.firstElementChild) return;
+    var d=document.querySelector('.product__info-container .product__description');
+    if(d&&d.parentNode){ d.parentNode.insertBefore(s, d.nextSibling); }
+  }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', mv); } else { mv(); }
 })();
 </script>
 {%- endif -%}
