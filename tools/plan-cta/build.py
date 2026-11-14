@@ -17,6 +17,18 @@ PNAME = {'industry-property-management-multifamily':'an apartment complex or man
  'food-processing-plant-safety-signs':'a food processing plant','metal-fabrication-foundry-safety-signs':'a fab shop or foundry',
  'lithium-battery-energy-storage-ev-safety-signs':'a battery or EV charging site','propane-natural-gas-pipeline-safety-signs':'a propane or gas site',
  'school-shop-class-theater-safety-signs':'a school shop or theater'}
+
+COLL_EXTRA = {
+ 'food-and-beverage-production-signs':('mfg','a food or beverage plant'),'food-plant-and-bottling-line-signs':('mfg','a food or bottling plant'),
+ 'pharmacy-signs':('lab','a pharmacy'),'dialysis-and-infusion-center-signs':('lab','a dialysis or infusion center'),'chiropractic-med-spa-and-eye-care-signs':('lab','a clinic'),
+ 'library-signs':('school','a library'),'recycling-and-scrap-signs':('mfg','a recycling or scrap yard'),'landfill-and-solid-waste-signs':('mfg','a landfill or transfer station'),
+ 'salon-barber-and-spa-signs':('retail','a salon or barber shop'),'auction-estate-sale-and-market-signs':('retail','an auction house or market'),
+ 'horse-barn-and-equestrian-signs':('farm','a horse barn'),'greenhouse-and-nursery-signs':('farm','a greenhouse or nursery'),
+ 'roofing-concrete-and-site-work-signs':('construction','a construction site'),'landscape-tree-and-pest-service-signs':('construction','a landscape or tree service shop'),
+ 'equipment-rental-and-crane-yard-signs':('construction','an equipment rental or crane yard'),'towing-impound-and-salvage-yard-signs':('auto','a towing or salvage yard'),
+ 'public-works-and-road-department-signs':('water','a public works yard'),'pizza-bbq-and-fast-food-signs':('kitchen','a restaurant or kitchen'),'self-storage-signs':('warehouse','a self storage facility'),
+}
+for h,(c,n) in COLL_EXTRA.items(): PAGES[h]=c; PNAME[h]=n
 L=["{%- comment -%}",
 "  Plan my site box. Built by tools/plan-cta/build.py; edit there.",
 "  Params: key (a page handle), mode ('product' looks at product.collections). Default: collection.handle.",
