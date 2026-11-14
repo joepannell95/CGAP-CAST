@@ -23,7 +23,10 @@ L=["{%- comment -%}",
 "{%- endcomment -%}",
 "{%- liquid","  assign pf = ''","  assign pn = ''",
 "  if key != blank","    assign keys = key",
-"  elsif mode == 'product'","    assign keys = product.collections | map: 'handle' | join: ','",
+"  elsif mode == 'product'","    assign keys = ''",
+"    assign s = ''",
+"    for t in product.tags","      if t contains 'Sector: '","        assign s = t | remove_first: 'Sector: ' | downcase | prepend: ' ' | append: ' '","        break","      endif","    endfor",
+"    if s != ''"]+open('sector_block.liquid').read().split("\n")+["    endif",
 "  else","    assign keys = collection.handle","  endif",
 "  assign keys = keys | split: ','",
 "  for k in keys","    case k"]
@@ -32,7 +35,8 @@ for code,(name,hs) in M.items():
     L.append(f"        assign pf = '{code}'"); L.append(f"        assign pn = '{name}'")
 for h,code in PAGES.items():
     L.append(f"      when '{h}'"); L.append(f"        assign pf = '{code}'"); L.append(f"        assign pn = '{PNAME.get(h, M[code][0])}'")
-L+=["    endcase","    if pf != ''","      break","    endif","  endfor","-%}","{%- if pf != '' -%}",
+L+=["    endcase","    if pf != ''","      break","    endif","  endfor",
+"  if mode == 'product' and pf != ''","    case pf"]+sum([[f"      when '{c}'", f"        assign pn = '{M[c][0]}'"] for c in M],[])+["    endcase","  endif","-%}","{%- if pf != '' -%}",
 '''<div class="cgap-plan-cta{% if mode == 'product' %} cgap-plan-cta--p{% endif %}">
   <div class="cgap-plan-cta__text">
     {%- if mode == 'product' -%}

@@ -8,7 +8,59 @@
   if key != blank
     assign keys = key
   elsif mode == 'product'
-    assign keys = product.collections | map: 'handle' | join: ','
+    assign keys = ''
+    assign s = ''
+    for t in product.tags
+      if t contains 'Sector: '
+        assign s = t | remove_first: 'Sector: ' | downcase | prepend: ' ' | append: ' '
+        break
+      endif
+    endfor
+    if s != ''
+    if s contains 'marina' or s contains 'boatyard' or s contains 'boat ramp' or s contains 'dock and pier' or s contains 'harbor' or s contains 'yacht' or s contains 'waterfront'
+      assign pf = 'marina'
+    elsif s contains 'car wash' or s contains 'detailing'
+      assign pf = 'carwash'
+    elsif s contains 'gas station' or s contains 'truck stop' or s contains 'fuel station' or s contains 'fuel terminal' or s contains 'fuel island' or s contains 'convenience store'
+      assign pf = 'fuelstop'
+    elsif s contains 'data center' or s contains 'server room'
+      assign pf = 'datacenter'
+    elsif s contains 'brew' or s contains 'distill' or s contains 'winer' or s contains 'taproom'
+      assign pf = 'brewery'
+    elsif s contains 'cold storage' or s contains 'ammonia' or s contains 'freezer' or s contains 'refrigerated warehouse'
+      assign pf = 'cold'
+    elsif s contains 'restaurant' or s contains 'kitchen' or s contains 'bakery' or s contains 'catering' or s contains 'food truck' or s contains 'cafeteria' or s contains 'coffee' or s contains 'pizza' or s contains 'diner' or s contains 'food service'
+      assign pf = 'kitchen'
+    elsif s contains 'hospital' or s contains 'clinic' or s contains 'medical' or s contains 'dental' or s contains 'chiropract' or s contains 'laborator' or s contains ' lab ' or s contains ' labs ' or s contains 'pharma' or s contains 'veterinar' or s contains 'nursing' or s contains 'senior care' or s contains 'imaging' or s contains 'mri ' or s contains 'dialysis' or s contains 'infusion'
+      assign pf = 'lab'
+    elsif s contains 'school' or s contains 'librar' or s contains 'campus' or s contains 'college' or s contains 'universit' or s contains 'child care' or s contains 'daycare' or s contains 'preschool' or s contains 'apartment' or s contains 'condo' or s contains 'townhome' or s contains 'hoa ' or s contains 'property' or s contains 'church' or s contains 'playground'
+      assign pf = 'school'
+    elsif s contains 'farm' or s contains 'grain' or s contains 'feed' or s contains 'livestock' or s contains 'dairy' or s contains 'poultry' or s contains 'orchard' or s contains ' ranch' or s contains 'agricult' or s contains 'vineyard' or s contains 'greenhouse'
+      assign pf = 'farm'
+    elsif s contains 'auto ' or s contains 'automotive' or s contains ' tire' or s contains 'body shop' or s contains 'fleet' or s contains 'dealership' or s contains 'mechanic shop' or s contains 'collision' or s contains 'diesel shop' or s contains 'motorcycle shop'
+      assign pf = 'auto'
+    elsif s contains 'wastewater' or s contains 'water treatment' or s contains 'water plant' or s contains 'sewer' or s contains 'lift station' or s contains 'pump station' or s contains 'pump house' or s contains 'well house' or s contains 'water utilit' or s contains 'water and'
+      assign pf = 'water'
+    elsif s contains 'electric utilit' or s contains 'substation' or s contains 'telecom' or s contains 'utility' or s contains 'solar' or s contains 'wind farm' or s contains 'wind turbine' or s contains 'battery' or s contains 'power plant' or s contains 'transmission' or s contains 'ev charging'
+      assign pf = 'utility'
+    elsif s contains 'oil and gas' or s contains 'oilfield' or s contains 'oil field' or s contains 'oil well' or s contains 'gas well' or s contains 'refiner' or s contains 'chemical' or s contains 'propane' or s contains 'pipeline' or s contains 'petro' or s contains 'hydrogen'
+      assign pf = 'oil_chem'
+    elsif s contains 'quarry' or s contains 'mines' or s contains 'mining' or s contains 'aggregate' or s contains 'asphalt' or s contains 'gravel'
+      assign pf = 'quarry'
+    elsif s contains 'sawmill' or s contains 'lumber' or s contains 'woodwork' or s contains 'wood shop' or s contains 'pallet' or s contains 'timber' or s contains 'paper mill'
+      assign pf = 'woodshop'
+    elsif s contains 'construction' or s contains 'contractor' or s contains 'job site' or s contains 'jobsite' or s contains 'demolition' or s contains 'roofing' or s contains 'excavat'
+      assign pf = 'construction'
+    elsif s contains 'warehouse' or s contains 'distribution' or s contains 'logistic' or s contains 'loading dock' or s contains 'freight' or s contains 'fulfillment' or s contains 'self storage'
+      assign pf = 'warehouse'
+    elsif s contains 'manufactur' or s contains 'factory' or s contains 'foundry' or s contains 'fabricat' or s contains 'assembly' or s contains 'machine shop' or s contains 'processing plant' or s contains 'plant floor' or s contains ' plants' or s contains 'plant '
+      assign pf = 'mfg'
+    elsif s contains 'office' or s contains 'commercial building' or s contains ' bank ' or s contains 'credit union' or s contains 'coworking' or s contains 'city hall' or s contains 'courthouse'
+      assign pf = 'office'
+    elsif s contains 'retail' or s contains 'store' or s contains 'grocery' or s contains 'mall' or s contains 'salon' or s contains 'boutique'
+      assign pf = 'retail'
+    endif
+    endif
   else
     assign keys = collection.handle
   endif
@@ -167,6 +219,52 @@
       break
     endif
   endfor
+  if mode == 'product' and pf != ''
+    case pf
+      when 'mfg'
+        assign pn = 'a manufacturing plant'
+      when 'warehouse'
+        assign pn = 'a warehouse'
+      when 'construction'
+        assign pn = 'a construction site'
+      when 'farm'
+        assign pn = 'a farm'
+      when 'kitchen'
+        assign pn = 'a restaurant or kitchen'
+      when 'auto'
+        assign pn = 'an auto or fleet shop'
+      when 'water'
+        assign pn = 'a water or wastewater plant'
+      when 'utility'
+        assign pn = 'a utility, telecom or substation site'
+      when 'lab'
+        assign pn = 'a lab, hospital or clinic'
+      when 'school'
+        assign pn = 'a school, campus or property'
+      when 'oil_chem'
+        assign pn = 'an oil, gas or chemical site'
+      when 'cold'
+        assign pn = 'a cold storage site'
+      when 'carwash'
+        assign pn = 'a car wash'
+      when 'datacenter'
+        assign pn = 'a data center or server room'
+      when 'brewery'
+        assign pn = 'a brewery, distillery or winery'
+      when 'woodshop'
+        assign pn = 'a sawmill or wood shop'
+      when 'fuelstop'
+        assign pn = 'a gas station or truck stop'
+      when 'quarry'
+        assign pn = 'a quarry or mine'
+      when 'office'
+        assign pn = 'an office or commercial building'
+      when 'retail'
+        assign pn = 'a retail store'
+      when 'marina'
+        assign pn = 'a marina or boatyard'
+    endcase
+  endif
 -%}
 {%- if pf != '' -%}
 <div class="cgap-plan-cta{% if mode == 'product' %} cgap-plan-cta--p{% endif %}">
