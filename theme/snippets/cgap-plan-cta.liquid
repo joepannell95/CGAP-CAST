@@ -1,0 +1,86 @@
+{%- comment -%} Plan my site link on site-type collections. Map: tools/plan-cta/map.py {%- endcomment -%}
+{%- liquid
+  assign pf = ''
+  case collection.handle
+    when 'manufacturing-and-industrial-signs', 'manufacturing-plant-sign-kits', 'metal-shop-sign-kits', 'metal-foundry-and-fabrication-plant-signs', 'plastics-electronics-and-assembly-plant-signs', 'printing-sign-and-packaging-plant-signs', 'textile-and-apparel-plant-signs', 'additive-manufacturing-sign-kits', 'meat-seafood-and-game-processing-signs', 'electrical-equipment-plant-sign-kits', 'medical-device-plant-sign-kits', 'appliance-plant-sign-kits', 'boat-and-rv-plant-sign-kits'
+      assign pf = 'mfg'
+      assign pn = 'a manufacturing plant'
+    when 'warehouse-and-distribution-center-signs', 'warehouse-sign-kits', 'warehouses-and-logistics-signs', 'loading-dock-warehouse-signs', 'forklift-pedestrian-signs', 'moving-company-signs'
+      assign pf = 'warehouse'
+      assign pn = 'a warehouse'
+    when 'construction-and-trades-signs', 'construction-sign-kits', 'highway-construction-sign-kits', 'electrical-plumbing-and-hvac-contractor-signs'
+      assign pf = 'construction'
+      assign pn = 'a construction site'
+    when 'agriculture', 'agriculture-and-farms-signs', 'aquaculture-farm-signs', 'farm-and-grain-sign-kits', 'grain-bin-entry-signs', 'grain-seed-and-cotton-signs', 'livestock-dairy-and-poultry-farm-signs', 'orchard-farm-stand-and-market-signs'
+      assign pf = 'farm'
+      assign pn = 'a farm'
+    when 'commissary-and-catering-kitchen-signs', 'restaurant-front-of-house-signs', 'restaurant-kitchen-signs', 'restaurant-sign-kits', 'restaurants-and-bars-signs', 'bakery-coffee-roaster-and-candy-signs', 'coffee-ice-cream-and-dessert-shop-signs', 'food-truck-and-concession-signs', 'bar-taproom-and-nightclub-signs'
+      assign pf = 'kitchen'
+      assign pn = 'a restaurant or kitchen'
+    when 'auto-repair-and-body-shop-signs', 'auto-shop-sign-kits', 'automotive-and-fleet-signs', 'car-dealership-and-used-car-lot-signs', 'fleet-maintenance-sign-kits', 'tire-shop-signs', 'fleet-and-marine-sign-kits'
+      assign pf = 'auto'
+      assign pn = 'an auto or fleet shop'
+    when 'water-wastewater-sign-kits', 'water-and-wastewater-signs', 'dam-and-lock-sign-kits', 'canal-sign-kits'
+      assign pf = 'water'
+      assign pn = 'a water or wastewater plant'
+    when 'electric-co-op-sign-kits', 'electric-utility-and-co-op-signs', 'energy-utilities-and-telecom-signs', 'telecom-and-broadband-signs', 'telecom-sign-kits', 'utility-infrastructure-signs', 'solar-wind-and-battery-signs', 'wind-and-solar-sign-kits', 'battery-energy-storage-signs'
+      assign pf = 'utility'
+      assign pn = 'a utility, telecom or substation site'
+    when 'clinic-and-medical-office-signs', 'clinic-sign-kits', 'extraction-lab-sign-kits', 'hospital-sign-kits', 'hospital-signs', 'hospitals-and-healthcare-signs', 'laboratory-sign-kits', 'labs-and-research-signs', 'test-lab-sign-kits', 'veterinary-clinic-signs', 'nursing-home-and-senior-care-signs', 'behavioral-health-signs', 'dental-office-signs'
+      assign pf = 'lab'
+      assign pn = 'a lab, hospital or clinic'
+    when 'child-care-and-preschool-signs', 'college-and-university-signs', 'k-12-school-signs', 'school-district-and-bus-signs', 'school-sign-kits', 'schools-and-universities-signs', 'trade-culinary-and-specialty-school-signs', 'apartments-and-residential-signs', 'church-signs', 'churches-and-nonprofits-signs'
+      assign pf = 'school'
+      assign pn = 'a school, campus or property'
+    when 'chemical-plant-and-distributor-signs', 'chemical-plant-sign-kits', 'chemical-storage-signs', 'gas-and-propane-sign-kits', 'natural-gas-and-propane-signs', 'oil-and-gas-sign-kits', 'oil-gas-mining-and-chemical-signs', 'oilfield-and-well-pad-signs', 'propane-lp-gas-signs', 'refining-sign-kits', 'offshore-sign-kits'
+      assign pf = 'oil_chem'
+      assign pn = 'an oil, gas or chemical site'
+    when 'ammonia-refrigeration-signs', 'cold-storage-and-food-distribution-signs', 'cold-storage-sign-kits'
+      assign pf = 'cold'
+      assign pn = 'a cold storage site'
+    when 'car-wash-sign-kits', 'car-wash-signs'
+      assign pf = 'carwash'
+      assign pn = 'a car wash'
+    when 'data-center-and-server-room-signs', 'data-center-sign-kits'
+      assign pf = 'datacenter'
+      assign pn = 'a data center or server room'
+    when 'brewery-and-winery-sign-kits', 'brewery-winery-and-distillery-signs'
+      assign pf = 'brewery'
+      assign pn = 'a brewery, distillery or winery'
+    when 'lumber-yard-sign-kits', 'sawmill-and-paper-mill-sign-kits', 'wood-lumber-and-furniture-plant-signs'
+      assign pf = 'woodshop'
+      assign pn = 'a sawmill or wood shop'
+    when 'fuel-station-sign-kits', 'gas-station-and-fuel-terminal-signs', 'trucking-fleet-and-truck-stop-signs'
+      assign pf = 'fuelstop'
+      assign pn = 'a gas station or truck stop'
+    when 'coal-mine-sign-kits', 'critical-minerals-sign-kits', 'mineral-processing-sign-kits', 'mining', 'quarry-and-mine-sign-kits', 'quarry-mine-and-gravel-pit-signs', 'blasting-area-signs'
+      assign pf = 'quarry'
+      assign pn = 'a quarry or mine'
+    when 'commercial-property-and-building-signs', 'corporate-office-and-coworking-signs', 'law-insurance-and-real-estate-office-signs', 'offices-and-commercial-property-signs', 'city-hall-and-government-office-signs', 'bank-and-credit-union-signs'
+      assign pf = 'office'
+      assign pn = 'an office or commercial building'
+    when 'retail-and-personal-services-signs', 'retail-back-room-sign-kits', 'retail-store-signs', 'thrift-store-and-donation-center-signs', 'pet-store-and-feed-store-signs', 'repair-and-service-shop-signs'
+      assign pf = 'retail'
+      assign pn = 'a retail store'
+    when 'marina-dock-and-boat-signs', 'boat-ramp-lake-and-beach-signs', 'port-and-marine-sign-kits', 'port-barge-and-shipyard-signs', 'shipyard-sign-kits'
+      assign pf = 'marina'
+      assign pn = 'a marina or boatyard'
+  endcase
+-%}
+{%- if pf != '' -%}
+<div class="cgap-plan-cta">
+  <div class="cgap-plan-cta__text">
+    <strong>Setting up {{ pn }}?</strong>
+    <span>Answer a few questions and get every sign you need, room by room, with quantities and where each one goes. Takes about two minutes.</span>
+  </div>
+  <a class="cgap-plan-cta__btn" href="/pages/site-sign-plan?f={{ pf }}">Plan my site</a>
+</div>
+<style>
+.cgap-plan-cta{display:flex;align-items:center;justify-content:space-between;gap:1.6rem;margin:1.6rem 0 0;padding:1.4rem 1.8rem;border:2px solid #111;border-left:10px solid #f5c400;border-radius:6px;background:#fffbea;max-width:84rem}
+.cgap-plan-cta__text{display:flex;flex-direction:column;gap:.4rem;font-size:1.5rem;line-height:1.4;color:#222}
+.cgap-plan-cta__text strong{font-size:1.7rem;color:#111}
+.cgap-plan-cta__btn{flex:0 0 auto;display:inline-block;padding:1.1rem 2rem;background:#111;color:#fff;font-weight:700;font-size:1.5rem;text-decoration:none;border-radius:4px;white-space:nowrap}
+.cgap-plan-cta__btn:hover{background:#333;color:#fff}
+@media screen and (max-width:749px){.cgap-plan-cta{flex-direction:column;align-items:stretch;text-align:left}.cgap-plan-cta__btn{text-align:center}}
+</style>
+{%- endif -%}
