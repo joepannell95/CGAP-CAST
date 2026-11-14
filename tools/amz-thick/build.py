@@ -11,7 +11,7 @@ for s,t in T.items():
     m=RX.search(t)
     if not m: stat['nomatch']+=1; continue
     size=m.group(1).replace('×','x'); uv=m.group(3) or ''
-    cands=[f"{size} .065 Heavy-Duty Rust-Resistant {uv}Aluminum", f"{size} .065 Heavy-Duty Rust-Resistant Aluminum", f"{size} .065 Rust-Resistant Aluminum"]
+    cands=[f"{size} Premium Extra-Thick Rust-Resistant {uv}Aluminum", f"{size} Premium Extra-Thick Rust-Resistant Aluminum", f"{size} Extra-Thick Rust-Resistant Aluminum"]
     best=None
     for ci,c in enumerate(cands):
         for extra in [(),('Pre-Drilled ',),('Pre-Drilled ','Safety Sign','Sign')]:
@@ -22,7 +22,10 @@ for s,t in T.items():
             nt=re.sub(r'\s+',' ',nt)
             if len(nt)<=200: best=(nt,ci,len(extra)); break
         if best: break
-    if not best: stat['too_long']+=1; continue
+    if not best:
+        stat['too_long']+=1
+        if len(t)<=200: out[s]=t
+        continue
     out[s]=best[0]; stat[f'ok_c{best[1]}_x{best[2]}']+=1
 json.dump(out,open('new_titles.json','w'))
 print(stat, len(out))
