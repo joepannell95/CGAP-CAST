@@ -1,0 +1,284 @@
+{%- comment -%} CGAP sign compliance checker: pick a facility, mark which areas it has, walk the site marking each expected sign Posted / Missing / N/A, get a score, print a walk-through checklist, and add every missing sign to the cart. Uses the site plan data from the Sign Finder API (action=plan). {%- endcomment -%}
+<style>
+  .cc{--g:#173F24;--o:#E0731A;--ink:#14181a;--mut:#5d6660;--line:#dfe3dc;color:var(--ink)}
+  .cc *{box-sizing:border-box}
+  .cc-hero{background:var(--g);color:#fff;padding:4.4rem 1.6rem 3.6rem;border-bottom:4px solid var(--o)}
+  .cc-wrap{max-width:1100px;margin:0 auto;padding:0 1.6rem}
+  .cc-hero .cc-wrap{padding:0}
+  .cc-eyebrow{display:inline-block;font-size:1.2rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#f3c79c;margin:0 0 1rem}
+  .cc-hero h1{color:#fff;font-size:clamp(3rem,4.6vw,4.6rem);line-height:1.08;margin:0 0 1.2rem;text-transform:uppercase}
+  .cc-hero p{font-size:1.75rem;line-height:1.5;max-width:760px;margin:0;opacity:.92}
+  .cc-main{padding:3.2rem 0 5rem}
+  .cc-step{display:flex;gap:1rem;align-items:baseline;margin:0 0 1.2rem}
+  .cc-step i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;width:3rem;height:3rem;border-radius:50%;background:var(--o);color:#fff;font-weight:800;font-size:1.5rem;flex:none}
+  .cc-step h2{margin:0;font-size:2.2rem;text-transform:uppercase}
+  .cc-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:2rem;margin:0 0 2.4rem}
+  .cc-facs{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.8rem}
+  .cc-facs button,.cc-areas label{all:unset;cursor:pointer;display:flex;align-items:center;gap:.8rem;border:2px solid var(--line);border-radius:6px;padding:1.1rem 1.2rem;font-size:1.45rem;font-weight:600;background:#fff}
+  .cc-facs button:hover,.cc-areas label:hover{border-color:var(--g)}
+  .cc-facs button[aria-pressed=true]{border-color:var(--g);background:#eef4ef}
+  .cc-areas{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.8rem}
+  .cc-areas input{width:1.8rem;height:1.8rem;accent-color:var(--g);flex:none}
+  .cc-btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;background:var(--g);color:#fff;font-weight:700;font-size:1.5rem;padding:1.3rem 2.2rem;border-radius:4px;text-transform:uppercase;letter-spacing:.04em}
+  .cc-btn--o{background:var(--o)}
+  .cc-btn--ghost{background:#fff;color:var(--g);border:2px solid var(--g);padding:1.1rem 2rem}
+  .cc-btn[disabled]{opacity:.5;cursor:default}
+  .cc-row{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-top:1.6rem}
+  .cc-link{all:unset;cursor:pointer;color:var(--g);font-weight:700;font-size:1.4rem;text-decoration:underline}
+  .cc-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:2.4rem;align-items:start}
+  .cc-area{margin:0 0 2rem}
+  .cc-area h3{font-size:1.6rem;text-transform:uppercase;margin:0 0 .8rem;padding:0 0 .6rem;border-bottom:2px solid var(--line)}
+  .cc-item{display:grid;grid-template-columns:1fr auto;gap:.6rem 1.2rem;padding:1.1rem 0;border-bottom:1px solid var(--line)}
+  .cc-item.miss{background:linear-gradient(90deg,#fff4ec,transparent)}
+  .cc-lab{font-weight:700;font-size:1.5rem}
+  .cc-pri{display:inline-block;font-size:1rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:.2rem .6rem;border-radius:3px;margin-left:.6rem;vertical-align:middle}
+  .cc-pri.p1{background:#C8102E;color:#fff}.cc-pri.p2{background:#FFD100;color:#111}.cc-pri.p3{background:#e6e8e3;color:#333}
+  .cc-why{font-size:1.3rem;color:var(--mut);margin:.3rem 0 0;line-height:1.45}
+  .cc-sign{font-size:1.3rem;margin:.5rem 0 0}
+  .cc-sign a{color:var(--g);font-weight:700}
+  .cc-seg{display:inline-flex;border:1px solid #cfd4cc;border-radius:5px;overflow:hidden;align-self:start}
+  .cc-seg button{all:unset;cursor:pointer;font-size:1.2rem;font-weight:700;padding:.7rem 1rem;border-left:1px solid #cfd4cc;color:var(--mut)}
+  .cc-seg button:first-child{border-left:0}
+  .cc-seg button[aria-pressed=true][data-s=ok]{background:#2e7d32;color:#fff}
+  .cc-seg button[aria-pressed=true][data-s=miss]{background:#C8102E;color:#fff}
+  .cc-seg button[aria-pressed=true][data-s=na]{background:#6b7280;color:#fff}
+  .cc-sum{position:sticky;top:2rem;background:#fff;border:1px solid var(--line);border-top:5px solid var(--o);border-radius:8px;padding:2rem}
+  .cc-sum h3{margin:0 0 1rem;font-size:1.8rem;text-transform:uppercase}
+  .cc-score{font-size:4.2rem;font-weight:800;line-height:1;color:var(--g)}
+  .cc-score small{font-size:1.4rem;color:var(--mut);font-weight:600;display:block;margin-top:.4rem}
+  .cc-bar{height:10px;background:#eceee9;border-radius:6px;overflow:hidden;margin:1.2rem 0}
+  .cc-bar i{display:block;height:100%;background:var(--g);transition:width .3s}
+  .cc-sum dl{display:grid;grid-template-columns:1fr auto;gap:.6rem 1rem;margin:0 0 1.4rem;font-size:1.4rem}
+  .cc-sum dt{color:var(--mut)}.cc-sum dd{margin:0;font-weight:700;text-align:right}
+  .cc-sum .cc-btn{width:100%;margin:0 0 .8rem}
+  .cc-fine{font-size:1.2rem;color:var(--mut);line-height:1.5;margin:.8rem 0 0}
+  .cc-dlg{border:0;border-radius:10px;padding:0;max-width:520px;width:calc(100% - 2.4rem);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  .cc-dlg::backdrop{background:rgba(10,20,14,.55)}
+  .cc-in{padding:2.4rem;position:relative}
+  .cc-in h3{margin:0 0 .6rem;font-size:2rem;color:var(--g);text-transform:uppercase}
+  .cc-in p{font-size:1.4rem;color:var(--mut);margin:0 0 1.4rem}
+  .cc-f{display:block;margin:0 0 1rem}
+  .cc-f span{display:block;font-weight:700;font-size:1.25rem;margin:0 0 .3rem}
+  .cc-f input{width:100%;border:1px solid #cfd4cc;border-radius:6px;padding:1rem 1.1rem;font:inherit;font-size:1.5rem}
+  .cc-chk{display:flex;gap:.8rem;align-items:center;font-size:1.35rem;margin:0 0 1rem}
+  .cc-xd{all:unset;cursor:pointer;position:absolute;right:1.4rem;top:1rem;font-size:2.6rem;line-height:1}
+  @media (max-width:900px){.cc-grid{grid-template-columns:1fr}.cc-sum{position:static}}
+  @media (max-width:560px){.cc-item{grid-template-columns:1fr}}
+</style>
+<div class="cc">
+  <div class="cc-hero"><div class="cc-wrap">
+    <div class="cc-eyebrow">{{ section.settings.eyebrow }}</div>
+    <h1>{{ section.settings.heading }}</h1>
+    <p>{{ section.settings.subheading }}</p>
+  </div></div>
+  <div class="cc-wrap cc-main" id="cc-main"><div class="cc-card"><p>Loading the checklist...</p></div></div>
+  <dialog class="cc-dlg" id="cc-dlg"><div class="cc-in" id="cc-in"></div></dialog>
+</div>
+<script type="application/json" id="cc-cfg">{"api": {{ section.settings.api_url | json }}, "email": {{ section.settings.email | json }}}</script>
+{% raw %}
+<script>
+(() => {
+  const C = JSON.parse(document.getElementById('cc-cfg').textContent);
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const money = (n) => '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const TIERS = [[20, 0.20], [10, 0.15], [5, 0.10]];
+  const PRI = { 1: ['p1', 'Required'], 2: ['p2', 'Recommended'], 3: ['p3', 'Good practice'] };
+  const KEY = 'cgap_cc_v1';
+  const main = $('#cc-main');
+  let M = null, st = { fac: '', areas: {}, mark: {}, qty: {} };
+  const pc = new Map();
+  const product = (h) => { if (!pc.has(h)) pc.set(h, fetch('/products/' + h + '.js').then((r) => (r.ok ? r.json() : null)).catch(() => null)); return pc.get(h); };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
+  const fac = () => M.facilities.find((f) => f.code === st.fac);
+  const pick = (k) => { const a = [...((M.picks[st.fac] || {})[k] || []), ...((M.picks.any || {})[k] || [])].filter((s) => M.signs[s]); return a[0] || null; };
+
+  function items() {
+    const out = [];
+    for (const a of fac().areas) {
+      if (!st.areas[a] || !M.areas[a]) continue;
+      for (const k of M.areas[a].slots || []) { const sl = M.slots[k]; if (!sl) continue; const sku = pick(k); out.push({ a, k, sl, sku, s: sku ? M.signs[sku] : null }); }
+    }
+    return out;
+  }
+
+  // ---------- step 1: facility ----------
+  function step1() {
+    main.innerHTML = `<div class="cc-step"><i>1</i><h2>What kind of site?</h2></div>
+      <div class="cc-card"><div class="cc-facs">${M.facilities.map((f) => `<button type="button" data-f="${esc(f.code)}" aria-pressed="${f.code === st.fac}">${esc(f.name)}</button>`).join('')}</div></div>`;
+    main.querySelectorAll('[data-f]').forEach((b) => b.addEventListener('click', () => {
+      if (st.fac !== b.dataset.f) { st = { fac: b.dataset.f, areas: {}, mark: {}, qty: {} }; fac().areas.forEach((a) => { st.areas[a] = true; }); }
+      save(); step2();
+    }));
+  }
+
+  // ---------- step 2: areas ----------
+  function step2() {
+    const f = fac();
+    main.innerHTML = `<div class="cc-step"><i>2</i><h2>Which of these does your ${esc(f.name.toLowerCase())} have?</h2></div>
+      <div class="cc-card"><p style="font-size:1.45rem;color:var(--mut);margin:0 0 1.4rem">Uncheck anything you don't have. Each area adds the signs inspectors expect to see there.</p>
+      <div class="cc-areas">${f.areas.filter((a) => M.areas[a]).map((a) => `<label><input type="checkbox" data-a="${esc(a)}"${st.areas[a] ? ' checked' : ''}>${esc(M.areas[a].label)}</label>`).join('')}</div>
+      <div class="cc-row"><button class="cc-btn cc-btn--o" type="button" id="cc-n2">Build my checklist</button><button class="cc-link" type="button" id="cc-b2">Change site type</button></div></div>`;
+    main.querySelectorAll('[data-a]').forEach((c) => c.addEventListener('change', () => { st.areas[c.dataset.a] = c.checked; save(); }));
+    $('#cc-n2').addEventListener('click', () => { step3(); window.scrollTo({ top: main.offsetTop - 20, behavior: 'smooth' }); });
+    $('#cc-b2').addEventListener('click', step1);
+  }
+
+  // ---------- step 3: walk-through ----------
+  function step3() {
+    const list = items();
+    const byArea = {};
+    list.forEach((it) => { (byArea[it.a] = byArea[it.a] || []).push(it); });
+    main.innerHTML = `<div class="cc-step"><i>3</i><h2>Walk your site and mark each sign</h2></div>
+      <div class="cc-grid"><div class="cc-card">${Object.entries(byArea).map(([a, arr]) => `<div class="cc-area"><h3>${esc(M.areas[a].label)}</h3>${arr.sort((x, y) => (x.sl.pri || 2) - (y.sl.pri || 2)).map(itemHtml).join('')}</div>`).join('')}
+      <div class="cc-row"><button class="cc-link" type="button" id="cc-b3">Change areas</button><button class="cc-link" type="button" id="cc-all">Mark everything missing (new site)</button></div></div>
+      <aside class="cc-sum" id="cc-sum"></aside></div>`;
+    main.querySelectorAll('.cc-item').forEach(bindItem);
+    $('#cc-b3').addEventListener('click', step2);
+    $('#cc-all').addEventListener('click', () => { list.forEach((it) => { if (it.s) st.mark[it.k] = 'miss'; }); save(); step3(); });
+    summary();
+    list.forEach((it) => { if (it.s) product(it.s.h); });
+  }
+  function itemHtml(it) {
+    const p = PRI[it.sl.pri || 2], m = st.mark[it.k] || '';
+    return `<div class="cc-item${m === 'miss' ? ' miss' : ''}" data-k="${esc(it.k)}">
+      <div><span class="cc-lab">${esc(it.sl.label)}</span><span class="cc-pri ${p[0]}">${p[1]}</span>
+      ${it.sl.why ? `<p class="cc-why">${esc(it.sl.why)}</p>` : ''}
+      ${it.s ? `<p class="cc-sign">Sign: <a href="/products/${encodeURIComponent(it.s.h)}" target="_blank" rel="noopener">${esc(it.s.c)} ${esc(it.s.s)}</a>${it.s.p ? `<br><span class="cc-why">${esc(it.s.p)}</span>` : ''}</p>` : ''}</div>
+      <div class="cc-seg" role="group" aria-label="Status"><button type="button" data-s="ok" aria-pressed="${m === 'ok'}">Posted</button><button type="button" data-s="miss" aria-pressed="${m === 'miss'}">Missing</button><button type="button" data-s="na" aria-pressed="${m === 'na'}">N/A</button></div></div>`;
+  }
+  function bindItem(el) {
+    el.querySelectorAll('[data-s]').forEach((b) => b.addEventListener('click', () => {
+      const k = el.dataset.k; st.mark[k] = st.mark[k] === b.dataset.s ? '' : b.dataset.s; save();
+      el.classList.toggle('miss', st.mark[k] === 'miss');
+      el.querySelectorAll('[data-s]').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.s === st.mark[k])));
+      summary();
+    }));
+  }
+  function stats() {
+    const list = items().filter((it) => st.mark[it.k] !== 'na');
+    const req = list.filter((it) => (it.sl.pri || 2) === 1);
+    const ok = list.filter((it) => st.mark[it.k] === 'ok').length;
+    const miss = list.filter((it) => st.mark[it.k] === 'miss' && it.s);
+    const unchecked = list.filter((it) => !st.mark[it.k]).length;
+    const reqOk = req.filter((it) => st.mark[it.k] === 'ok').length;
+    return { list, total: list.length, ok, miss, unchecked, req: req.length, reqOk, reqMiss: req.filter((it) => st.mark[it.k] === 'miss').length };
+  }
+  async function summary() {
+    const s = stats(), pct = s.total ? Math.round((s.ok / s.total) * 100) : 0;
+    const n = s.miss.length, t = TIERS.find(([m]) => n >= m), d = t ? t[1] : 0;
+    $('#cc-sum').innerHTML = `<h3>Your score</h3><div class="cc-score">${pct}%<small>${s.ok} of ${s.total} expected signs posted</small></div><div class="cc-bar"><i style="width:${pct}%"></i></div>
+      <dl><dt>Required signs posted</dt><dd>${s.reqOk} of ${s.req}</dd><dt>Missing</dt><dd>${n}</dd><dt>Not checked yet</dt><dd>${s.unchecked}</dd>${n ? `<dt>Missing signs cost</dt><dd id="cc-cost">...</dd>` : ''}</dl>
+      <button class="cc-btn cc-btn--o" type="button" id="cc-cart"${n ? '' : ' disabled'}>Add ${n || ''} missing sign${n === 1 ? '' : 's'} to cart</button>
+      <button class="cc-btn cc-btn--ghost" type="button" id="cc-pdf">Print walk-through checklist</button>
+      <p class="cc-fine">${s.reqMiss ? `<b style="color:#C8102E">${s.reqMiss} required sign${s.reqMiss === 1 ? ' is' : 's are'} missing.</b> These are the ones most often cited. ` : ''}Missing signs ship within 2 business days.${d ? ` Your ${n} signs get ${Math.round(d * 100)}% off.` : ' Order 5 or more for 10% off.'} This checklist is a guide built from OSHA, ANSI and NFPA expectations. Local codes and your inspector have the final word.</p>`;
+    $('#cc-cart').addEventListener('click', toCart);
+    $('#cc-pdf').addEventListener('click', pdfDlg);
+    if (n) {
+      let sum = 0; for (const it of s.miss) { const p = await product(it.s.h); if (p) sum += p.price / 100; }
+      const el = $('#cc-cost'); if (el) el.textContent = money(sum * (1 - d)) + (d ? ` (${Math.round(d * 100)}% off)` : '');
+    }
+  }
+  async function toCart() {
+    const b = $('#cc-cart'); b.disabled = true; b.textContent = 'Adding...';
+    const items = [];
+    for (const it of stats().miss) { const p = await product(it.s.h); if (p && p.available !== false) items.push({ id: p.variants[0].id, quantity: 1, properties: { _Checklist: M.areas[it.a].label } }); }
+    try { const r = await fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items }) }); if (!r.ok) throw new Error(); location.href = '/cart'; }
+    catch (e) { b.disabled = false; b.textContent = 'Try again'; }
+  }
+
+  // ---------- printable checklist ----------
+  const loadPdf = () => window.jspdf ? Promise.resolve(window.jspdf) : new Promise((ok, bad) => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'; s.onload = () => (window.jspdf ? ok(window.jspdf) : bad(new Error('pdf'))); s.onerror = bad; document.head.appendChild(s); });
+  const clean = (t) => String(t ?? '').replace(/[–—]/g, '-').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[^\x20-\x7E\xA0-\xFF]/g, '');
+  async function pdf(info) {
+    const { jsPDF } = await loadPdf();
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+    const W = 612, H = 792, M0 = 40, G = [23, 63, 36], O = [224, 115, 26], INK = [20, 24, 26], MUT = [93, 102, 96];
+    const color = (c) => doc.setTextColor(c[0], c[1], c[2]);
+    const f = fac(), s = stats();
+    doc.setFillColor(...G); doc.rect(0, 0, W, 76, 'F'); doc.setFillColor(...O); doc.rect(0, 76, W, 4, 'F');
+    doc.setTextColor(255); doc.setFont('helvetica', 'bold'); doc.setFontSize(19); doc.text('SAFETY SIGN WALK-THROUGH', M0, 36);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.text(clean(f.name) + (info.site ? '  |  ' + clean(info.site) : ''), M0, 54);
+    doc.text('CGAP Safety   ' + location.host + '/pages/sign-compliance-checker', M0, 67);
+    doc.setFontSize(9); doc.text('Date: ____________   Inspector: ________________', W - M0, 36, { align: 'right' });
+    doc.text(`Posted ${s.ok} of ${s.total}   Missing ${s.miss.length}`, W - M0, 54, { align: 'right' });
+    let y = 104;
+    const key = () => { color(MUT); doc.setFontSize(8); doc.text('OK = posted and readable     X = missing or damaged     N/A = not at this site     R = required (most often cited)', M0, y); y += 18; };
+    key();
+    const byArea = {}; s.list.forEach((it) => { (byArea[it.a] = byArea[it.a] || []).push(it); });
+    for (const [a, arr] of Object.entries(byArea)) {
+      if (y > H - 90) { doc.addPage(); y = 50; }
+      doc.setFillColor(238, 244, 239); doc.rect(M0, y - 11, W - 2 * M0, 18, 'F'); color(G); doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.text(clean(M.areas[a].label).toUpperCase(), M0 + 6, y + 2); y += 20;
+      for (const it of arr.sort((x, z) => (x.sl.pri || 2) - (z.sl.pri || 2))) {
+        const why = it.sl.why ? doc.splitTextToSize(clean(it.sl.why), 330) : [];
+        const sign = it.s ? doc.splitTextToSize('Sign: ' + clean(it.s.c + ' ' + it.s.s) + (it.s.p ? '. ' + clean(it.s.p) : ''), 330) : [];
+        const need = 14 + (why.length + sign.length) * 10 + 6;
+        if (y + need > H - 50) { doc.addPage(); y = 50; key(); }
+        const m = st.mark[it.k];
+        doc.setDrawColor(120); [0, 1, 2].forEach((i) => doc.rect(M0 + 4 + i * 34, y - 9, 11, 11));
+        doc.setFontSize(7); color(MUT); doc.text('OK', M0 + 17, y); doc.text('X', M0 + 51, y); doc.text('N/A', M0 + 85, y);
+        if (m) { color(INK); doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.text('x', M0 + 6.5 + ({ ok: 0, miss: 1, na: 2 }[m]) * 34, y); }
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(10); color(INK); doc.text(clean(it.sl.label) + ((it.sl.pri || 2) === 1 ? '  (R)' : ''), M0 + 112, y);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(8); color(MUT); let yy = y + 11;
+        why.forEach((l) => { doc.text(l, M0 + 112, yy); yy += 10; }); color(INK); sign.forEach((l) => { doc.text(l, M0 + 112, yy); yy += 10; });
+        doc.setDrawColor(225); doc.line(M0, yy - 2, W - M0, yy - 2); y = yy + 10;
+      }
+      y += 6;
+    }
+    if (y > H - 120) { doc.addPage(); y = 60; }
+    color(G); doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.text('NOTES', M0, y + 6); doc.setDrawColor(200); for (let i = 1; i <= 4; i++) doc.line(M0, y + 6 + i * 18, W - M0, y + 6 + i * 18);
+    const n = doc.getNumberOfPages();
+    for (let p = 1; p <= n; p++) { doc.setPage(p); doc.setFontSize(7.5); color(MUT); doc.text('A guide built from OSHA, ANSI and NFPA expectations. Local codes and your inspector have the final word.   Page ' + p + ' of ' + n, W - M0, H - 24, { align: 'right' }); }
+    doc.save('Sign-Walkthrough-' + clean(f.name).replace(/[^A-Za-z0-9]+/g, '-') + '.pdf');
+  }
+  function pdfDlg() {
+    const dlg = $('#cc-dlg'), inn = $('#cc-in');
+    inn.innerHTML = `<button class="cc-xd" type="button" aria-label="Close">&times;</button><h3>Print your checklist</h3><p>A printable walk-through with every sign marked, why it's expected and where it goes. Take it on your next inspection round.</p>
+      <form id="cc-f"><label class="cc-f"><span>Site name (optional, printed on the sheet)</span><input name="site"></label>
+      <label class="cc-f"><span>Email (optional)</span><input type="email" name="email" autocomplete="email"></label>
+      <label class="cc-chk"><input type="checkbox" name="news"> Email me a short safety tip and new checklists now and then</label>
+      <button class="cc-btn cc-btn--o" style="width:100%" type="submit">Download checklist PDF</button></form>`;
+    inn.querySelector('.cc-xd').addEventListener('click', () => dlg.close());
+    $('#cc-f').addEventListener('submit', async (e) => {
+      e.preventDefault(); const fd = Object.fromEntries(new FormData(e.target)); const b = e.target.querySelector('button'); b.disabled = true; b.textContent = 'Building...';
+      if (fd.email && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(fd.email)) {
+        const s = stats();
+        if (fd.news) { const body = new FormData(); body.append('form_type', 'customer'); body.append('utf8', '✓'); body.append('contact[email]', fd.email); body.append('contact[tags]', 'newsletter,compliance-checker,' + st.fac); fetch('/contact#contact_form', { method: 'POST', body, credentials: 'same-origin' }).catch(() => {}); }
+        const n = new FormData(); n.append('form_type', 'contact'); n.append('utf8', '✓'); n.append('contact[email]', fd.email);
+        n.append('contact[body]', `[COMPLIANCE CHECKLIST downloaded]\nSite type: ${fac().name}\nSite: ${fd.site || ''}\nScore: ${s.ok}/${s.total} posted, ${s.miss.length} missing (${s.reqMiss} required)\nMissing: ${s.miss.map((it) => it.sl.label).join('; ')}\nNewsletter: ${fd.news ? 'yes' : 'no'}`);
+        fetch('/contact#contact_form', { method: 'POST', body: n, credentials: 'same-origin' }).catch(() => {});
+      }
+      try { await pdf(fd); inn.innerHTML = `<button class="cc-xd" type="button" aria-label="Close">&times;</button><h3>Checklist downloaded</h3><p>It's in your downloads. Your marks are saved on this device, so you can come back and update them.</p>`; }
+      catch (er) { inn.innerHTML = `<button class="cc-xd" type="button" aria-label="Close">&times;</button><h3>Could not build the PDF</h3><p>Try again on a computer, or use your browser's print button on this page.</p>`; }
+      inn.querySelector('.cc-xd').addEventListener('click', () => dlg.close());
+    });
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+  }
+  $('#cc-dlg').addEventListener('click', (e) => { if (e.target.id === 'cc-dlg') e.target.close(); });
+
+  fetch(C.api + '?action=plan').then((r) => r.json()).then((d) => {
+    if (!d || !d.facilities) throw new Error('no data');
+    M = d;
+    try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.fac && M.facilities.some((f) => f.code === s.fac)) st = s; } catch (e) {}
+    const q = new URLSearchParams(location.search).get('site');
+    if (q && M.facilities.some((f) => f.code === q) && st.fac !== q) { st = { fac: q, areas: {}, mark: {}, qty: {} }; fac().areas.forEach((a) => { st.areas[a] = true; }); }
+    if (st.fac && Object.keys(st.mark).length) step3(); else if (st.fac) step2(); else step1();
+  }).catch(() => { main.innerHTML = `<div class="cc-card"><h2>The checklist is busy</h2><p>Refresh in a moment, or <a href="/pages/site-sign-plan">build a full site sign plan</a> instead.</p></div>`; });
+})();
+</script>
+{% endraw %}
+{% schema %}
+{
+  "name": "CGAP Compliance Checker",
+  "tag": "section",
+  "class": "cgap-compliance",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Free sign compliance check" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Is your site signed the way inspectors expect?" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Pick your site type, check off the areas you have, then walk the floor and mark each sign posted or missing. You get a score, a printable checklist with the code behind each sign, and one button to order what's missing." },
+    { "type": "text", "id": "email", "label": "Email", "default": "Info@cgapenterprises.com" },
+    { "type": "text", "id": "api_url", "label": "Sign Finder API URL", "default": "https://esmwoaqemeukjrjaesby.supabase.co/functions/v1/sign-finder" }
+  ],
+  "presets": [{ "name": "CGAP Compliance Checker" }]
+}
+{% endschema %}

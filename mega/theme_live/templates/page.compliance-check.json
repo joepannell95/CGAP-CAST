@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "cgap-compliance",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}
