@@ -1,0 +1,470 @@
+{%- comment -%} CGAP government and PO quote builder: buyer pastes a sign list, each line is matched to the catalog through the Sign Finder API, priced with the store's quantity discounts, then downloaded as a formal PDF quote with SAM.gov vendor details or added to the cart in one click. {%- endcomment -%}
+{%- assign custom = all_products[section.settings.custom_handle] -%}
+<style>
+  .gq{--g:#173F24;--o:#E0731A;--ink:#14181a;--mut:#5d6660;--line:#dfe3dc;--bg:#F3F4F1;color:var(--ink)}
+  .gq *{box-sizing:border-box}
+  .gq-hero{background:var(--g);color:#fff;padding:4.4rem 1.6rem 3.6rem;border-bottom:4px solid var(--o)}
+  .gq-wrap{max-width:1180px;margin:0 auto;padding:0 1.6rem}
+  .gq-hero .gq-wrap{padding:0}
+  .gq-eyebrow{display:inline-block;font-size:1.2rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#f3c79c;margin:0 0 1rem}
+  .gq-hero h1{color:#fff;font-size:clamp(3rem,4.6vw,4.6rem);line-height:1.08;margin:0 0 1.2rem;text-transform:uppercase}
+  .gq-hero p{font-size:1.75rem;line-height:1.5;max-width:760px;margin:0;opacity:.92}
+  .gq-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin:-2rem auto 0;position:relative;max-width:1180px;border-radius:6px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+  .gq-fact{background:#fff;padding:1.3rem 1.4rem}
+  .gq-fact span{display:block;font-size:1.1rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:700}
+  .gq-fact b{display:block;font-size:1.55rem;margin-top:.3rem;word-break:break-word}
+  .gq-main{padding:3.6rem 0 5rem}
+  .gq-step{display:flex;gap:1rem;align-items:baseline;margin:0 0 1rem}
+  .gq-step i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;width:3rem;height:3rem;border-radius:50%;background:var(--o);color:#fff;font-weight:800;font-size:1.5rem;flex:none}
+  .gq-step h2{margin:0;font-size:2.2rem;text-transform:uppercase}
+  .gq-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:2rem;margin:0 0 2.6rem}
+  .gq-ta{width:100%;min-height:200px;border:1px solid #cfd4cc;border-radius:6px;padding:1.2rem 1.3rem;font:inherit;font-size:1.55rem;line-height:1.5;resize:vertical}
+  .gq-help{font-size:1.35rem;color:var(--mut);margin:.8rem 0 1.4rem;line-height:1.5}
+  .gq-row{display:flex;flex-wrap:wrap;gap:1rem;align-items:center}
+  .gq-btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:.6rem;background:var(--g);color:#fff;font-weight:700;font-size:1.5rem;padding:1.3rem 2.2rem;border-radius:4px;text-transform:uppercase;letter-spacing:.04em}
+  .gq-btn:hover{background:#0f2d19}
+  .gq-btn[disabled]{opacity:.5;cursor:default}
+  .gq-btn--o{background:var(--o)}.gq-btn--o:hover{background:#c55f0e}
+  .gq-btn--ghost{background:#fff;color:var(--g);border:2px solid var(--g);padding:1.1rem 2rem}
+  .gq-link{all:unset;cursor:pointer;color:var(--g);font-weight:700;font-size:1.4rem;text-decoration:underline}
+  .gq-status{font-size:1.4rem;color:var(--mut);min-height:2rem;margin-top:1rem}
+  .gq-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:2.4rem;align-items:start}
+  .gq-tbl{width:100%;border-collapse:collapse}
+  .gq-tbl th{font-size:1.1rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);text-align:left;padding:.8rem .6rem;border-bottom:2px solid var(--line)}
+  .gq-tbl td{padding:1.2rem .6rem;border-bottom:1px solid var(--line);vertical-align:top;font-size:1.4rem}
+  .gq-orig{font-size:1.25rem;color:var(--mut);margin:0 0 .5rem}
+  .gq-orig b{color:var(--ink);font-weight:600}
+  .gq-m{display:flex;gap:1rem;align-items:flex-start}
+  .gq-m img{width:64px;height:auto;border:1px solid var(--line);border-radius:3px;flex:none;background:#f6f6f4}
+  .gq-m a{color:var(--ink);font-weight:700;text-decoration:none;line-height:1.35}
+  .gq-m a:hover{text-decoration:underline}
+  .gq-pill{display:inline-block;font-size:1rem;font-weight:800;letter-spacing:.08em;padding:.2rem .6rem;border-radius:3px;margin:0 0 .4rem;color:#fff;background:#555}
+  .gq-pill.DANGER{background:#C8102E}.gq-pill.WARNING{background:#FF7900;color:#111}.gq-pill.CAUTION{background:#FFD100;color:#111}.gq-pill.NOTICE{background:#0057B8}.gq-pill.CUSTOM{background:var(--g)}
+  .gq-sel{width:100%;margin-top:.7rem;font:inherit;font-size:1.3rem;padding:.6rem;border:1px solid #cfd4cc;border-radius:4px;background:#fff}
+  .gq-cust{display:grid;grid-template-columns:130px 1fr;gap:.6rem;margin-top:.7rem}
+  .gq-cust select,.gq-cust input{font:inherit;font-size:1.35rem;padding:.6rem;border:1px solid #cfd4cc;border-radius:4px;width:100%}
+  .gq-qty{width:72px;font:inherit;font-size:1.5rem;padding:.6rem;border:1px solid #cfd4cc;border-radius:4px;text-align:center}
+  .gq-x{all:unset;cursor:pointer;color:var(--mut);font-size:2rem;line-height:1;padding:0 .4rem}
+  .gq-amt{font-weight:700;white-space:nowrap;text-align:right}
+  .gq-sum{position:sticky;top:2rem;background:#fff;border:1px solid var(--line);border-top:5px solid var(--o);border-radius:8px;padding:2rem}
+  .gq-sum h3{margin:0 0 1.2rem;font-size:1.8rem;text-transform:uppercase}
+  .gq-sum dl{display:grid;grid-template-columns:1fr auto;gap:.7rem 1rem;margin:0 0 1.2rem;font-size:1.45rem}
+  .gq-sum dt{color:var(--mut)}.gq-sum dd{margin:0;text-align:right;font-weight:600}
+  .gq-tot{display:flex;justify-content:space-between;align-items:baseline;background:var(--g);color:#fff;padding:1.2rem 1.4rem;border-radius:4px;margin:0 0 1rem;font-weight:800;font-size:1.6rem}
+  .gq-tot b{font-size:2.4rem}
+  .gq-hint{font-size:1.3rem;color:var(--g);background:#eef4ef;border-radius:4px;padding:.9rem 1rem;margin:0 0 1.4rem;line-height:1.45}
+  .gq-sum .gq-btn{width:100%;margin:0 0 .8rem}
+  .gq-fine{font-size:1.2rem;color:var(--mut);line-height:1.5;margin:.6rem 0 0}
+  .gq-how{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.6rem;margin-top:1rem}
+  .gq-how div{background:#fff;border:1px solid var(--line);border-radius:8px;padding:1.6rem}
+  .gq-how h4{margin:0 0 .5rem;font-size:1.55rem;text-transform:uppercase;color:var(--g)}
+  .gq-how p{margin:0;font-size:1.4rem;line-height:1.5;color:var(--mut)}
+  .gq-dlg{border:0;border-radius:10px;padding:0;max-width:600px;width:calc(100% - 2.4rem);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  .gq-dlg::backdrop{background:rgba(10,20,14,.55)}
+  .gq-in{padding:2.4rem;position:relative}
+  .gq-in h3{margin:0 0 .6rem;font-size:2rem;color:var(--g);text-transform:uppercase}
+  .gq-in p{font-size:1.4rem;color:var(--mut);margin:0 0 1.4rem}
+  .gq-f{display:block;margin:0 0 1rem}
+  .gq-f span{display:block;font-weight:700;font-size:1.25rem;margin:0 0 .3rem}
+  .gq-f input,.gq-f textarea{width:100%;border:1px solid #cfd4cc;border-radius:6px;padding:1rem 1.1rem;font:inherit;font-size:1.5rem}
+  .gq-f textarea{min-height:64px}
+  .gq-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  .gq-chk{display:flex;gap:.8rem;align-items:center;font-size:1.4rem;margin:0 0 .8rem}
+  .gq-chk input{width:1.8rem;height:1.8rem}
+  .gq-err{color:#b3261e;font-size:1.3rem;min-height:1.6rem;margin:0 0 .6rem}
+  .gq-ok{background:#eef4ef;border:1px solid #bcd3c1;border-radius:8px;padding:1.2rem;font-size:1.4rem;color:var(--g);font-weight:700}
+  .gq-xd{all:unset;cursor:pointer;position:absolute;right:1.4rem;top:1rem;font-size:2.6rem;line-height:1}
+  .gq-skel{height:64px;border-radius:4px;background:linear-gradient(90deg,#f1f2ef 25%,#e6e8e3 50%,#f1f2ef 75%);background-size:200% 100%;animation:gqs 1.2s infinite}
+  @keyframes gqs{to{background-position:-200% 0}}
+  @media (max-width:900px){.gq-grid{grid-template-columns:1fr}.gq-sum{position:static}}
+  @media (max-width:640px){.gq-2,.gq-cust{grid-template-columns:1fr}.gq-tbl thead{display:none}.gq-tbl tr{display:grid;grid-template-columns:1fr auto auto;gap:.4rem 1rem;border-bottom:1px solid var(--line);padding:1rem 0}.gq-tbl td{border:0;padding:0}.gq-tbl td.gq-c1{grid-column:1/-1}.gq-tbl td.gq-cu{display:none}}
+</style>
+
+<div class="gq">
+  <div class="gq-hero"><div class="gq-wrap">
+    <div class="gq-eyebrow">{{ section.settings.eyebrow }}</div>
+    <h1>{{ section.settings.heading }}</h1>
+    <p>{{ section.settings.subheading }}</p>
+  </div></div>
+  <div class="gq-wrap">
+    <div class="gq-facts">
+      <div class="gq-fact"><span>Legal name</span><b>{{ section.settings.legal_name }}</b></div>
+      <div class="gq-fact"><span>UEI</span><b>{{ section.settings.uei }}</b></div>
+      <div class="gq-fact"><span>CAGE</span><b>{{ section.settings.cage }}</b></div>
+      <div class="gq-fact"><span>NAICS</span><b>{{ section.settings.naics }}</b></div>
+      <div class="gq-fact"><span>SAM.gov</span><b>Active, small business</b></div>
+      <div class="gq-fact"><span>Terms</span><b>PO, Net 30, P-card</b></div>
+      <div class="gq-fact"><span>Ships</span><b>Within 2 business days</b></div>
+    </div>
+  </div>
+
+  <div class="gq-wrap gq-main">
+    <div id="gq-s1">
+      <div class="gq-step"><i>1</i><h2>Paste your sign list</h2></div>
+      <div class="gq-card">
+        <textarea class="gq-ta" id="gq-ta" spellcheck="false" placeholder="One sign per line. Add a quantity anywhere on the line.&#10;&#10;10 Confined Space Permit Required&#10;Eye wash station x 4&#10;Chlorine room, 2&#10;High voltage keep out - 6&#10;No smoking within 25 feet"></textarea>
+        <p class="gq-help">Paste straight from a bid sheet, email or spreadsheet. Quantities can go before or after the sign name ("10 Eye Wash", "Eye Wash x 10", "Eye Wash, 10"). Up to 200 lines. Anything we don't carry is quoted as a custom sign with your exact wording at the same price.</p>
+        <div class="gq-row">
+          <button class="gq-btn gq-btn--o" type="button" id="gq-go">Match my signs</button>
+          <label class="gq-btn gq-btn--ghost" for="gq-file">Upload CSV or TXT</label>
+          <input type="file" id="gq-file" accept=".csv,.txt,.tsv,text/plain,text/csv" hidden>
+          <button class="gq-link" type="button" id="gq-ex">Try an example</button>
+        </div>
+        <div class="gq-status" id="gq-st" role="status"></div>
+      </div>
+    </div>
+
+    <div id="gq-s2" hidden>
+      <div class="gq-step"><i>2</i><h2>Check the matches</h2></div>
+      <div class="gq-grid">
+        <div class="gq-card" style="padding:1rem 1.6rem">
+          <table class="gq-tbl"><thead><tr><th>Sign</th><th>Qty</th><th class="gq-cu" style="text-align:right">Each</th><th style="text-align:right">Amount</th><th></th></tr></thead><tbody id="gq-rows"></tbody></table>
+          <div class="gq-row" style="margin-top:1.4rem;justify-content:space-between">
+            <button class="gq-link" type="button" id="gq-add">+ Add a line</button>
+            <button class="gq-link" type="button" id="gq-reset">Start over</button>
+          </div>
+        </div>
+        <aside class="gq-sum" aria-live="polite">
+          <h3>Quote summary</h3>
+          <dl id="gq-dl"></dl>
+          <div class="gq-tot"><span>Total</span><b id="gq-total">$0.00</b></div>
+          <div class="gq-hint" id="gq-hint"></div>
+          <button class="gq-btn gq-btn--o" type="button" id="gq-pdf">Download quote PDF</button>
+          <button class="gq-btn" type="button" id="gq-cart">Add all to cart</button>
+          <p class="gq-fine">Shipping is included. Tax-exempt orders welcome. Quotes hold for 30 days. Pay by PO (Net 30 for public agencies), P-card, card, ACH or check.</p>
+        </aside>
+      </div>
+    </div>
+
+    <div class="gq-step" style="margin-top:2rem"><i>?</i><h2>How buying by PO works</h2></div>
+    <div class="gq-how">
+      <div><h4>1. Get the quote</h4><p>Download a formal quote with our UEI, CAGE and NAICS on it. Attach it to your requisition or bid file.</p></div>
+      <div><h4>2. Send the PO</h4><p>Email your PO to {{ section.settings.email }} with the quote number. Tax-exempt certificate and W-9 handled on request.</p></div>
+      <div><h4>3. We make and ship</h4><p>Signs are made to order in Amory, Mississippi and ship within 2 business days. Invoice follows, Net 30.</p></div>
+      <div><h4>Paying by card instead?</h4><p>Use "Add all to cart" and check out with any purchasing card. Quantity discounts apply automatically.</p></div>
+    </div>
+  </div>
+  <dialog class="gq-dlg" id="gq-dlg"><div class="gq-in" id="gq-in"></div></dialog>
+</div>
+
+<script type="application/json" id="gq-cfg">{
+  "api": {{ section.settings.api_url | json }},
+  "email": {{ section.settings.email | json }},
+  "phone": {{ section.settings.phone | json }},
+  "legal": {{ section.settings.legal_name | json }},
+  "dba": {{ section.settings.dba | json }},
+  "address": {{ section.settings.address | json }},
+  "uei": {{ section.settings.uei | json }},
+  "cage": {{ section.settings.cage | json }},
+  "naics": {{ section.settings.naics | json }},
+  "custom": {% if custom and custom.id %}{"id": {{ custom.variants.first.id | json }}, "price": {{ custom.price | json }}, "handle": {{ custom.handle | json }}}{% else %}null{% endif %}
+}</script>
+{% raw %}
+<script>
+(() => {
+  const C = JSON.parse(document.getElementById('gq-cfg').textContent);
+  const TIERS = [[20, 0.20], [10, 0.15], [5, 0.10]];
+  const MAXL = 200, KEY = 'cgap_gq_v1';
+  const HEADERS = ['DANGER', 'WARNING', 'CAUTION', 'NOTICE', 'SAFETY FIRST'];
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const money = (n) => '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const r2 = (n) => Math.round(n * 100 + 1e-6) / 100;
+  const short = (t) => String(t || '').split(/ [–-] 8x12| – |, (?:for |8x12|English)/)[0].replace(/\s+Sign$/i, '').trim();
+  let rows = [], uid = 0;
+
+  // ---------- parsing ----------
+  const cleanTxt = (t) => t.replace(/^[\s\-*•·▪>]+/, '').replace(/["']/g, '').replace(/\s+/g, ' ').trim();
+  const UNITS = /^(mph|km|ft|feet|foot|lbs?|pounds?|tons?|volts?|v|kv|vac|vdc|amps?|degrees?|°|%|psi|gallons?|gal|inch|in|minutes?|min|hours?|hrs?|days?|am|pm|years?|people|persons|occupants)\b/i;
+  function parseLine(raw) {
+    let line = raw.replace(/\u00a0/g, ' ').trim();
+    if (!line) return null;
+    if (/^(qty|quantity|item|description|sign|signs|line|#)([\s,\t]+(qty|quantity|description|item|sign|signs))*\s*$/i.test(line)) return null;
+    const cells = line.split(/\t|,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map((c) => c.trim()).filter(Boolean);
+    if (cells.length > 1) {
+      const num = cells.findIndex((c) => /^\d{1,4}(\.0+)?$/.test(c));
+      if (num >= 0) { const qty = parseInt(cells[num], 10); cells.splice(num, 1); const text = cleanTxt(cells.join(' ')); return text.length > 1 ? { text, qty: Math.max(1, Math.min(9999, qty || 1)) } : null; }
+      line = cells.join(', ');
+    }
+    line = line.replace(/^\d{1,3}[.)]\s+/, '');
+    let m, qty = 1, text = line;
+    if ((m = line.match(/^(\d{1,4})\s*(x|×|ea\.?|each|pcs?\.?|-|:)?\s+(.+)$/i)) && (m[2] || !UNITS.test(m[3]))) { qty = +m[1]; text = m[3]; }
+    else if ((m = line.match(/^(.+?)(?:\s*[,;:(\-–]\s*|\s+[x×]\s*)(?:qty\.?\s*)?(\d{1,4})\s*(?:ea\.?|each|pcs?\.?|signs?)?\)?\s*$/i))) { qty = +m[2]; text = m[1]; }
+    else if ((m = line.match(/^(.+?)\s*(?:qty|quantity)\s*[:=]?\s*(\d{1,4})\b/i))) { qty = +m[2]; text = m[1]; }
+    text = cleanTxt(text.replace(/[\s,;:(\-–]+$/, ''));
+    if (!text || text.length < 2) return null;
+    return { text, qty: Math.max(1, Math.min(9999, qty || 1)) };
+  }
+  const guessHeader = (t) => { const u = t.toUpperCase(); return HEADERS.find((h) => u.startsWith(h) || u.includes(h + ' ')) || (/(fire|exit|extinguisher|eyewash|eye wash|first aid|shower)/i.test(t) ? 'SAFETY FIRST' : /(keep out|high voltage|confined|chlorine|arc flash|explosive|toxic|crush|amputat)/i.test(t) ? 'DANGER' : 'NOTICE'); };
+  const stripHeader = (t) => t.replace(new RegExp('^(' + HEADERS.join('|') + ')[\\s:,-]*', 'i'), '').trim();
+
+  // ---------- data ----------
+  const pcache = new Map();
+  const product = (h) => { if (!pcache.has(h)) pcache.set(h, fetch('/products/' + h + '.js').then((r) => (r.ok ? r.json() : null)).catch(() => null)); return pcache.get(h); };
+  async function search(q) {
+    const u = new URL(C.api); u.searchParams.set('q', q);
+    const r = await fetch(u); if (!r.ok) throw new Error('search'); const d = await r.json();
+    return (d.results || []).slice(0, 4);
+  }
+  async function match(row) {
+    row.state = 'loading'; draw();
+    try {
+      const res = await search(row.text);
+      const opts = [];
+      for (const r of res) { const p = await product(r.handle); if (p && p.available !== false) opts.push({ sku: r.sku, handle: r.handle, series: (r.series || '').toUpperCase(), title: r.subject || short(p.title), full: p.title, id: p.variants[0].id, price: p.price / 100, img: p.featured_image }); if (opts.length >= 3) break; }
+      row.opts = opts;
+      row.pick = opts.length ? 0 : -1;
+    } catch (e) { row.opts = []; row.pick = -1; }
+    if (row.pick === -1) { row.header = guessHeader(row.text); row.wording = stripHeader(row.text); }
+    row.state = 'ok'; draw();
+  }
+  async function pool(list, n) { let i = 0; await Promise.all(Array.from({ length: n }, async () => { while (i < list.length) { const r = list[i++]; await match(r); } })); }
+
+  // ---------- pricing ----------
+  const customPrice = () => (C.custom ? C.custom.price / 100 : 29.99);
+  function line(r) {
+    if (r.state !== 'ok') return null;
+    if (r.pick >= 0) { const o = r.opts[r.pick]; return { id: o.id, unit: o.price, desc: o.full, sku: o.sku, url: location.origin + '/products/' + o.handle, custom: false }; }
+    return { id: C.custom && C.custom.id, unit: customPrice(), desc: 'Custom sign: ' + (r.header || 'NOTICE') + ' - ' + (r.wording || r.text), sku: 'CUSTOM', url: '', custom: true };
+  }
+  function totals() {
+    let n = 0, list = 0, pending = 0;
+    rows.forEach((r) => { const l = line(r); if (!l) { pending++; return; } n += r.qty; list += r.qty * l.unit; });
+    const t = TIERS.find(([min]) => n >= min); const pct = t ? t[1] : 0;
+    const next = [...TIERS].reverse().find(([min]) => min > n);
+    return { n, list: r2(list), pct, disc: r2(list * pct), total: r2(list * (1 - pct)), next, pending };
+  }
+
+  // ---------- render ----------
+  const tb = $('#gq-rows');
+  function rowHtml(r) {
+    if (r.state !== 'ok') return `<tr><td class="gq-c1"><p class="gq-orig">Your line: <b>${esc(r.text)}</b></p><div class="gq-skel"></div></td><td></td><td class="gq-cu"></td><td></td><td></td></tr>`;
+    const l = line(r);
+    const opts = r.opts.map((o, i) => `<option value="${i}"${i === r.pick ? ' selected' : ''}>${esc(o.series)} ${esc(o.title)} (${money(o.price)})</option>`).join('') + `<option value="-1"${r.pick === -1 ? ' selected' : ''}>Custom sign with my exact wording (${money(customPrice())})</option>`;
+    let body;
+    if (r.pick >= 0) {
+      const o = r.opts[r.pick];
+      body = `<div class="gq-m">${o.img ? `<img src="${esc(o.img)}${o.img.includes('?') ? '&' : '?'}width=140" alt="" loading="lazy">` : ''}<div><span class="gq-pill ${esc(o.series.split(' ')[0])}">${esc(o.series)}</span><br><a href="/products/${esc(o.handle)}" target="_blank" rel="noopener">${esc(o.title)}</a><div class="gq-orig" style="margin:.3rem 0 0">${esc(o.sku)}</div></div></div>`;
+    } else {
+      body = `<div class="gq-m"><div style="width:100%"><span class="gq-pill CUSTOM">CUSTOM</span> <span style="font-size:1.3rem;color:var(--mut)">${r.opts.length ? 'Your exact wording' : 'No close catalog match, quoted as a custom sign'}</span>
+        <div class="gq-cust"><select data-k="header">${HEADERS.map((h) => `<option${h === r.header ? ' selected' : ''}>${h}</option>`).join('')}</select><input data-k="wording" value="${esc(r.wording)}" maxlength="160" aria-label="Sign wording"></div></div></div>`;
+    }
+    return `<tr data-u="${r.u}"><td class="gq-c1"><p class="gq-orig">Your line: <b>${esc(r.text)}</b></p>${body}<select class="gq-sel" data-k="pick" aria-label="Choose sign">${opts}</select></td>
+      <td><input class="gq-qty" type="number" min="1" max="9999" value="${r.qty}" data-k="qty" aria-label="Quantity"></td>
+      <td class="gq-cu gq-amt" style="font-weight:400">${money(l.unit)}</td><td class="gq-amt">${money(r2(l.unit * r.qty))}</td>
+      <td><button class="gq-x" type="button" data-k="del" aria-label="Remove line">&times;</button></td></tr>`;
+  }
+  let raf = 0;
+  function draw() { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { tb.innerHTML = rows.map(rowHtml).join(''); summary(); save(); }); }
+  function summary() {
+    const t = totals();
+    $('#gq-dl').innerHTML = `<dt>Lines</dt><dd>${rows.length}</dd><dt>Signs</dt><dd>${t.n}</dd><dt>List price</dt><dd>${money(t.list)}</dd>` +
+      (t.pct ? `<dt>Quantity discount (${Math.round(t.pct * 100)}%)</dt><dd>-${money(t.disc)}</dd>` : '') + `<dt>Shipping</dt><dd>Included</dd>`;
+    $('#gq-total').textContent = money(t.total);
+    const h = [];
+    if (t.pending) h.push(`Matching ${t.pending} more line${t.pending === 1 ? '' : 's'}...`);
+    else if (t.next) h.push(`Add ${t.next[0] - t.n} more sign${t.next[0] - t.n === 1 ? '' : 's'} (any mix) to reach ${Math.round(t.next[1] * 100)}% off the whole order.`);
+    else h.push('Your order gets our top 20% quantity discount.');
+    $('#gq-hint').textContent = h.join(' ');
+    $('#gq-pdf').disabled = $('#gq-cart').disabled = !!t.pending || !rows.length;
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(rows.filter((r) => r.state === 'ok').map(({ u, text, qty, pick, opts, header, wording }) => ({ text, qty, pick, opts, header, wording })))); } catch (e) {} }
+
+  tb.addEventListener('input', (e) => {
+    const tr = e.target.closest('tr[data-u]'); if (!tr) return; const r = rows.find((x) => x.u == tr.dataset.u); const k = e.target.dataset.k;
+    if (k === 'qty') { r.qty = Math.max(1, Math.min(9999, parseInt(e.target.value, 10) || 1)); const l = line(r); tr.querySelector('td:nth-child(4)').textContent = money(r2(l.unit * r.qty)); summary(); save(); }
+    else if (k === 'wording') { r.wording = e.target.value; save(); }
+  });
+  tb.addEventListener('change', (e) => {
+    const tr = e.target.closest('tr[data-u]'); if (!tr) return; const r = rows.find((x) => x.u == tr.dataset.u); const k = e.target.dataset.k;
+    if (k === 'pick') { r.pick = +e.target.value; if (r.pick === -1 && !r.wording) { r.header = guessHeader(r.text); r.wording = stripHeader(r.text); } draw(); }
+    else if (k === 'header') { r.header = e.target.value; save(); }
+    else if (k === 'qty') draw();
+  });
+  tb.addEventListener('click', (e) => { const b = e.target.closest('[data-k="del"]'); if (!b) return; const u = b.closest('tr').dataset.u; rows = rows.filter((x) => x.u != u); if (!rows.length) reset(); else draw(); });
+
+  // ---------- flow ----------
+  const st = $('#gq-st');
+  async function run(text) {
+    const lines = text.split(/\r?\n/).map(parseLine).filter(Boolean);
+    if (!lines.length) { st.textContent = 'Paste at least one sign, one per line.'; return; }
+    const extra = lines.length > MAXL ? lines.length - MAXL : 0;
+    const add = lines.slice(0, MAXL).map((l) => ({ u: ++uid, text: l.text, qty: l.qty, state: 'loading', opts: [], pick: -1 }));
+    rows = rows.concat(add);
+    $('#gq-s2').hidden = false; draw();
+    st.textContent = extra ? `Matched the first ${MAXL} lines. Send the other ${extra} as a second list, or email the whole list to ${C.email}.` : '';
+    $('#gq-s2').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    await pool(add, 4);
+  }
+  function reset() { rows = []; try { localStorage.removeItem(KEY); } catch (e) {} $('#gq-s2').hidden = true; $('#gq-ta').value = ''; $('#gq-ta').focus(); }
+  $('#gq-go').addEventListener('click', () => { const v = $('#gq-ta').value; $('#gq-ta').value = ''; run(v); });
+  $('#gq-reset').addEventListener('click', reset);
+  $('#gq-ex').addEventListener('click', () => { $('#gq-ta').value = '10 Confined Space Permit Required\nEye wash station x 4\nChlorine room, 2\nHigh voltage keep out - 6\nLift station wet well x 3\nPump station authorized personnel only\nWASTEWATER TREATMENT PLANT VISITORS MUST CHECK IN AT OFFICE'; $('#gq-ta').focus(); });
+  $('#gq-file').addEventListener('change', async (e) => { const f = e.target.files[0]; if (!f) return; if (f.size > 500000) { st.textContent = 'That file is too large. Paste the sign list instead.'; return; } $('#gq-ta').value = await f.text(); e.target.value = ''; st.textContent = f.name + ' loaded. Check it, then press Match my signs.'; });
+  $('#gq-add').addEventListener('click', () => { const t = prompt('Sign name or wording (add a quantity if you like):'); if (t) run(t); });
+
+  // restore a saved list or a shared ?list= link
+  try {
+    const q = new URLSearchParams(location.search).get('list');
+    if (q) $('#gq-ta').value = q;
+    else { const s = JSON.parse(localStorage.getItem(KEY) || '[]'); if (s.length) { rows = s.map((r) => ({ ...r, u: ++uid, state: 'ok' })); $('#gq-s2').hidden = false; draw(); } }
+  } catch (e) {}
+
+  // ---------- cart ----------
+  $('#gq-cart').addEventListener('click', async () => {
+    const b = $('#gq-cart'); b.disabled = true; b.textContent = 'Adding...';
+    const items = rows.map((r) => { const l = line(r); if (!l || !l.id) return null; const it = { id: l.id, quantity: r.qty }; if (l.custom) it.properties = { Header: r.header || 'NOTICE', Wording: r.wording || r.text, '_From quote list': r.text }; return it; }).filter(Boolean);
+    try {
+      for (let i = 0; i < items.length; i += 50) { const res = await fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: items.slice(i, i + 50) }) }); if (!res.ok) throw new Error('cart'); }
+      location.href = '/cart';
+    } catch (e) { b.disabled = false; b.textContent = 'Add all to cart'; alert('Some signs could not be added. Please download the quote and email it to ' + C.email + '.'); }
+  });
+
+  // ---------- PDF ----------
+  const loadPdf = () => window.jspdf ? Promise.resolve(window.jspdf) : new Promise((ok, bad) => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'; s.onload = () => (window.jspdf ? ok(window.jspdf) : bad(new Error('pdf'))); s.onerror = bad; document.head.appendChild(s); });
+  const quoteNo = () => { const d = new Date(), p = (n) => String(n).padStart(2, '0'); return 'G' + String(d.getFullYear()).slice(2) + p(d.getMonth() + 1) + p(d.getDate()) + '-' + Math.random().toString(36).slice(2, 6).toUpperCase(); };
+  const clean = (t) => String(t ?? '').replace(/[–—]/g, '-').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[^\x20-\x7E\xA0-\xFF]/g, '');
+
+  async function pdf(info, qn) {
+    const { jsPDF } = await loadPdf();
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+    const W = 612, H = 792, M = 40, G = [23, 63, 36], O = [224, 115, 26], INK = [20, 24, 26], MUT = [93, 102, 96];
+    const color = (c) => doc.setTextColor(c[0], c[1], c[2]);
+    const now = new Date(), until = new Date(now.getTime() + 30 * 864e5);
+    const fdt = (x) => x.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const t = totals();
+    // header band
+    doc.setFillColor(...G); doc.rect(0, 0, W, 92, 'F'); doc.setFillColor(...O); doc.rect(0, 92, W, 4, 'F');
+    doc.setTextColor(255); doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.text(clean(C.dba).toUpperCase(), M, 40);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
+    doc.text(clean(C.legal) + ', doing business as ' + clean(C.dba), M, 56);
+    doc.text(clean(C.address), M, 69);
+    doc.text(clean(C.phone) + '   ' + clean(C.email) + '   ' + location.host, M, 82);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.text('QUOTATION', W - M, 40, { align: 'right' });
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+    doc.text('Quote no. ' + qn, W - M, 58, { align: 'right' }); doc.text('Date: ' + fdt(now), W - M, 71, { align: 'right' }); doc.text('Valid through: ' + fdt(until), W - M, 84, { align: 'right' });
+    let y = 120;
+    // three blocks
+    color(MUT); doc.setFontSize(8); doc.setFont('helvetica', 'bold');
+    doc.text('PREPARED FOR', M, y); doc.text('VENDOR REGISTRATION', 232, y); doc.text('ORDER DETAILS', 420, y);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); color(INK);
+    const who = [info.name, info.agency, info.email, info.phone].filter(Boolean).map(clean);
+    const ship = info.ship ? doc.splitTextToSize('Ship to: ' + clean(info.ship), 175) : [];
+    [...who, ...ship].forEach((l, i) => doc.text(l, M, y + 15 + i * 13));
+    const reg = [['UEI', C.uei], ['CAGE', C.cage], ['NAICS', C.naics], ['SAM.gov', 'Active'], ['Size', 'Small business'], ['Origin', 'Made in USA']];
+    reg.forEach(([k, v], i) => { color(MUT); doc.text(k, 232, y + 15 + i * 13); color(INK); doc.text(clean(v).slice(0, 26), 280, y + 15 + i * 13); });
+    const det = [['Ref / PO', info.ref || '-'], ['Need by', info.needby || '-'], ['Tax', info.exempt ? 'Exempt (cert. to follow)' : 'Not included'], ['Shipping', 'Included'], ['Lead time', 'Ships in 2 bus. days']];
+    det.forEach(([k, v], i) => { color(MUT); doc.text(k, 420, y + 15 + i * 13); color(INK); doc.text(clean(v).slice(0, 22), W - M, y + 15 + i * 13, { align: 'right' }); });
+    y += 15 + Math.max(who.length + ship.length, reg.length, det.length) * 13 + 14;
+    // table
+    const head = () => { doc.setFillColor(238, 244, 239); doc.rect(M, y, W - 2 * M, 20, 'F'); color(G); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+      doc.text('#', M + 6, y + 13); doc.text('ITEM', M + 26, y + 13); doc.text('QTY', M + 400, y + 13, { align: 'right' }); doc.text('UNIT', M + 462, y + 13, { align: 'right' }); doc.text('AMOUNT', W - M - 4, y + 13, { align: 'right' }); y += 32; doc.setFont('helvetica', 'normal'); };
+    head();
+    rows.forEach((r, i) => {
+      const l = line(r); if (!l) return;
+      const dl = doc.splitTextToSize(clean(l.desc), 340); const sub = l.custom ? 'Custom 8x12 sign, customer wording, ANSI layout' : 'SKU ' + clean(l.sku);
+      const need = dl.length * 11 + 14;
+      if (y + need > H - 70) { doc.addPage(); y = 50; head(); }
+      doc.setFontSize(9.5); color(INK);
+      doc.text(String(i + 1), M + 6, y); doc.text(dl, M + 26, y);
+      doc.text(String(r.qty), M + 400, y, { align: 'right' }); doc.text(money(l.unit), M + 462, y, { align: 'right' }); doc.text(money(r2(l.unit * r.qty)), W - M - 4, y, { align: 'right' });
+      y += dl.length * 11; color(MUT); doc.setFontSize(7.5); doc.text(sub, M + 26, y); y += 14;
+      doc.setDrawColor(235, 237, 232); doc.line(M, y - 7, W - M, y - 7);
+    });
+    // totals
+    if (y + 130 > H - 50) { doc.addPage(); y = 60; }
+    y += 8; doc.setFontSize(9.5);
+    const tot = [['Signs', String(t.n)], ['List price', money(t.list)], ...(t.pct ? [[Math.round(t.pct * 100) + '% quantity discount (' + t.n + ' signs)', '-' + money(t.disc)]] : []), ['Shipping', 'Included'], ['Sales tax', info.exempt ? 'Exempt' : 'Not included']];
+    tot.forEach(([k, v]) => { color(MUT); doc.text(k, 300, y); color(INK); doc.text(v, W - M, y, { align: 'right' }); y += 15; });
+    doc.setFillColor(...G); doc.rect(290, y - 6, W - M - 290, 26, 'F');
+    doc.setTextColor(255); doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.text('Quote total', 300, y + 11); doc.text(money(t.total), W - M - 8, y + 11, { align: 'right' });
+    y += 44;
+    const terms = [
+      'Prices are firm for 30 days, through ' + fdt(until) + '. Quantity discount applies to the whole order, any mix of signs.',
+      'Payment: purchase order (Net 30 for government agencies and public institutions), purchasing card, credit card, ACH or check. W-9 and tax-exempt handling on request.',
+      'Every sign is made to order in Amory, Mississippi and ships within 2 business days of the PO. Shipping is included.',
+      'Each sign: 8 x 12 in, heavy-gauge, rust-resistant aluminum, UV-stable print, pre-drilled corners. Five-year outdoor warranty. Custom wording is proofed before printing.',
+      'To order: email your PO to ' + C.email + ' referencing quote no. ' + qn + '.',
+    ];
+    if (y + 170 > H - 40) { doc.addPage(); y = 60; }
+    color(G); doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.text('TERMS', M, y); y += 14;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); color(INK);
+    terms.forEach((tx) => { const l = doc.splitTextToSize(tx, W - 2 * M - 12); doc.text('-', M, y); doc.text(l, M + 12, y); y += l.length * 12 + 3; });
+    y += 22; doc.setDrawColor(150); doc.line(M, y, M + 200, y); doc.line(M + 230, y, M + 360, y); doc.line(M + 390, y, W - M, y);
+    color(MUT); doc.setFontSize(8); doc.text('Accepted by', M, y + 11); doc.text('Date', M + 230, y + 11); doc.text('PO number', M + 390, y + 11);
+    const n = doc.getNumberOfPages();
+    for (let p = 1; p <= n; p++) { doc.setPage(p); doc.setFontSize(7.5); color(MUT); doc.text(clean(C.dba) + '   Quote ' + qn + '   Page ' + p + ' of ' + n, W - M, H - 26, { align: 'right' }); }
+    doc.save('CGAP-Safety-Quote-' + qn + '.pdf');
+  }
+
+  function notify(info, qn) {
+    const t = totals();
+    const list = rows.map((r, i) => { const l = line(r); return l ? `${i + 1}. ${r.qty} x ${l.desc}${l.custom ? '' : ' [' + l.sku + ']'} @ ${money(l.unit)}   (buyer wrote: ${r.text})` : ''; }).join('\n');
+    const fd = new FormData();
+    fd.append('form_type', 'contact'); fd.append('utf8', '✓');
+    fd.append('contact[email]', info.email); if (info.name) fd.append('contact[name]', info.name); if (info.phone) fd.append('contact[phone]', info.phone);
+    fd.append('contact[body]', `[GOV QUOTE ${qn} - PDF downloaded by buyer]\n` + (info.w9 ? '*** W-9 REQUESTED ***\n' : '') + (info.exempt ? 'Tax exempt: yes\n' : '') +
+      `Agency: ${info.agency || ''}\nRef/PO: ${info.ref || ''}\nNeed by: ${info.needby || ''}\nShip to: ${info.ship || ''}\n\n${list}\n\nSigns: ${t.n}   List: ${money(t.list)}   Discount: ${Math.round(t.pct * 100)}%   Total: ${money(t.total)}`);
+    return fetch('/contact#contact_form', { method: 'POST', body: fd, credentials: 'same-origin' }).then((r) => r.ok).catch(() => false);
+  }
+
+  const dlg = $('#gq-dlg'), inn = $('#gq-in');
+  const closeBtn = () => inn.querySelector('.gq-xd').addEventListener('click', () => dlg.close());
+  $('#gq-pdf').addEventListener('click', () => {
+    const t = totals();
+    let saved = {}; try { saved = JSON.parse(localStorage.getItem(KEY + '_who') || '{}'); } catch (e) {}
+    const v = (k) => esc(saved[k] || '');
+    inn.innerHTML = `<button class="gq-xd" type="button" aria-label="Close">&times;</button><h3>Your quote: ${money(t.total)}</h3>
+      <p>${t.n} signs on ${rows.length} lines. The PDF downloads right away and lists our UEI, CAGE and NAICS. Prices hold for 30 days.</p>
+      <form id="gq-f"><div class="gq-2"><label class="gq-f"><span>Name</span><input name="name" required autocomplete="name" value="${v('name')}"></label><label class="gq-f"><span>Agency or organization</span><input name="agency" required autocomplete="organization" value="${v('agency')}"></label></div>
+      <div class="gq-2"><label class="gq-f"><span>Email</span><input type="email" name="email" required autocomplete="email" value="${v('email')}"></label><label class="gq-f"><span>Phone</span><input name="phone" autocomplete="tel" value="${v('phone')}"></label></div>
+      <div class="gq-2"><label class="gq-f"><span>Requisition, bid or PO no. (optional)</span><input name="ref"></label><label class="gq-f"><span>Need by (optional)</span><input name="needby" placeholder="e.g. Dec 15"></label></div>
+      <label class="gq-f"><span>Ship-to address (optional)</span><textarea name="ship">${v('ship')}</textarea></label>
+      <label class="gq-chk"><input type="checkbox" name="exempt"${saved.exempt ? ' checked' : ''}> We are tax exempt</label>
+      <label class="gq-chk"><input type="checkbox" name="w9"> Email me your W-9</label>
+      <div class="gq-err" id="gq-e"></div><button class="gq-btn gq-btn--o" style="width:100%" type="submit">Download quote PDF</button></form>`;
+    closeBtn();
+    $('#gq-f').addEventListener('submit', async (e) => {
+      e.preventDefault(); const fd = Object.fromEntries(new FormData(e.target)); fd.exempt = !!fd.exempt; fd.w9 = !!fd.w9;
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(fd.email)) { $('#gq-e').textContent = 'Enter a valid email.'; return; }
+      try { localStorage.setItem(KEY + '_who', JSON.stringify({ name: fd.name, agency: fd.agency, email: fd.email, phone: fd.phone, ship: fd.ship, exempt: fd.exempt })); } catch (er) {}
+      const b = e.target.querySelector('button[type=submit]'); b.disabled = true; b.textContent = 'Building your quote...';
+      const qn = quoteNo(); const sent = notify(fd, qn);
+      let made = true; try { await pdf(fd, qn); } catch (er) { made = false; }
+      await sent;
+      inn.innerHTML = `<button class="gq-xd" type="button" aria-label="Close">&times;</button><h3>${made ? 'Quote ' + esc(qn) + ' downloaded' : 'Quote request received'}</h3>
+        <div class="gq-ok">${made ? 'The PDF is in your downloads. We have a copy on file' : 'The PDF could not be built on this device, so we will email your quote'}${fd.w9 ? ' and will email our W-9 to ' + esc(fd.email) : ''}.</div>
+        <p style="margin-top:1.4rem">To order, email your PO to <a href="mailto:${esc(C.email)}?subject=PO%20for%20quote%20${esc(qn)}">${esc(C.email)}</a> with the quote number, or close this and use Add all to cart to pay by card.</p>`;
+      closeBtn();
+    });
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+    setTimeout(() => { const f = inn.querySelector('input'); if (f) f.focus(); }, 30);
+  });
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+})();
+</script>
+{% endraw %}
+
+{% schema %}
+{
+  "name": "CGAP Gov Quote Builder",
+  "tag": "section",
+  "class": "cgap-gov-quote",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Government, utility and PO buyers" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Paste your sign list. Get a quote in a minute." },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "We match every line to our catalog of 200,000+ safety signs, price it with quantity discounts, and give you a formal PDF quote with our SAM.gov vendor details for your requisition file." },
+    { "type": "text", "id": "legal_name", "label": "Legal name", "default": "CGAP Enterprises LLC" },
+    { "type": "text", "id": "dba", "label": "Doing business as", "default": "CGAP Safety" },
+    { "type": "text", "id": "uei", "label": "UEI", "default": "NCWXZMBWLV69" },
+    { "type": "text", "id": "cage", "label": "CAGE", "default": "208U8" },
+    { "type": "text", "id": "naics", "label": "NAICS", "default": "339950 Sign Mfg" },
+    { "type": "text", "id": "address", "label": "Address", "default": "60259 Cotton Gin Port Rd, Amory, MS 38821" },
+    { "type": "text", "id": "phone", "label": "Phone", "default": "(662) 491-1803" },
+    { "type": "text", "id": "email", "label": "Order email", "default": "Info@cgapenterprises.com" },
+    { "type": "text", "id": "custom_handle", "label": "Custom sign product handle", "default": "custom-safety-sign-8x12-aluminum" },
+    { "type": "text", "id": "api_url", "label": "Sign Finder API URL", "default": "https://esmwoaqemeukjrjaesby.supabase.co/functions/v1/sign-finder" }
+  ],
+  "presets": [{ "name": "CGAP Gov Quote Builder" }]
+}
+{% endschema %}

@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "cgap-gov-quote",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}
