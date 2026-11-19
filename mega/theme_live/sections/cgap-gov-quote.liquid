@@ -254,8 +254,8 @@
       <td class="gq-cu gq-amt" style="font-weight:400">${money(l.unit)}</td><td class="gq-amt">${money(r2(l.unit * r.qty))}</td>
       <td><button class="gq-x" type="button" data-k="del" aria-label="Remove line">&times;</button></td></tr>`;
   }
-  let raf = 0;
-  function draw() { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { tb.innerHTML = rows.map(rowHtml).join(''); summary(); save(); }); }
+  let tmr = 0;
+  function draw() { clearTimeout(tmr); tmr = setTimeout(() => { tb.innerHTML = rows.map(rowHtml).join(''); summary(); save(); }, 30); }
   function summary() {
     const t = totals();
     $('#gq-dl').innerHTML = `<dt>Lines</dt><dd>${rows.length}</dd><dt>Signs</dt><dd>${t.n}</dd><dt>List price</dt><dd>${money(t.list)}</dd>` +
