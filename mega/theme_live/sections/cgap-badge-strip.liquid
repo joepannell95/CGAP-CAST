@@ -1,0 +1,41 @@
+{%- style -%}
+  .cgap-badges { background: {{ section.settings.bg }}; border-top: 1px solid {{ section.settings.rule }}; }
+  .cgap-badges__in { max-width: var(--page-width); margin: 0 auto; padding: 1.6rem 1.5rem; display: flex; flex-wrap: wrap; gap: .8rem 1rem; justify-content: center; }
+  .cgap-badge { display: inline-flex; align-items: center; gap: .8rem; border: 1px solid {{ section.settings.rule }}; border-radius: 4px; padding: .8rem 1.2rem; font-size: 1.3rem; font-weight: 600; letter-spacing: .01em; color: {{ section.settings.fg }}; background: {{ section.settings.card }}; }
+  .cgap-badge i { width: 1rem; height: 1rem; border-radius: 2px; background: {{ section.settings.accent }}; flex: none; }
+  @media screen and (min-width: 750px) { .cgap-badges__in { padding: 2rem 5rem; } }
+{%- endstyle -%}
+<div class="cgap-badges">
+  <div class="cgap-badges__in">
+    {%- for block in section.blocks -%}
+      <span class="cgap-badge" {{ block.shopify_attributes }}><i aria-hidden="true"></i>{{ block.settings.label | escape }}</span>
+    {%- endfor -%}
+  </div>
+</div>
+{% schema %}
+{
+  "name": "CGAP badge strip",
+  "enabled_on": { "groups": ["footer"] },
+  "max_blocks": 8,
+  "settings": [
+    { "type": "color", "id": "bg", "label": "Background", "default": "#F3F4F1" },
+    { "type": "color", "id": "card", "label": "Badge background", "default": "#FFFFFF" },
+    { "type": "color", "id": "rule", "label": "Border", "default": "#D3D8D2" },
+    { "type": "color", "id": "fg", "label": "Text", "default": "#152018" },
+    { "type": "color", "id": "accent", "label": "Marker", "default": "#E0731A" }
+  ],
+  "blocks": [
+    { "type": "badge", "name": "Badge", "settings": [ { "type": "text", "id": "label", "label": "Label", "default": "Made in the USA" } ] }
+  ],
+  "presets": [
+    { "name": "CGAP badge strip", "blocks": [
+      { "type": "badge", "settings": { "label": "Made in the USA" } },
+      { "type": "badge", "settings": { "label": "Heavy-gauge aluminum" } },
+      { "type": "badge", "settings": { "label": "5-year outdoor warranty" } },
+      { "type": "badge", "settings": { "label": "Ships in 2 business days" } },
+      { "type": "badge", "settings": { "label": "POs & tax-exempt accepted" } },
+      { "type": "badge", "settings": { "label": "SAM.gov registered" } }
+    ] }
+  ]
+}
+{% endschema %}

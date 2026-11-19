@@ -1,0 +1,52 @@
+{%- style -%}
+  .section-header.shopify-section-group-header-group { z-index: 6; }
+  .cgap-ub { background: {{ section.settings.bg }}; color: {{ section.settings.fg }}; font-size: 1.2rem; letter-spacing: .06em; text-transform: uppercase; }
+  .cgap-ub__in { max-width: var(--page-width); margin: 0 auto; padding: .7rem 1.5rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem 1.6rem; }
+  .cgap-ub__msg { display: block; opacity: .95; width: 100%; text-align: center; font-size: 1.1rem; }
+  .cgap-ub__links { display: flex; gap: 1.8rem; flex-wrap: wrap; justify-content: center; width: 100%; }
+  .cgap-ub a { color: inherit; text-decoration: none; font-weight: 600; border-bottom: 1px solid transparent; padding-bottom: 1px; }
+  .cgap-ub a:hover, .cgap-ub a:focus-visible { border-bottom-color: {{ section.settings.accent }}; }
+  @media screen and (min-width: 750px) {
+    .cgap-ub__msg { width: auto; text-align: left; font-size: inherit; }
+    .cgap-ub__in { flex-wrap: nowrap; }
+    .cgap-ub__links { width: auto; justify-content: flex-end; }
+    .cgap-ub__in { padding: .8rem 5rem; }
+  }
+{%- endstyle -%}
+<div class="cgap-ub">
+  <div class="cgap-ub__in">
+    {%- if section.settings.message != blank -%}
+      <div class="cgap-ub__msg">{{ section.settings.message | escape }}</div>
+    {%- endif -%}
+    <div class="cgap-ub__links">
+      {%- if section.settings.link1_label != blank -%}
+        <a href="{{ section.settings.link1_url }}">{{ section.settings.link1_label | escape }}</a>
+      {%- endif -%}
+      {%- if section.settings.link2_label != blank -%}
+        <a href="{{ section.settings.link2_url }}">{{ section.settings.link2_label | escape }}</a>
+      {%- endif -%}
+      {%- if section.settings.phone != blank -%}
+        <a href="tel:{{ section.settings.phone | remove: ' ' | remove: '-' | remove: '(' | remove: ')' | remove: '.' }}">{{ section.settings.phone | escape }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+{% schema %}
+{
+  "name": "CGAP utility bar",
+  "class": "cgap-utility-bar-section",
+  "enabled_on": { "groups": ["header"] },
+  "settings": [
+    { "type": "text", "id": "message", "label": "Message", "default": "Made in the USA on heavy-gauge aluminum. Every order ships within 2 business days." },
+    { "type": "text", "id": "link1_label", "label": "Link 1 label", "default": "Request a Quote" },
+    { "type": "url", "id": "link1_url", "label": "Link 1 URL" },
+    { "type": "text", "id": "link2_label", "label": "Link 2 label", "default": "Purchase Orders & Tax-Exempt" },
+    { "type": "url", "id": "link2_url", "label": "Link 2 URL" },
+    { "type": "text", "id": "phone", "label": "Phone number (optional)" },
+    { "type": "color", "id": "bg", "label": "Background", "default": "#173F24" },
+    { "type": "color", "id": "fg", "label": "Text", "default": "#F3F4F1" },
+    { "type": "color", "id": "accent", "label": "Hover underline", "default": "#E0731A" }
+  ],
+  "presets": [{ "name": "CGAP utility bar" }]
+}
+{% endschema %}

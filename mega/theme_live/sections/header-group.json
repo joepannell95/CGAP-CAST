@@ -1,0 +1,58 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "cgap-utility-bar": {
+      "type": "cgap-utility-bar",
+      "settings": {
+        "message": "Free shipping over $35 · Made in the USA · Ships in 2 business days",
+        "link1_label": "Request a Quote",
+        "link1_url": "/pages/request-a-quote",
+        "link2_label": "Purchase Orders & Tax-Exempt",
+        "link2_url": "/pages/how-to-buy#po",
+        "phone": "",
+        "bg": "#173F24",
+        "fg": "#F3F4F1",
+        "accent": "#E0731A"
+      }
+    },
+    "header": {
+      "type": "header",
+      "custom_css": [],
+      "settings": {
+        "logo_position": "middle-left",
+        "mobile_logo_position": "center",
+        "menu": "main-menu-v2",
+        "menu_type_desktop": "mega",
+        "sticky_header_type": "on-scroll-up",
+        "show_line_separator": true,
+        "color_scheme": "scheme-1",
+        "menu_color_scheme": "scheme-1",
+        "enable_country_selector": false,
+        "enable_language_selector": false,
+        "enable_customer_avatar": true,
+        "margin_bottom": 0,
+        "padding_top": 20,
+        "padding_bottom": 20
+      }
+    },
+    "cgap-search-suggest": {
+      "type": "cgap-search-suggest",
+      "settings": {}
+    }
+  },
+  "order": [
+    "cgap-utility-bar",
+    "header",
+    "cgap-search-suggest"
+  ]
+}

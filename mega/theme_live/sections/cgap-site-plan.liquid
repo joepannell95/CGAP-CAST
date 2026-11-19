@@ -1,0 +1,721 @@
+{%- comment -%} CGAP Site Sign Plan: short questionnaire that builds a room-by-room sign plan, then cart / quote / printable plan {%- endcomment -%}
+<link rel="preconnect" href="https://esmwoaqemeukjrjaesby.supabase.co">
+<style>
+  .sp{--g:#173F24;--g2:#0d2615;--o:#E0731A;--ink:#14181a;--mut:#5d6660;--ln:#e3e6e0;--bg:#f5f6f2;font-family:var(--font-body-family);color:var(--ink);background:var(--bg)}
+  .sp *{box-sizing:border-box}
+  .sp-hd{background:linear-gradient(155deg,var(--g),var(--g2));color:#fff;position:relative;overflow:hidden}
+  .sp-hd:before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.035) 0 14px,transparent 14px 28px)}
+  .sp-hd-in{position:relative;max-width:1180px;margin:0 auto;padding:4.4rem 2.4rem 3.6rem}
+  .sp-eb{display:inline-flex;align-items:center;gap:1rem;font-size:1.2rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:#f7c79f}
+  .sp-eb i{width:28px;height:4px;background:var(--o)}
+  .sp-hd h1{font-family:var(--font-heading-family);text-transform:uppercase;font-size:clamp(3rem,4.4vw,5.2rem);line-height:1.02;margin:1rem 0;color:#fff}
+  .sp-hd p{font-size:1.7rem;opacity:.9;max-width:720px;margin:0;line-height:1.5}
+  .sp-steps{display:flex;gap:.6rem;margin-top:2.4rem;flex-wrap:wrap}
+  .sp-steps span{font-size:1.25rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.7rem 1.3rem;border-radius:40px;border:1px solid rgba(255,255,255,.25);opacity:.6}
+  .sp-steps span.on{opacity:1;background:var(--o);border-color:var(--o)}
+  .sp-steps span.done{opacity:1}
+  .sp-stripe{height:8px;background:repeating-linear-gradient(-45deg,#111 0 14px,#FFD100 14px 28px)}
+  .sp-main{max-width:1180px;margin:0 auto;padding:3.2rem 2.4rem 14rem}
+  .sp-card{background:#fff;border:1px solid var(--ln);border-radius:10px;padding:2.6rem;box-shadow:0 6px 24px rgba(20,24,26,.05)}
+  .sp-card h2{font-family:var(--font-heading-family);text-transform:uppercase;font-size:2.4rem;margin:0 0 .4rem;color:var(--g)}
+  .sp-card>p.s{color:var(--mut);font-size:1.5rem;margin:0 0 2rem}
+  .sp-fac{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+  .sp-fac button{all:unset;cursor:pointer;border:2px solid var(--ln);border-radius:8px;padding:1.6rem 1.4rem;font-weight:700;font-size:1.5rem;line-height:1.3;display:flex;gap:1rem;align-items:center;transition:all .15s;background:#fff}
+  .sp-fac button i{flex:none;width:12px;height:12px;background:var(--o);transform:rotate(45deg)}
+  .sp-fac button:hover{border-color:var(--o);background:#fff7f0}
+  .sp-fac button[aria-pressed=true]{border-color:var(--g);background:#eef4ef;box-shadow:inset 0 0 0 1px var(--g)}
+  .sp-areas{display:grid;grid-template-columns:repeat(2,1fr);gap:.9rem}
+  .sp-area{display:flex;align-items:center;gap:1.2rem;border:2px solid var(--ln);border-radius:8px;padding:1.1rem 1.3rem;background:#fff;transition:border-color .15s}
+  .sp-area.on{border-color:var(--g);background:#f4f8f4}
+  .sp-area label{flex:1;display:flex;align-items:center;gap:1rem;cursor:pointer;font-weight:700;font-size:1.45rem;line-height:1.3}
+  .sp-area input[type=checkbox]{width:2rem;height:2rem;accent-color:var(--g);flex:none;margin:0}
+  .sp-area small{display:block;font-weight:400;color:var(--mut);font-size:1.2rem}
+  .sp-qty{display:inline-flex;align-items:center;border:1px solid #cfd4cc;border-radius:6px;overflow:hidden;flex:none;background:#fff}
+  .sp-qty button{all:unset;cursor:pointer;width:3.2rem;height:3.2rem;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;color:var(--g)}
+  .sp-qty button:hover{background:#eef2ec}
+  .sp-qty span{min-width:3rem;text-align:center;font-weight:800;font-size:1.45rem}
+  .sp-area:not(.on) .sp-qty{opacity:.35;pointer-events:none}
+  .sp-more{margin-top:1.6rem}
+  .sp-more summary{cursor:pointer;font-weight:700;color:var(--g);font-size:1.45rem;padding:.6rem 0}
+  .sp-more .sp-areas{margin-top:1rem}
+  .sp-site{display:flex;gap:2rem;flex-wrap:wrap;margin:0 0 2.2rem;padding:1.6rem;border-radius:8px;background:var(--bg)}
+  .sp-site>div{display:flex;align-items:center;gap:1.2rem;font-weight:700;font-size:1.45rem}
+  .sp-site small{display:block;color:var(--mut);font-weight:400;font-size:1.2rem}
+  .sp-nav{display:flex;justify-content:space-between;align-items:center;margin-top:2.4rem;gap:1rem}
+  .sp-btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:.8rem;background:var(--o);color:#fff;font-family:var(--font-heading-family);text-transform:uppercase;letter-spacing:.06em;font-size:1.6rem;padding:1.4rem 2.6rem;border-radius:7px;transition:background .15s;text-align:center}
+  .sp-btn:hover{background:#c55f0e}
+  .sp-btn.g{background:var(--g)}.sp-btn.g:hover{background:#0f2b18}
+  .sp-btn.w{background:#fff;color:var(--g);box-shadow:inset 0 0 0 2px var(--g)}.sp-btn.w:hover{background:#eef4ef}
+  .sp-btn[disabled]{opacity:.45;pointer-events:none}
+  .sp-link{all:unset;cursor:pointer;color:var(--g);font-weight:700;font-size:1.4rem;text-decoration:underline}
+  .sp-sum{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:0 0 2rem}
+  .sp-sum div{background:#fff;border:1px solid var(--ln);border-radius:8px;padding:1.4rem 1.6rem}
+  .sp-sum b{display:block;font-family:var(--font-heading-family);font-size:2.8rem;line-height:1;color:var(--g)}
+  .sp-sum small{font-size:1.15rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+  .sp-nudge{background:#fff7f0;border:1px solid #f3c9a3;border-radius:8px;padding:1.2rem 1.6rem;margin:0 0 2rem;font-size:1.45rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+  .sp-nudge b{color:#a54d06}
+  .sp-grp{background:#fff;border:1px solid var(--ln);border-radius:10px;margin:0 0 1.6rem;overflow:hidden}
+  .sp-grp-h{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1.4rem 1.8rem;background:#f9faf7;border-bottom:1px solid var(--ln)}
+  .sp-grp-h h3{margin:0;font-family:var(--font-heading-family);text-transform:uppercase;font-size:1.8rem;color:var(--g)}
+  .sp-grp-h span{font-size:1.3rem;color:var(--mut)}
+  .sp-row{display:grid;grid-template-columns:96px minmax(0,1fr) auto auto;gap:1.6rem;align-items:center;padding:1.3rem 1.8rem;border-bottom:1px solid #eef0ec}
+  .sp-row:last-child{border-bottom:0}
+  .sp-row.off{opacity:.45}
+  .sp-th{width:96px;height:64px;border:1px solid var(--ln);border-radius:4px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+  .sp-th img{width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .2s}
+  .sp-th img.ok{opacity:1}
+  .sp-th .ph{position:absolute;inset:6px;border-radius:2px;display:flex;align-items:flex-start;justify-content:center;font:900 9px/1.6 Arial,sans-serif;color:#fff}
+  .sp-th img.ok+.ph{display:none}
+  .sp-tx{min-width:0}
+  .sp-tx .k{font-size:1.15rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:700}
+  .sp-tx a{display:block;font-weight:800;font-size:1.55rem;color:var(--ink);text-decoration:none;line-height:1.3;margin:.2rem 0}
+  .sp-tx a:hover{color:var(--o)}
+  .sp-tx .m{font-size:1.25rem;color:var(--mut);display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center}
+  .sp-tag{font-size:1rem;font-weight:800;letter-spacing:.08em;padding:.2rem .6rem;border-radius:2px}
+  .sp-acts{display:flex;gap:.6rem;align-items:center}
+  .sp-ic{all:unset;cursor:pointer;font-size:1.25rem;font-weight:700;color:var(--g);padding:.6rem .9rem;border-radius:5px;border:1px solid #d5dad2;white-space:nowrap}
+  .sp-ic:hover{border-color:var(--o);color:var(--o)}
+  .sp-custom{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1.2rem 1.8rem;background:#fcfcfa;font-size:1.35rem;color:var(--mut);flex-wrap:wrap}
+  .sp-bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:3px solid var(--o);box-shadow:0 -10px 40px rgba(0,0,0,.14);z-index:60;transform:translateY(110%);transition:transform .3s}
+  .sp-bar.on{transform:none}
+  .sp-bar-in{max-width:1180px;margin:0 auto;padding:1.4rem 2.4rem;display:flex;align-items:center;gap:1.6rem;flex-wrap:wrap}
+  .sp-bar .tot{flex:1;min-width:220px}
+  .sp-bar .tot b{font-family:var(--font-heading-family);font-size:2.6rem;color:var(--g)}
+  .sp-bar .tot small{display:block;font-size:1.25rem;color:var(--mut)}
+  .sp-bar .sp-btn{padding:1.2rem 2rem;font-size:1.45rem}
+  .sp-modal{position:fixed;inset:0;background:rgba(10,20,14,.55);z-index:80;display:none;align-items:center;justify-content:center;padding:1.6rem}
+  .sp-modal.on{display:flex}
+  .sp-dlg{background:#fff;border-radius:10px;max-width:560px;width:100%;max-height:92vh;overflow:auto;padding:2.6rem;position:relative}
+  .sp-dlg h3{font-family:var(--font-heading-family);text-transform:uppercase;color:var(--g);font-size:2.2rem;margin:0 0 .6rem}
+  .sp-dlg p{color:var(--mut);font-size:1.45rem;margin:0 0 1.6rem}
+  .sp-dlg .x{all:unset;cursor:pointer;position:absolute;right:1.4rem;top:1.2rem;font-size:2.6rem;line-height:1;color:var(--mut)}
+  .sp-f{display:block;margin:0 0 1.2rem}
+  .sp-f span{display:block;font-weight:700;font-size:1.3rem;margin:0 0 .4rem}
+  .sp-f input,.sp-f textarea,.sp-f select{width:100%;border:1px solid #cfd4cc;border-radius:6px;padding:1.1rem 1.2rem;font:inherit;font-size:1.5rem;background:#fff;color:var(--ink)}
+  .sp-f textarea{min-height:90px;resize:vertical}
+  .sp-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  .sp-ok{background:#eef4ef;border:1px solid #bcd3c1;border-radius:8px;padding:1.4rem;font-size:1.45rem;color:var(--g);font-weight:700}
+  .sp-err{color:#b3261e;font-size:1.3rem;margin:.4rem 0 0;min-height:1.6rem}
+  .sp-prev{border:1px solid var(--ln);border-radius:6px;padding:1.2rem;text-align:center;margin:0 0 1.4rem}
+  .sp-prev .h{font:900 2rem/1 Arial,sans-serif;padding:.8rem;color:#fff;border-radius:3px 3px 0 0}
+  .sp-prev .b{font:800 1.6rem/1.25 Arial,sans-serif;text-transform:uppercase;padding:1.4rem .8rem;min-height:80px;border:2px solid #222;border-top:0}
+  .sp-load{padding:4rem;text-align:center;color:var(--mut);font-size:1.5rem}
+  .sp-adm{display:flex;gap:.5rem;flex-wrap:wrap;grid-column:1/-1;padding:.8rem 1rem;margin-top:.4rem;background:#fff8e6;border:1px dashed #e2b04a;border-radius:6px;font-size:1.2rem;align-items:center}
+  .sp-adm b{color:#8a5a00;margin-right:.4rem}
+  .sp-adm .on{background:#173F24;color:#fff;border-color:#173F24}
+  .sp-adm-bn{background:#fff8e6;border:1px solid #e2b04a;border-radius:8px;padding:1.2rem 1.6rem;margin:0 0 1.6rem;font-size:1.4rem}
+  .sp-res{max-height:50vh;overflow:auto;border:1px solid var(--ln);border-radius:6px}
+  .sp-res button{all:unset;cursor:pointer;display:block;width:100%;box-sizing:border-box;padding:1rem 1.2rem;border-bottom:1px solid #eef0ec;font-size:1.4rem}
+  .sp-res button:hover{background:#f6f7f4}
+  .sp-res small{display:block;color:var(--mut);font-size:1.15rem}
+  .sp-h3{font-family:var(--font-heading-family);text-transform:uppercase;font-size:1.6rem;letter-spacing:.04em;color:var(--g);margin:2.6rem 0 1rem}
+  .sp-h3:first-of-type{margin-top:0}
+  .sp-goals{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem}
+  .sp-goals button,.sp-chips button{all:unset;cursor:pointer;box-sizing:border-box;border:2px solid var(--ln);border-radius:8px;padding:1.3rem 1.4rem;background:#fff;transition:all .15s}
+  .sp-goals button b{display:block;font-size:1.5rem;line-height:1.3}
+  .sp-goals button small{display:block;color:var(--mut);font-size:1.25rem;line-height:1.4;margin-top:.3rem}
+  .sp-goals button:hover,.sp-chips button:hover{border-color:var(--o)}
+  .sp-goals button[aria-pressed=true],.sp-chips button[aria-pressed=true]{border-color:var(--g);background:#eef4ef;box-shadow:inset 0 0 0 1px var(--g)}
+  .sp-chips{display:flex;flex-wrap:wrap;gap:.8rem}
+  .sp-chips button{padding:1rem 1.6rem;font-weight:700;font-size:1.4rem;border-radius:40px}
+  .sp-qs{display:grid;grid-template-columns:repeat(2,1fr);gap:.9rem}
+  .sp-q{display:flex;align-items:center;gap:1.2rem;border:1px solid var(--ln);border-radius:8px;padding:1.1rem 1.3rem;background:#fff}
+  .sp-q>span{flex:1;font-weight:700;font-size:1.42rem;line-height:1.3}
+  .sp-q small{display:block;font-weight:400;color:var(--mut);font-size:1.2rem;line-height:1.4;margin-top:.2rem}
+  .sp-yn{display:inline-flex;border:1px solid #cfd4cc;border-radius:6px;overflow:hidden;flex:none}
+  .sp-yn button{all:unset;cursor:pointer;padding:.7rem 1.3rem;font-weight:700;font-size:1.3rem;color:var(--g)}
+  .sp-yn button[aria-pressed=true]{background:var(--g);color:#fff}
+  .sp-pri{font-size:1rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .6rem;border-radius:2px;border:1px solid}
+  .sp-pri.p1{background:#fdecea;color:#9b1c13;border-color:#f2b8b3}
+  .sp-pri.p2{background:#eef4ef;color:var(--g);border-color:#bcd3c1}
+  .sp-pri.p3{background:#f4f4f1;color:#5d6660;border-color:#dcdfd8}
+  .sp-why{grid-column:1/-1;background:#f9faf7;border-left:3px solid var(--o);padding:.9rem 1.2rem;font-size:1.3rem;line-height:1.5;color:#333;border-radius:0 6px 6px 0}
+  .sp-why b{color:var(--g)}
+  .sp-tools{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;margin:0 0 1.6rem;font-size:1.35rem;color:var(--mut)}
+  .sp-banner{background:#eef4ef;border:1px solid #bcd3c1;border-radius:8px;padding:1.3rem 1.6rem;margin:0 0 1.6rem;font-size:1.45rem;line-height:1.5}
+  .sp-banner b{color:var(--g)}
+  #sp-print{display:none}
+  @media (max-width:989px){
+    .sp-fac{grid-template-columns:1fr 1fr}
+    .sp-goals,.sp-qs{grid-template-columns:1fr}
+    .sp-q{flex-wrap:wrap}
+    .sp-areas{grid-template-columns:1fr}
+    .sp-sum{grid-template-columns:1fr 1fr}
+    .sp-row{grid-template-columns:72px minmax(0,1fr);gap:1rem;padding:1.2rem}
+    .sp-th{width:72px;height:50px}
+    .sp-row .sp-qty,.sp-row .sp-acts{grid-column:2}
+    .sp-row .sp-acts{justify-content:flex-start}
+    .sp-card{padding:1.8rem}
+    .sp-bar-in{padding:1rem 1.2rem;gap:.8rem}
+    .sp-bar .tot{flex-basis:100%}
+    .sp-bar .sp-btn{flex:1;padding:1.1rem .8rem;font-size:1.2rem}
+    .sp-2{grid-template-columns:1fr}
+  }
+  @media print{
+    body *{visibility:hidden!important}
+    #sp-print,#sp-print *{visibility:visible!important}
+    #sp-print{display:block!important;position:absolute;left:0;top:0;width:100%;font-family:Arial,sans-serif;color:#111;font-size:11pt}
+    #sp-print h1{font-size:20pt;margin:0 0 4pt}
+    #sp-print h2{font-size:13pt;margin:14pt 0 4pt;border-bottom:2px solid #173F24;padding-bottom:2pt;color:#173F24}
+    #sp-print table{width:100%;border-collapse:collapse}
+    #sp-print td,#sp-print th{border:1px solid #bbb;padding:4pt 5pt;text-align:left;vertical-align:top}
+    #sp-print th{background:#eee}
+    #sp-print tr{page-break-inside:avoid}
+    #sp-print .meta{color:#444;margin:0 0 8pt}
+    #sp-print .box{width:12pt;height:12pt;border:1px solid #333;display:inline-block}
+  }
+</style>
+
+<div class="sp" id="sp">
+  <header class="sp-hd">
+    <div class="sp-hd-in">
+      <div class="sp-eb"><i></i>{{ section.settings.eyebrow }}</div>
+      <h1>{{ section.settings.heading }}</h1>
+      <p>{{ section.settings.subheading }}</p>
+      <div class="sp-steps" id="sp-steps"><span data-s="0">1. Your site</span><span data-s="1">2. Site details</span><span data-s="2">3. Your areas</span><span data-s="3">4. Your sign plan</span></div>
+    </div>
+    <div class="sp-stripe"></div>
+  </header>
+  <div class="sp-main" id="sp-main"><div class="sp-load">Loading the plan builder...</div></div>
+</div>
+
+<div class="sp-bar" id="sp-bar"><div class="sp-bar-in">
+  <div class="tot"><b id="sp-bt">$0.00</b><small id="sp-bs"></small></div>
+  <button class="sp-btn w" type="button" data-act="pdf">Save or print plan</button>
+  <button class="sp-btn g" type="button" data-act="quote">Get quote (PDF)</button>
+  <button class="sp-btn" type="button" data-act="cart" id="sp-cartbtn">Add all to cart</button>
+</div></div>
+
+<div class="sp-modal" id="sp-modal" role="dialog" aria-modal="true"><div class="sp-dlg" id="sp-dlg"></div></div>
+<div id="sp-print"></div>
+
+{%- if customer and customer.tags contains 'cgap-admin' and section.settings.admin_secret != blank -%}
+  {%- assign sp_ts = 'now' | date: '%s' -%}
+  {%- capture sp_msg -%}{{ customer.id }}:{{ sp_ts }}{%- endcapture -%}
+  <script>window.CGAP_PIN = { cid: {{ customer.id | json }}, ts: {{ sp_ts | json }}, sig: {{ sp_msg | hmac_sha256: section.settings.admin_secret | json }} };</script>
+{%- endif -%}
+<script>
+(() => {
+  const API = {{ section.settings.api_url | json }};
+  const CUSTOM = {{ section.settings.custom_handle | json }};
+  const STORE = {{ shop.name | json }};
+  const TIERS = [[20, 23.99], [10, 25.49], [5, 26.99], [1, 29.99]];
+  const BASE = 29.99;
+  const QUOTE_AT = 5000;
+  const SER = { 'DANGER': ['#C8102E', '#fff'], 'WARNING': ['#F47B20', '#111'], 'CAUTION': ['#FFD100', '#111'], 'NOTICE': ['#005EB8', '#fff'], 'SAFETY FIRST': ['#00843D', '#fff'] };
+  const SCOPE = { site: 'One for the site', entrance: 'One at each entrance', area: 'One at each area' };
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const money = (n) => '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const unit = (q) => { for (const [min, p] of TIERS) if (q >= min) return p; return BASE; };
+  const next = (q) => { const t = [...TIERS].reverse().find(([min]) => min > q); return t ? { need: t[0] - q, price: t[1] } : null; };
+  const main = $('#sp-main'), bar = $('#sp-bar'), modal = $('#sp-modal'), dlg = $('#sp-dlg');
+  const prod = new Map();
+  const product = (h) => { if (!prod.has(h)) prod.set(h, fetch('/products/' + encodeURIComponent(h) + '.js').then((r) => (r.ok ? r.json() : null)).catch(() => null)); return prod.get(h); };
+
+  const ADMIN = window.CGAP_PIN || null;
+  let M = null, PINS = new Set();
+  const pinKey = (f, k, sku) => f + '|' + k + '|' + sku;
+  const GOALS = [
+    ['new', 'Outfitting a new or empty site', 'Every sign the site needs, from the door in.'],
+    ['inspect', 'Getting ready for an inspection', 'Code-cited signs first. Extras start switched off.'],
+    ['audit', 'Fixing audit or insurance findings', 'Close the gaps with code-cited and recommended signs.'],
+    ['replace', 'Replacing faded or missing signs', 'A full list to check against what is on the walls.'],
+    ['expand', 'Adding a new area or line', 'Plan just the new space. Uncheck the rest next step.'],
+  ];
+  const BUDGETS = [[0, 'No limit'], [500, 'Under $500 (P-card)'], [2500, 'Under $2,500'], [5000, 'Under $5,000']];
+  const PRI = { 1: ['p1', 'Code-cited'], 2: ['p2', 'Recommended'], 3: ['p3', 'Good practice'] };
+  const st = { step: 0, fac: null, goal: 'new', budget: 0, ans: {}, areas: {}, entrances: 1, rows: [], custom: [], cut: 0, onlyReq: false };
+
+  // URL state so a plan can be shared or reopened: ?f=warehouse&g=inspect&b=500&q=ext.6,dock.4&a=forklift.2,dock.3&e=2
+  function readUrl() {
+    const u = new URLSearchParams(location.search);
+    const f = u.get('f'); if (f && M.facilities.some((x) => x.code === f)) { st.fac = f; st.step = 1; defaults(); }
+    const g = u.get('g'); if (g && GOALS.some((x) => x[0] === g)) st.goal = g;
+    const b = Number(u.get('b')); if (BUDGETS.some((x) => x[0] === b)) st.budget = b;
+    const q = u.get('q'); if (q && st.fac) q.split(',').forEach((p) => { const [k, n] = p.split('.'); if (qsFor().some((x) => x.code === k)) st.ans[k] = Math.max(0, Math.min(999, Number(n) || 0)); });
+    const a = u.get('a');
+    if (a && st.fac) { st.areas = {}; a.split(',').forEach((p) => { const [k, n] = p.split('.'); if (M.areas[k]) st.areas[k] = Math.max(1, Math.min(50, Number(n) || 1)); }); st.step = 3; }
+    else if (q && st.fac) st.step = 2;
+    const e = Number(u.get('e')); if (e) st.entrances = Math.max(1, Math.min(20, e));
+  }
+  function writeUrl() {
+    const u = new URLSearchParams();
+    if (st.fac) u.set('f', st.fac);
+    if (st.step >= 2) { u.set('g', st.goal); if (st.budget) u.set('b', st.budget); u.set('q', Object.entries(st.ans).map(([k, n]) => k + '.' + n).join(',')); u.set('e', st.entrances); }
+    if (st.step >= 3) u.set('a', Object.entries(st.areas).map(([k, n]) => k + '.' + n).join(','));
+    history.replaceState(null, '', location.pathname + (u.toString() ? '?' + u : ''));
+  }
+  const fac = () => M.facilities.find((x) => x.code === st.fac);
+  const qsFor = () => (M.questions || []).filter((q) => !q.facs || q.facs.includes(st.fac));
+  const qDef = (q) => (q.fdef && st.fac in q.fdef ? q.fdef[st.fac] : (q.def || 0));
+  function defaults() {
+    st.areas = {}; (fac()?.areas || []).forEach((a) => { st.areas[a] = 1; });
+    st.ans = {}; qsFor().forEach((q) => { st.ans[q.code] = qDef(q); });
+  }
+  // Answers switch areas on or off: a yes or a count above zero turns the area on, zero turns it off.
+  function applyAnswers() {
+    qsFor().forEach((q) => { if (!q.area || !M.areas[q.area]) return; if ((st.ans[q.code] || 0) > 0) st.areas[q.area] = st.areas[q.area] || 1; else delete st.areas[q.area]; });
+  }
+
+  function steps() { document.querySelectorAll('#sp-steps span').forEach((s) => { const i = +s.dataset.s; s.className = i === st.step ? 'on' : i < st.step ? 'done' : ''; }); }
+  function show(step) { st.step = step; steps(); writeUrl(); bar.classList.toggle('on', step === 3); [view0, viewQ, view1, view2][step](); window.scrollTo({ top: Math.max(0, $('#sp').offsetTop - 20), behavior: 'smooth' }); }
+
+  function view0() {
+    main.innerHTML = `<div class="sp-card"><h2>What kind of site is it?</h2><p class="s">Pick the closest match. You can add any area later.</p>
+      <div class="sp-fac">${M.facilities.map((f) => `<button type="button" data-f="${esc(f.code)}" aria-pressed="${f.code === st.fac}"><i></i>${esc(f.name)}</button>`).join('')}</div></div>`;
+    main.querySelectorAll('[data-f]').forEach((b) => b.addEventListener('click', () => { if (st.fac !== b.dataset.f) { st.fac = b.dataset.f; defaults(); } show(1); }));
+  }
+
+  const counter = (id, n) => `<div class="sp-qty" data-qid="${esc(id)}"><button type="button" data-d="-1" aria-label="Fewer">&minus;</button><span>${n}</span><button type="button" data-d="1" aria-label="More">+</button></div>`;
+  const yesno = (id, on) => `<div class="sp-yn" data-yn="${esc(id)}"><button type="button" data-v="1" aria-pressed="${!!on}">Yes</button><button type="button" data-v="0" aria-pressed="${!on}">No</button></div>`;
+  function viewQ() {
+    const f = fac(), qs = qsFor();
+    const site = qs.filter((q) => !q.facs), mine = qs.filter((q) => q.facs);
+    const qHtml = (q) => `<div class="sp-q"><span>${esc(q.label)}<small>${esc(q.help || '')}</small></span>${q.kind === 'yesno' ? yesno(q.code, st.ans[q.code] > 0) : counter(q.code, st.ans[q.code] || 0)}</div>`;
+    main.innerHTML = `<div class="sp-card"><h2>${esc(f.name)}: tell us about it</h2><p class="s">A few counts let us size the plan to your site instead of guessing. Best guesses are fine. You can change every number on the plan.</p>
+      <h3 class="sp-h3">What's driving this?</h3>
+      <div class="sp-goals">${GOALS.map(([c, t, d]) => `<button type="button" data-g="${c}" aria-pressed="${st.goal === c}"><b>${esc(t)}</b><small>${esc(d)}</small></button>`).join('')}</div>
+      <h3 class="sp-h3">Budget</h3>
+      <div class="sp-chips">${BUDGETS.map(([v, l]) => `<button type="button" data-b="${v}" aria-pressed="${st.budget === v}">${esc(l)}</button>`).join('')}</div>
+      <h3 class="sp-h3">${esc(f.name)} specifics</h3>
+      <div class="sp-qs"><div class="sp-q"><span>Entrances, gates and building doors<small>Visitor, PPE and keep-out signs go at each one people use.</small></span>${counter('__ent', st.entrances)}</div>${mine.map(qHtml).join('')}</div>
+      <h3 class="sp-h3">Emergency gear, exits and people</h3>
+      <div class="sp-qs">${site.map(qHtml).join('')}</div>
+      <div class="sp-nav"><button class="sp-link" type="button" id="sp-back">&larr; Change site type</button><button class="sp-btn" type="button" id="sp-next">Next: check my areas &rarr;</button></div></div>`;
+    main.querySelectorAll('[data-g]').forEach((b) => b.addEventListener('click', () => { st.goal = b.dataset.g; main.querySelectorAll('[data-g]').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); }));
+    main.querySelectorAll('[data-b]').forEach((b) => b.addEventListener('click', () => { st.budget = Number(b.dataset.b); main.querySelectorAll('[data-b]').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); }));
+    main.querySelectorAll('[data-qid]').forEach((el) => {
+      const id = el.dataset.qid, q = qs.find((x) => x.code === id), max = id === '__ent' ? 20 : (q && q.max) || 99;
+      el.querySelectorAll('[data-d]').forEach((b) => b.addEventListener('click', () => {
+        if (id === '__ent') { st.entrances = Math.max(1, Math.min(max, st.entrances + Number(b.dataset.d))); el.querySelector('span').textContent = st.entrances; return; }
+        st.ans[id] = Math.max(0, Math.min(max, (st.ans[id] || 0) + Number(b.dataset.d))); el.querySelector('span').textContent = st.ans[id];
+      }));
+    });
+    main.querySelectorAll('[data-yn]').forEach((el) => el.querySelectorAll('[data-v]').forEach((b) => b.addEventListener('click', () => {
+      st.ans[el.dataset.yn] = Number(b.dataset.v); el.querySelectorAll('[data-v]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    })));
+    $('#sp-back').addEventListener('click', () => show(0));
+    $('#sp-next').addEventListener('click', () => { applyAnswers(); show(2); });
+  }
+
+  function areaRow(code) {
+    const a = M.areas[code], on = code in st.areas, n = st.areas[code] || 1;
+    const per = (a.slots || []).length;
+    return `<div class="sp-area${on ? ' on' : ''}" data-a="${esc(code)}"><label><input type="checkbox" ${on ? 'checked' : ''}><span>${esc(a.label)}<small>${per} sign${per === 1 ? '' : 's'} per area</small></span></label>
+      <div class="sp-qty" title="How many of these areas"><button type="button" data-d="-1" aria-label="Fewer">&minus;</button><span>${n}</span><button type="button" data-d="1" aria-label="More">+</button></div></div>`;
+  }
+  function view1() {
+    const f = fac(); const mine = f.areas; const rest = Object.keys(M.areas).filter((k) => !mine.includes(k)).sort((x, y) => M.areas[x].ord - M.areas[y].ord);
+    main.innerHTML = `<div class="sp-card"><h2>${esc(f.name)}: which areas do you have?</h2><p class="s">We checked the areas your answers point to. Uncheck what you don't have and set how many of each. Equipment you counted on the last step is already sized.</p>
+      <div class="sp-areas" id="sp-mine">${mine.map(areaRow).join('')}</div>
+      <details class="sp-more" ${rest.some((k) => k in st.areas) ? 'open' : ''}><summary>+ Add other areas (${rest.length})</summary><div class="sp-areas">${rest.map(areaRow).join('')}</div></details>
+      <div class="sp-nav"><button class="sp-link" type="button" id="sp-back">&larr; Site details</button><button class="sp-btn" type="button" id="sp-build">Build my sign plan &rarr;</button></div></div>`;
+    main.querySelectorAll('.sp-area').forEach((el) => {
+      const code = el.dataset.a, cb = el.querySelector('input');
+      cb.addEventListener('change', () => { if (cb.checked) st.areas[code] = st.areas[code] || 1; else delete st.areas[code]; el.classList.toggle('on', cb.checked); upd(); });
+      el.querySelectorAll('[data-d]').forEach((b) => b.addEventListener('click', () => { st.areas[code] = Math.max(1, Math.min(50, (st.areas[code] || 1) + Number(b.dataset.d))); el.querySelector('.sp-qty span').textContent = st.areas[code]; }));
+    });
+    const upd = () => { $('#sp-build').disabled = !Object.keys(st.areas).length; };
+    upd();
+    $('#sp-back').addEventListener('click', () => show(1));
+    $('#sp-build').addEventListener('click', () => { build(); show(3); });
+  }
+
+  // Turn answers into rows: one per sign slot, best pick first, never the same sign twice.
+  // Quantities come from the counts asked on the details step when there is one, otherwise from the slot's scope.
+  function build() {
+    const picks = (M.picks[st.fac] || {}), any = M.picks.any || {};
+    const set = {}, add = {};
+    qsFor().forEach((q) => { const n = st.ans[q.code] || 0; (q.slots || []).forEach((k) => { set[k] = (set[k] || 0) + n; }); (q.adds || []).forEach((k) => { add[k] = (add[k] || 0) + n; }); });
+    const used = new Set(); const rows = [];
+    const order = Object.keys(st.areas).sort((x, y) => (fac().areas.indexOf(x) + 1 || 99) - (fac().areas.indexOf(y) + 1 || 99) || M.areas[x].ord - M.areas[y].ord);
+    for (const a of order) for (const k of (M.areas[a].slots || [])) {
+      const alts = [...(picks[k] || []), ...(any[k] || [])].filter((s, i, arr) => M.signs[s] && arr.indexOf(s) === i);
+      if (!alts.length) continue;
+      const sl = M.slots[k];
+      let qty = k in set ? set[k] : (sl.scope === 'site' ? 1 : sl.scope === 'entrance' ? st.entrances : st.areas[a]);
+      qty += add[k] || 0;
+      if (qty <= 0) continue;
+      const i = Math.max(0, alts.findIndex((s) => !used.has(s)));
+      used.add(alts[i]);
+      const pri = sl.pri || 2;
+      // For inspections and audits, good-practice signs start switched off so the list leads with what gets cited.
+      const off = pri === 3 && (st.goal === 'inspect' || st.goal === 'audit');
+      rows.push({ area: a, k, alts, i, qty, on: !off, opt: off, pri, v: null, price: null });
+    }
+    rows.sort((x, y) => order.indexOf(x.area) - order.indexOf(y.area) || x.pri - y.pri);
+    st.rows = rows; st.cut = 0;
+    fit();
+  }
+  // Keep the plan under the chosen budget by switching off whole lines, good practice first, then recommended. Code-cited signs always stay.
+  function fit() {
+    if (!st.budget) return;
+    for (const p of [3, 2]) {
+      const pool = st.rows.filter((r) => r.on && r.pri === p).sort((x, y) => y.qty - x.qty);
+      for (const r of pool) { if (totals().total <= st.budget) return; r.on = false; r.cut = true; st.cut++; }
+    }
+  }
+
+  const totals = () => {
+    const live = st.rows.filter((r) => r.on && r.qty > 0 && r.v !== false);
+    const q = live.reduce((s, r) => s + r.qty, 0) + st.custom.reduce((s, c) => s + c.qty, 0);
+    const u = unit(q);
+    return { q, u, total: q * u, list: q * BASE, lines: live.length + st.custom.length, req: live.filter((r) => r.pri === 1).reduce((s, r) => s + r.qty, 0) };
+  };
+
+  function rowHtml(r, idx) {
+    const s = M.signs[r.alts[r.i]] || {}, sl = M.slots[r.k], c = SER[s.c] || SER.NOTICE, pr = PRI[r.pri] || PRI[2];
+    const hide = st.onlyReq && r.pri !== 1;
+    return `<div class="sp-row${r.on ? '' : ' off'}" data-r="${idx}"${hide ? ' hidden' : ''}>
+      <div class="sp-th"><img alt="" data-h="${esc(s.h)}"><span class="ph" style="background:${c[0]};color:${c[1]}">${esc(s.c)}</span></div>
+      <div class="sp-tx"><div class="k">${esc(sl.label)}</div><a href="/products/${encodeURIComponent(s.h)}" target="_blank" rel="noopener">${esc(s.s)} Sign</a>
+        <div class="m"><span class="sp-pri ${pr[0]}">${pr[1]}</span><span class="sp-tag" style="background:${c[0]};color:${c[1]}">${esc(s.c)}</span><span>${esc(SCOPE[sl.scope])}</span>${r.cut ? '<span>Left out to fit budget</span>' : r.opt && !r.on ? '<span>Optional</span>' : ''}</div></div>
+      <div class="sp-qty"><button type="button" data-q="-1" aria-label="Fewer">&minus;</button><span>${r.on ? r.qty : 0}</span><button type="button" data-q="1" aria-label="More">+</button></div>
+      <div class="sp-acts"><button class="sp-ic" type="button" data-why aria-expanded="${!!r.why}">Why</button>${r.alts.length > 1 ? `<button class="sp-ic" type="button" data-sw>Swap (${r.alts.length - 1} more)</button>` : ''}<button class="sp-ic" type="button" data-rm>${r.on ? 'Remove' : 'Add back'}</button></div>
+      ${r.why ? `<div class="sp-why"><b>${pr[1]}.</b> ${esc(sl.why || (r.pri === 3 ? 'Not required, but it heads off common problems in this area.' : 'Commonly expected in this area by inspectors and insurers.'))}${s.p ? `<br><b>Where it goes:</b> ${esc(s.p)}` : ''}</div>` : ''}${ADMIN ? adminBar(r) : ''}</div>`;
+  }
+  function adminBar(r) {
+    const sku = r.alts[r.i], pf = PINS.has(pinKey(st.fac, r.k, sku)), pa = PINS.has(pinKey('any', r.k, sku));
+    return `<div class="sp-adm"><b>Admin</b><button class="sp-ic${pf ? ' on' : ''}" type="button" data-pin="${esc(st.fac)}">${pf ? 'Pinned for ' : 'Pin for '}${esc(fac().name)}</button>
+      <button class="sp-ic${pa ? ' on' : ''}" type="button" data-pin="any">${pa ? 'Pinned for all sites' : 'Pin for all sites'}</button>
+      <button class="sp-ic" type="button" data-find>Find another sign</button><span class="sp-pmsg"></span></div>`;
+  }
+  async function pin(r, f, el) {
+    const sku = r.alts[r.i], on = PINS.has(pinKey(f, r.k, sku)), msg = el.querySelector('.sp-pmsg');
+    msg.textContent = on ? 'Unpinning...' : 'Pinning...';
+    try {
+      const res = await (await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'plan_pin', op: on ? 'unpin' : 'pin', fac: f, k: r.k, sku, ...ADMIN }) })).json();
+      if (!res.ok) throw new Error(res.error || 'failed');
+      if (on) PINS.delete(pinKey(f, r.k, sku)); else PINS.add(pinKey(f, r.k, sku));
+      redraw(el); const m = main.querySelector(`.sp-row[data-r="${el.dataset.r}"] .sp-pmsg`); if (m) m.textContent = on ? 'Unpinned.' : 'Pinned. Shoppers see it within about 10 minutes.';
+    } catch (e) { msg.textContent = 'Could not save. Log in again and reload.'; }
+  }
+  function findDlg(r, el) {
+    openDlg(`<h3>Find a sign for: ${esc(M.slots[r.k].label)}</h3><p>Search the catalog, pick a sign, then pin it.</p><label class="sp-f"><input id="sp-q" placeholder="e.g. fire extinguisher"></label><div class="sp-res" id="sp-res"></div>`);
+    let t; $('#sp-q').addEventListener('input', () => { clearTimeout(t); t = setTimeout(async () => {
+      const q = $('#sp-q').value.trim(); if (q.length < 2) return;
+      const d = await (await fetch(API + '?action=suggest&q=' + encodeURIComponent(q))).json();
+      $('#sp-res').innerHTML = (d.results || []).map((x, i) => `<button type="button" data-i="${i}"><b>${esc(x.series)}</b> ${esc(x.subject)}<small>${esc((x.lines || []).join(' / '))}</small></button>`).join('') || '<p style="padding:1rem">No match yet.</p>';
+      $('#sp-res').querySelectorAll('[data-i]').forEach((b) => b.addEventListener('click', () => {
+        const x = d.results[+b.dataset.i]; M.signs[x.sku] = { h: x.handle, s: x.subject, c: x.series };
+        r.alts = [x.sku, ...r.alts.filter((y) => y !== x.sku)]; r.i = 0; r.v = null; r.tries = 0; closeDlg(); redraw(el);
+      }));
+    }, 160); });
+  }
+  function view2() {
+    const f = fac();
+    const groups = [...new Set(st.rows.map((r) => r.area))];
+    const GB = { new: 'Full plan for a new or empty site. Every area you checked is covered, from the door in.', inspect: 'Inspection-ready list. <b>Code-cited</b> signs are the ones inspectors look for first. Good-practice signs start switched off; add back any you want.', audit: 'Audit and insurance list. Code-cited and recommended signs are on. Match each line to a finding and remove what you already have.', replace: 'Replacement checklist. Print the plan, walk the site, and remove anything still in good shape before you order.', expand: 'Plan for the new space only. Remove anything the rest of the site already has.' };
+    const tr = totals();
+    main.innerHTML = `${ADMIN ? '<div class="sp-adm-bn"><b>Admin mode.</b> Pin the sign you want shown first for each need, for this site type or for every site. Draft signs stay hidden from shoppers until you activate them.</div>' : ''}<div class="sp-banner">${GB[st.goal] || GB.new}</div>
+      ${st.cut ? `<div class="sp-nudge">To stay under ${money(st.budget).replace('.00', '')}, we left out <b>${st.cut} lower-priority line${st.cut === 1 ? '' : 's'}</b>. Code-cited signs always stay in. <button class="sp-ic" type="button" id="sp-uncut">Add them back</button></div>` : ''}
+      ${st.budget && tr.total > st.budget && st.rows.every((r) => !r.on || r.pri === 1) ? `<div class="sp-nudge">Code-cited signs alone come to <b>${money(tr.total)}</b>, over your budget. Order these first, or download a quote to split across two purchases.</div>` : ''}
+      ${st.ans.spanish ? `<div class="sp-nudge">Crews that read Spanish first: any sign can be made <b>bilingual, English and Spanish</b>, as a custom sign at the same ${money(BASE)}. <button class="sp-ic" type="button" data-cu="">Make a bilingual sign</button></div>` : ''}
+      <div class="sp-sum" id="sp-sum"></div><div id="sp-nudge"></div>
+      <div class="sp-tools"><span>Show:</span><div class="sp-chips"><button type="button" data-only="0" aria-pressed="${!st.onlyReq}">Whole plan</button><button type="button" data-only="1" aria-pressed="${st.onlyReq}">Code-cited only</button></div></div>
+      ${groups.map((a) => { const rs = st.rows.map((r, i) => [r, i]).filter(([r]) => r.area === a); return `<section class="sp-grp"><div class="sp-grp-h"><h3>${esc(M.areas[a].label)}</h3><span>${st.areas[a] > 1 ? st.areas[a] + ' areas' : '1 area'}</span></div>${rs.map(([r, i]) => rowHtml(r, i)).join('')}
+        <div class="sp-custom"><span>Need wording we don't have for this area?</span><button class="sp-ic" type="button" data-cu="${esc(a)}">Design a custom sign, ${money(BASE)}</button></div></section>`; }).join('')}
+      <section class="sp-grp" id="sp-cust" ${st.custom.length ? '' : 'hidden'}><div class="sp-grp-h"><h3>Custom signs</h3><span>Made to your wording</span></div><div id="sp-cust-rows"></div></section>
+      <div class="sp-nav"><button class="sp-link" type="button" id="sp-back">&larr; Change areas</button><button class="sp-ic" type="button" data-cu="">+ Add a custom sign</button></div>`;
+    const uc = $('#sp-uncut'); if (uc) uc.addEventListener('click', () => { st.rows.forEach((r) => { if (r.cut) { r.on = true; r.cut = false; } }); st.cut = 0; view2(); });
+    main.querySelectorAll('[data-only]').forEach((b) => b.addEventListener('click', () => { st.onlyReq = b.dataset.only === '1'; view2(); }));
+    $('#sp-back').addEventListener('click', () => show(2));
+    main.querySelectorAll('[data-cu]').forEach((b) => b.addEventListener('click', () => customDlg(b.dataset.cu)));
+    main.querySelectorAll('.sp-row').forEach(bindRow);
+    renderCustom(); refresh(); resolve();
+  }
+  function bindRow(el) {
+    const r = st.rows[+el.dataset.r];
+    el.querySelectorAll('[data-q]').forEach((b) => b.addEventListener('click', () => { r.qty = Math.max(0, Math.min(500, (r.on ? r.qty : 0) + Number(b.dataset.q))); r.on = r.qty > 0; redraw(el); }));
+    const sw = el.querySelector('[data-sw]'); if (sw) sw.addEventListener('click', () => { r.i = (r.i + 1) % r.alts.length; r.v = null; redraw(el); });
+    el.querySelector('[data-rm]').addEventListener('click', () => { r.on = !r.on; if (r.on && !r.qty) r.qty = 1; if (r.on && r.cut) { r.cut = false; st.cut = Math.max(0, st.cut - 1); } redraw(el); });
+    el.querySelector('[data-why]').addEventListener('click', () => { r.why = !r.why; redraw(el); });
+    el.querySelectorAll('[data-pin]').forEach((b) => b.addEventListener('click', () => pin(r, b.dataset.pin, el)));
+    const fd = el.querySelector('[data-find]'); if (fd) fd.addEventListener('click', () => findDlg(r, el));
+  }
+  function redraw(el) { const i = +el.dataset.r; const t = document.createElement('div'); t.innerHTML = rowHtml(st.rows[i], i); const n = t.firstElementChild; el.replaceWith(n); bindRow(n); refresh(); resolve(); }
+
+  // Fetch product data for each shown pick: image, variant id, live price. Unavailable picks fall to the next alternative.
+  function resolve() {
+    st.rows.forEach((r, idx) => {
+      const s = M.signs[r.alts[r.i]]; if (!s || r.v) return;
+      product(s.h).then((p) => {
+        const v = p && p.variants && p.variants.find((x) => x.available) || null;
+        if (!v && ADMIN) { r.v = false; const t = main.querySelector(`.sp-row[data-r="${idx}"] .sp-tx .m`); if (t && !t.querySelector('.dr')) t.insertAdjacentHTML('afterbegin', '<span class="sp-tag dr" style="background:#8a5a00;color:#fff">DRAFT, hidden from shoppers</span>'); refresh(); return; }
+        if (!v) {
+          if (r.alts.length > 1 && r.tries !== r.alts.length) { r.tries = (r.tries || 1) + 1; r.i = (r.i + 1) % r.alts.length; const el = main.querySelector(`.sp-row[data-r="${idx}"]`); if (el) redraw(el); return; }
+          r.v = false; refresh(); return;
+        }
+        r.v = v.id; r.price = v.price / 100;
+        const im = main.querySelector(`.sp-row[data-r="${idx}"] img`);
+        if (im && p.featured_image) { im.onload = () => im.classList.add('ok'); im.src = p.featured_image + (p.featured_image.includes('?') ? '&' : '?') + 'width=240'; }
+      });
+    });
+  }
+
+  function refresh() {
+    const t = totals(); const sv = t.list - t.total;
+    const sum = $('#sp-sum'); if (sum) sum.innerHTML = `<div><b>${t.q}</b><small>Signs in plan</small></div><div><b>${t.req}</b><small>Code-cited signs</small></div><div><b>${money(t.u)}</b><small>Price per sign</small></div><div><b>${money(t.total)}</b><small>${sv > 0 ? 'You save ' + money(sv) : 'Plan total'}</small></div>`;
+    const nx = next(t.q), nd = $('#sp-nudge');
+    if (nd) nd.innerHTML = (nx && t.q > 0 ? `<div class="sp-nudge">Add <b>${nx.need} more sign${nx.need === 1 ? '' : 's'}</b> and every sign in your order drops to <b>${money(nx.price)}</b>. <button class="sp-ic" type="button" id="sp-addmore">Add spares to my plan</button></div>` : '')
+      + (t.total > QUOTE_AT ? `<div class="sp-nudge">Over $5,000, most public buyers need a <b>written quote</b> on file. Download a formal PDF quote for this plan in one step. <button class="sp-ic" type="button" id="sp-qnudge">Download quote (PDF)</button></div>` : '');
+    const am = $('#sp-addmore'); if (am) am.addEventListener('click', () => { spares(nx.need); });
+    const qn = $('#sp-qnudge'); if (qn) qn.addEventListener('click', quoteDlg);
+    $('#sp-bt').textContent = money(t.total);
+    $('#sp-bs').textContent = `${t.q} signs at ${money(t.u)} each` + (t.list > t.total ? ` (list ${money(t.list)})` : '') + '. Volume price applies in cart.';
+    $('#sp-cartbtn').textContent = `Add all ${t.q} to cart`;
+    $('#sp-cartbtn').disabled = !t.q;
+  }
+  // Spares go to the signs most likely to be needed in more places: entrance and area signs first.
+  function spares(n) {
+    const pool = st.rows.filter((r) => r.on && M.slots[r.k].scope !== 'site').sort((x, y) => x.pri - y.pri);
+    for (let i = 0; i < n && pool.length; i++) pool[i % pool.length].qty++;
+    view2();
+  }
+
+  function planData() {
+    const f = fac(); const t = totals();
+    return { facility: f.name, code: st.fac, entrances: st.entrances, areas: st.areas, total: t.total, unit: t.u, signs: t.q,
+      rows: st.rows.filter((r) => r.on && r.qty > 0 && r.v !== false).map((r) => { const s = M.signs[r.alts[r.i]]; return { area: M.areas[r.area].label, slot: M.slots[r.k].label, scope: SCOPE[M.slots[r.k].scope], sign: s.s, series: s.c, handle: s.h, qty: r.qty, pri: r.pri, why: M.slots[r.k].why || '', place: s.p || '' }; }),
+      custom: st.custom, url: location.href, goal: st.goal, budget: st.budget, answers: st.ans };
+  }
+  function planText(d) {
+    const lines = [`Site sign plan: ${d.facility}`, `Plan link: ${d.url}`, `${d.signs} signs, ${money(d.unit)} each, est. ${money(d.total)}`, ''];
+    d.rows.forEach((r) => lines.push(`${r.qty} x ${r.series} ${r.sign} (${r.area}: ${r.slot}) https://${location.host}/products/${r.handle}`));
+    d.custom.forEach((c) => lines.push(`${c.qty} x CUSTOM ${c.header}: ${c.text}${c.area ? ' (' + c.area + ')' : ''}`));
+    return lines.join('\n');
+  }
+  async function lead(kind, info) {
+    const d = planData();
+    const body = { action: 'plan_lead', kind, email: info.email, name: info.name, company: info.company, phone: info.phone, note: info.note, facility: st.fac, plan: d, signs: d.signs, total: d.total };
+    const a = fetch(API, { method: 'POST', body: JSON.stringify(body) }).then((r) => r.json()).catch(() => ({ ok: false }));
+    // Also send through the store contact form so the owner gets an email with the plan.
+    const fd = new FormData();
+    fd.append('form_type', 'contact'); fd.append('utf8', '✓');
+    fd.append('contact[email]', info.email); if (info.name) fd.append('contact[name]', info.name);
+    if (info.phone) fd.append('contact[phone]', info.phone);
+    fd.append('contact[body]', `[${kind === 'quote' ? 'QUOTE / PO REQUEST' : 'SAVED SIGN PLAN'}]\n` + (info.company ? 'Company: ' + info.company + '\n' : '') + (info.note ? 'Notes: ' + info.note + '\n' : '') + '\n' + planText(d));
+    const b = fetch('/contact#contact_form', { method: 'POST', body: fd, credentials: 'same-origin' }).catch(() => null);
+    const [r] = await Promise.all([a, b]);
+    return r && r.ok;
+  }
+
+  function openDlg(html) { dlg.innerHTML = `<button class="x" type="button" aria-label="Close">&times;</button>` + html; modal.classList.add('on'); dlg.querySelector('.x').addEventListener('click', closeDlg); const f = dlg.querySelector('input,textarea,select'); if (f) setTimeout(() => f.focus(), 30); }
+  function closeDlg() { modal.classList.remove('on'); }
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeDlg(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDlg(); });
+
+  function pdfDlg() {
+    openDlg(`<h3>Save your sign plan</h3><p>Enter your email and we'll keep a copy of this plan for you, then open the printable version. Print it or choose "Save as PDF".</p>
+      <form id="sp-f"><label class="sp-f"><span>Email</span><input type="email" name="email" required autocomplete="email"></label>
+      <div class="sp-2"><label class="sp-f"><span>Name (optional)</span><input name="name" autocomplete="name"></label><label class="sp-f"><span>Company (optional)</span><input name="company" autocomplete="organization"></label></div>
+      <div class="sp-err" id="sp-e"></div><button class="sp-btn" type="submit" style="width:100%">Save and open printable plan</button></form>`);
+    $('#sp-f').addEventListener('submit', async (e) => {
+      e.preventDefault(); const fd = Object.fromEntries(new FormData(e.target));
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(fd.email)) { $('#sp-e').textContent = 'Enter a valid email.'; return; }
+      e.target.querySelector('button').disabled = true; e.target.querySelector('button').textContent = 'Saving...';
+      await lead('save', fd); closeDlg(); printPlan(fd);
+    });
+  }
+  function printPlan(info) {
+    const d = planData(); const dt = new Date().toLocaleDateString();
+    const by = {}; d.rows.forEach((r) => { (by[r.area] = by[r.area] || []).push(r); });
+    $('#sp-print').innerHTML = `<h1>Site Safety Sign Plan</h1><p class="meta"><b>${esc(d.facility)}</b>${info && info.company ? ' &middot; ' + esc(info.company) : ''} &middot; Prepared ${dt} by ${esc(STORE)} &middot; ${d.signs} signs, ${d.entrances} entrance${d.entrances === 1 ? '' : 's'}</p>
+      <p class="meta">Use this list to order, place and check off each sign. Code-cited lines point to the rule behind them. Walk the site to confirm locations and add anything specific to your equipment.</p>
+      ${Object.entries(by).map(([a, rs]) => `<h2>${esc(a)}</h2><table><tr><th style="width:20%">Need</th><th>Sign</th><th style="width:26%">Where it goes</th><th style="width:6%">Qty</th><th style="width:8%">Installed</th></tr>${rs.map((r) => `<tr><td>${esc(r.slot)}<br><small>${esc((PRI[r.pri] || PRI[2])[1])}</small></td><td><b>${esc(r.series)}</b> ${esc(r.sign)}<br><small>${location.host}/products/${esc(r.handle)}</small>${r.why ? `<br><small>${esc(r.why)}</small>` : ''}</td><td>${esc(r.place || r.scope)}</td><td>${r.qty}</td><td><span class="box"></span></td></tr>`).join('')}</table>`).join('')}
+      ${d.custom.length ? `<h2>Custom signs</h2><table><tr><th>Header</th><th>Wording</th><th>Area</th><th>Qty</th><th>Installed</th></tr>${d.custom.map((c) => `<tr><td>${esc(c.header)}</td><td>${esc(c.text)}</td><td>${esc(c.area || '')}</td><td>${c.qty}</td><td><span class="box"></span></td></tr>`).join('')}</table>` : ''}
+      <h2>Order summary</h2><p>${d.signs} signs at ${money(d.unit)} each = <b>${money(d.total)}</b> (8x12 aluminum). Reopen or order this plan: ${esc(d.url)}</p>`;
+    setTimeout(() => window.print(), 60);
+  }
+  // Formal written quote, built in the browser as a PDF so a buyer can file it or attach it to a PO request.
+  const loadPdf = () => window.jspdf ? Promise.resolve(window.jspdf) : new Promise((ok, bad) => {
+    const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.onload = () => (window.jspdf ? ok(window.jspdf) : bad(new Error('pdf lib'))); s.onerror = bad; document.head.appendChild(s);
+  });
+  const quoteNo = () => { const d = new Date(), p = (n) => String(n).padStart(2, '0'); return 'Q' + String(d.getFullYear()).slice(2) + p(d.getMonth() + 1) + p(d.getDate()) + '-' + Math.random().toString(36).slice(2, 6).toUpperCase(); };
+  async function quotePdf(info, qn) {
+    const { jsPDF } = await loadPdf();
+    const d = planData(), t = totals(), u = t.u;
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+    const W = 612, H = 792, M = 40, G = [23, 63, 36], O = [224, 115, 26], INK = [20, 24, 26], MUT = [93, 102, 96];
+    const now = new Date(), until = new Date(now.getTime() + 30 * 864e5);
+    const fdt = (x) => x.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const clean = (s) => String(s ?? '').replace(/[–—]/g, '-').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[^\x20-\x7E\xA0-\xFF]/g, '');
+    const color = (c) => doc.setTextColor(c[0], c[1], c[2]);
+    // Header band
+    doc.setFillColor(...G); doc.rect(0, 0, W, 88, 'F'); doc.setFillColor(...O); doc.rect(0, 88, W, 4, 'F');
+    doc.setTextColor(255); doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.text(clean(STORE).toUpperCase(), M, 42);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+    doc.text('Facility safety signs, made to order in Amory, Mississippi', M, 60);
+    doc.text(location.host + '   Info@cgapenterprises.com', M, 74);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.text('QUOTATION', W - M, 42, { align: 'right' });
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+    doc.text('Quote no. ' + qn, W - M, 60, { align: 'right' }); doc.text('Date: ' + fdt(now), W - M, 74, { align: 'right' });
+    // Prepared for / quote details
+    let y = 118;
+    color(MUT); doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.text('PREPARED FOR', M, y); doc.text('QUOTE DETAILS', 330, y);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); color(INK);
+    const who = [info.name, info.company, info.email, info.phone].filter(Boolean).map(clean);
+    who.forEach((l, i) => doc.text(l, M, y + 16 + i * 14));
+    const det = [['Valid through', fdt(until)], ['Site plan', clean(d.facility)], ['Signs', String(t.q)], ['Price per sign', money(u)]];
+    det.forEach(([k, v], i) => { color(MUT); doc.text(k, 330, y + 16 + i * 14); color(INK); doc.text(v, W - M, y + 16 + i * 14, { align: 'right' }); });
+    y += 16 + Math.max(who.length, det.length) * 14 + 4;
+    if (info.note) { const nl = doc.splitTextToSize('Notes: ' + clean(info.note), W - 2 * M); color(MUT); doc.setFontSize(9); doc.text(nl, M, y + 6); y += nl.length * 12 + 6; doc.setFontSize(10); }
+    // Line items
+    const items = [
+      ...d.rows.map((r) => ({ item: `${r.series} ${r.sign} Sign, 8x12 aluminum`, sub: `${location.host}/products/${r.handle}`, area: `${r.area}: ${r.slot}`, qty: r.qty })),
+      ...d.custom.map((c) => ({ item: `${c.header} custom sign: ${c.text}`, sub: 'Made to your wording, proof before production', area: c.area || 'General', qty: c.qty })),
+    ];
+    const C = { n: M, item: M + 22, area: M + 290, qty: M + 432, unit: M + 480, amt: W - M };
+    const head = () => {
+      doc.setFillColor(238, 244, 239); doc.rect(M, y, W - 2 * M, 20, 'F');
+      color(G); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+      doc.text('#', C.n + 4, y + 13); doc.text('ITEM', C.item, y + 13); doc.text('AREA', C.area, y + 13);
+      doc.text('QTY', C.qty, y + 13, { align: 'right' }); doc.text('UNIT', C.unit, y + 13, { align: 'right' }); doc.text('AMOUNT', C.amt, y + 13, { align: 'right' });
+      y += 26; doc.setFont('helvetica', 'normal');
+    };
+    y += 14; head();
+    items.forEach((it, i) => {
+      doc.setFontSize(9.5);
+      const il = doc.splitTextToSize(clean(it.item), 260), al = doc.splitTextToSize(clean(it.area), 128);
+      const hgt = Math.max(il.length * 12 + 11, al.length * 11) + 8;
+      if (y + hgt > H - 70) { doc.addPage(); y = 50; head(); doc.setFontSize(9.5); }
+      color(MUT); doc.text(String(i + 1), C.n + 4, y + 2);
+      color(INK); doc.text(il, C.item, y + 2);
+      color(MUT); doc.setFontSize(7.5); doc.text(clean(it.sub).slice(0, 70), C.item, y + 2 + il.length * 12);
+      doc.setFontSize(8.5); doc.text(al, C.area, y + 2);
+      doc.setFontSize(9.5); color(INK);
+      doc.text(String(it.qty), C.qty, y + 2, { align: 'right' }); doc.text(money(u), C.unit, y + 2, { align: 'right' }); doc.text(money(it.qty * u), C.amt, y + 2, { align: 'right' });
+      y += hgt; doc.setDrawColor(227, 230, 224); doc.line(M, y - 8, W - M, y - 8);
+    });
+    // Totals
+    if (y + 110 > H - 70) { doc.addPage(); y = 50; }
+    const tot = [['List price (' + t.q + ' x ' + money(BASE) + ')', money(t.list)], ...(t.list > t.total ? [['Volume pricing, ' + t.q + ' signs at ' + money(u) + ' each', '-' + money(t.list - t.total)]] : []), ['Shipping', 'Included'], ['Sales tax', 'Not included; exempt orders welcome']];
+    doc.setFontSize(9.5);
+    tot.forEach(([k, v]) => { color(MUT); doc.text(k, 330, y + 4); color(INK); doc.text(v, W - M, y + 4, { align: 'right' }); y += 15; });
+    doc.setFillColor(...G); doc.rect(320, y - 2, W - M - 320, 26, 'F');
+    doc.setTextColor(255); doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
+    doc.text('Quote total', 330, y + 15); doc.text(money(t.total), W - M - 8, y + 15, { align: 'right' });
+    y += 46;
+    // Terms
+    const terms = [
+      'Prices are firm for 30 days, through ' + fdt(until) + '.',
+      'Payment by purchase order (net 30 for government agencies and approved accounts), credit card or purchasing card. Tax-exempt orders welcome with a certificate.',
+      'Every order ships within 2 business days of order from Amory, Mississippi. Shipping is included.',
+      'Each sign: 8 x 12 in, heavy-gauge, rust-resistant aluminum, UV-stable print, pre-drilled corners. Five-year outdoor warranty.',
+      'To order: email your PO to Info@cgapenterprises.com with quote no. ' + qn + ', or order online from your plan link below.',
+    ];
+    if (y + 150 > H - 60) { doc.addPage(); y = 50; }
+    color(G); doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.text('TERMS', M, y); y += 14;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); color(INK);
+    terms.forEach((tx) => { const l = doc.splitTextToSize(tx, W - 2 * M - 12); doc.text('-', M, y); doc.text(l, M + 12, y); y += l.length * 12 + 3; });
+    y += 18; color(INK); doc.setFontSize(9.5);
+    doc.line(M, y, M + 200, y); doc.line(M + 230, y, M + 360, y); doc.line(M + 390, y, W - M, y);
+    color(MUT); doc.setFontSize(8); doc.text('Accepted by', M, y + 11); doc.text('Date', M + 230, y + 11); doc.text('PO number', M + 390, y + 11);
+    // Footer on every page
+    const n = doc.getNumberOfPages();
+    for (let p = 1; p <= n; p++) {
+      doc.setPage(p); doc.setFontSize(7.5); color(MUT);
+      doc.text(doc.splitTextToSize('Plan link: ' + d.url, W - 2 * M - 90)[0], M, H - 28);
+      doc.text(`Quote ${qn}   Page ${p} of ${n}`, W - M, H - 28, { align: 'right' });
+    }
+    doc.save(`CGAP-Safety-Quote-${qn}.pdf`);
+  }
+  function quoteDlg() {
+    const t = totals();
+    openDlg(`<h3>Get a formal quote (PDF)</h3><p>A written quote for these ${t.q} signs (${money(t.total)}) downloads right away, ready for your purchasing file or PO. Prices hold for 30 days and we get a copy too.${t.total > QUOTE_AT ? ' Orders over $5,000 usually need a written quote, so this is the one to file.' : ''}</p>
+      <form id="sp-f"><div class="sp-2"><label class="sp-f"><span>Name</span><input name="name" required autocomplete="name"></label><label class="sp-f"><span>Organization</span><input name="company" required autocomplete="organization"></label></div>
+      <div class="sp-2"><label class="sp-f"><span>Email</span><input type="email" name="email" required autocomplete="email"></label><label class="sp-f"><span>Phone</span><input name="phone" autocomplete="tel"></label></div>
+      <label class="sp-f"><span>Ship-to address, PO number or deadline (optional, printed on the quote)</span><textarea name="note"></textarea></label>
+      <div class="sp-err" id="sp-e"></div><button class="sp-btn g" type="submit" style="width:100%">Download quote PDF</button></form>`);
+    $('#sp-f').addEventListener('submit', async (e) => {
+      e.preventDefault(); const fd = Object.fromEntries(new FormData(e.target));
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(fd.email)) { $('#sp-e').textContent = 'Enter a valid email.'; return; }
+      const btn = e.target.querySelector('button'); btn.disabled = true; btn.textContent = 'Building your quote...';
+      const qn = quoteNo();
+      const sent = lead('quote', { ...fd, note: `Quote ${qn} (PDF downloaded by buyer). ` + (fd.note || '') });
+      let made = true;
+      try { await quotePdf(fd, qn); } catch (err) { made = false; }
+      const ok = await sent;
+      dlg.innerHTML = `<button class="x" type="button" aria-label="Close">&times;</button><h3>${made ? 'Quote ' + esc(qn) + ' downloaded' : 'Quote request received'}</h3><div class="sp-ok">${made ? 'Your PDF quote is in your downloads. ' : 'The PDF could not be built on this device, so we will email your quote instead. '}${ok ? 'We have a copy and can invoice against your PO.' : 'If you need anything changed, email Info@cgapenterprises.com with the quote number.'}</div>
+        <p style="margin-top:1.4rem">To order, email your PO to <a href="mailto:Info@cgapenterprises.com?subject=PO%20for%20quote%20${esc(qn)}">Info@cgapenterprises.com</a> or <button class="sp-link" type="button" id="sp-q2c">add the plan to your cart</button>.</p>`;
+      dlg.querySelector('.x').addEventListener('click', closeDlg);
+      $('#sp-q2c').addEventListener('click', () => { closeDlg(); toCart(); });
+    });
+  }
+
+  function customDlg(area) {
+    const areaOpts = [['', 'General / anywhere'], ...Object.keys(st.areas).map((a) => [M.areas[a].label, M.areas[a].label])];
+    openDlg(`<h3>Design a custom sign</h3><p>Same ${money(BASE)} price and volume discounts as every sign. Tell us the wording and we'll lay it out to match our catalog style.</p>
+      <div class="sp-prev"><div class="h" id="cp-h" style="background:#C8102E">DANGER</div><div class="b" id="cp-b">Your wording here</div></div>
+      <form id="sp-f"><div class="sp-2"><label class="sp-f"><span>Header</span><select name="header" id="cf-h">${Object.keys(SER).map((s) => `<option>${s}</option>`).join('')}</select></label>
+      <label class="sp-f"><span>Quantity</span><input type="number" name="qty" min="1" max="500" value="1" required></label></div>
+      <label class="sp-f"><span>Sign wording</span><textarea name="text" id="cf-t" maxlength="180" required placeholder="e.g. Ammonia Compressor Room. Authorized Refrigeration Staff Only"></textarea></label>
+      <label class="sp-f"><span>Where it goes</span><select name="area">${areaOpts.map(([v, l]) => `<option value="${esc(v)}" ${v && M.areas[area] && M.areas[area].label === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label>
+      <label class="sp-f"><span>Notes for our designer (optional)</span><input name="note" placeholder="Symbol, language, arrow direction..."></label>
+      <div class="sp-err" id="sp-e"></div><button class="sp-btn" type="submit" style="width:100%">Add custom sign to my plan</button></form>`);
+    const ph = $('#cp-h'), pb = $('#cp-b');
+    const upd = () => { const c = SER[$('#cf-h').value]; ph.textContent = $('#cf-h').value; ph.style.background = c[0]; ph.style.color = c[1]; pb.textContent = $('#cf-t').value || 'Your wording here'; };
+    $('#cf-h').addEventListener('change', upd); $('#cf-t').addEventListener('input', upd);
+    $('#sp-f').addEventListener('submit', (e) => {
+      e.preventDefault(); const fd = Object.fromEntries(new FormData(e.target));
+      if (!String(fd.text || '').trim()) { $('#sp-e').textContent = 'Add the wording for your sign.'; return; }
+      st.custom.push({ header: fd.header, text: String(fd.text).trim(), area: fd.area, note: fd.note || '', qty: Math.max(1, Math.min(500, Number(fd.qty) || 1)) });
+      closeDlg(); if (st.step === 3) { renderCustom(); refresh(); } else { if (!st.rows.length) build(); show(3); }
+    });
+  }
+  function renderCustom() {
+    const box = $('#sp-cust'), rows = $('#sp-cust-rows'); if (!box) return;
+    box.hidden = !st.custom.length;
+    rows.innerHTML = st.custom.map((c, i) => { const k = SER[c.header]; return `<div class="sp-row" data-c="${i}"><div class="sp-th"><span class="ph" style="background:${k[0]};color:${k[1]}">${esc(c.header)}</span></div><div class="sp-tx"><div class="k">Custom${c.area ? ' &middot; ' + esc(c.area) : ''}</div><a>${esc(c.text)}</a><div class="m"><span>We lay it out and send a proof</span><span>8x12 aluminum</span></div></div><div class="sp-qty"><button type="button" data-q="-1">&minus;</button><span>${c.qty}</span><button type="button" data-q="1">+</button></div><div class="sp-acts"><button class="sp-ic" type="button" data-rmc>Remove</button></div></div>`; }).join('');
+    rows.querySelectorAll('[data-c]').forEach((el) => { const c = st.custom[+el.dataset.c];
+      el.querySelectorAll('[data-q]').forEach((b) => b.addEventListener('click', () => { c.qty = Math.max(1, Math.min(500, c.qty + Number(b.dataset.q))); renderCustom(); refresh(); }));
+      el.querySelector('[data-rmc]').addEventListener('click', () => { st.custom.splice(+el.dataset.c, 1); renderCustom(); refresh(); }); });
+  }
+
+  async function toCart() {
+    const btn = $('#sp-cartbtn'); btn.disabled = true; btn.textContent = 'Adding...';
+    const live = st.rows.filter((r) => r.on && r.qty > 0);
+    await Promise.all(live.map(async (r) => { if (!r.v) { const p = await product(M.signs[r.alts[r.i]].h); const v = p && p.variants && p.variants.find((x) => x.available); r.v = v ? v.id : false; } }));
+    const items = live.filter((r) => r.v).map((r) => ({ id: r.v, quantity: r.qty, properties: { _site_plan: fac().name } }));
+    let missing = 0;
+    if (st.custom.length) {
+      const cp = CUSTOM ? await product(CUSTOM) : null; const cv = cp && cp.variants && cp.variants.find((x) => x.available);
+      if (cv) st.custom.forEach((c) => items.push({ id: cv.id, quantity: c.qty, properties: { Header: c.header, Wording: c.text, Location: c.area || 'General', 'Designer notes': c.note || '' } }));
+      else missing = st.custom.length;
+    }
+    try {
+      for (let i = 0; i < items.length; i += 40) { const r = await fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: items.slice(i, i + 40) }) }); if (!r.ok) throw new Error(await r.text()); }
+      if (missing) { openDlg(`<h3>Almost there</h3><p>Your catalog signs are in the cart. Custom signs can't be added online yet, so send them with a quote request and we'll invoice them with your order.</p><button class="sp-btn g" type="button" id="sp-q2">Send custom signs as a quote</button>`); $('#sp-q2').addEventListener('click', quoteDlg); return; }
+      location.href = '/cart';
+    } catch (e) {
+      openDlg(`<h3>Some signs couldn't be added</h3><p>Part of your plan may already be in the cart. Request a quote and we'll put the full order together for you.</p><button class="sp-btn g" type="button" id="sp-q2">Request a quote</button>`); $('#sp-q2').addEventListener('click', quoteDlg);
+    } finally { btn.disabled = false; refresh(); }
+  }
+  bar.addEventListener('click', (e) => { const a = e.target.closest('[data-act]'); if (!a) return; if (a.dataset.act === 'cart') toCart(); else if (a.dataset.act === 'quote') quoteDlg(); else pdfDlg(); });
+
+  const planUrl = API + '?action=plan' + (ADMIN ? '&cid=' + ADMIN.cid + '&ts=' + ADMIN.ts + '&sig=' + ADMIN.sig : '');
+  fetch(planUrl).then((r) => r.json()).then((d) => {
+    if (!d || !d.facilities) throw new Error('no plan data');
+    M = d; (d.pins || []).forEach((x) => PINS.add(pinKey(x.fac, x.k, x.sku))); readUrl(); if (st.step === 3) build(); show(st.step);
+  }).catch(() => { main.innerHTML = `<div class="sp-card"><h2>The plan builder is busy</h2><p class="s">Refresh in a moment, or <a href="/pages/contact">tell us about your site</a> and we'll build the plan for you.</p></div>`; });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "CGAP Site Sign Plan",
+  "tag": "section",
+  "class": "cgap-site-plan",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Site Sign Plan" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "We tell you which signs your site needs" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Answer a few questions about your facility and equipment. We build a room-by-room sign list sized to your site, marked by what codes require, with placement and automatic volume pricing. Order it, get a quote, or print it." },
+    { "type": "text", "id": "admin_secret", "label": "Pin admin key (do not share)", "info": "Lets store customers tagged cgap-admin pin signs on this page." },
+    { "type": "text", "id": "custom_handle", "label": "Custom sign product handle", "default": "custom-safety-sign-8x12-aluminum" },
+    { "type": "text", "id": "api_url", "label": "Plan API URL", "default": "https://esmwoaqemeukjrjaesby.supabase.co/functions/v1/sign-finder" }
+  ],
+  "presets": [{ "name": "CGAP Site Sign Plan" }]
+}
+{% endschema %}

@@ -1,0 +1,27 @@
+{%- doc -%}
+  Short display title for long marketplace-style product titles.
+  Drops the size/material, audience ("for ...") and "English and Spanish" parts.
+  The full product title stays in the data, the page title and search.
+  @param {object} product
+{%- enddoc -%}
+{%- liquid
+  assign t = product.title | replace: ' – 8x12 Aluminum', '' | replace: ' - 8x12 Aluminum', ''
+  assign segs = t | split: ', '
+  assign short = ''
+  for s in segs
+    assign s4 = s | slice: 0, 4
+    assign s7 = s | slice: 0, 7
+    if s4 == '8x12' or s4 == 'for ' or s7 == 'English'
+      continue
+    endif
+    if short == ''
+      assign short = s
+    else
+      assign short = short | append: ', ' | append: s
+    endif
+  endfor
+  if short == ''
+    assign short = product.title
+  endif
+  echo short | escape
+-%}
