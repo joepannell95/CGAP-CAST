@@ -121,9 +121,9 @@
       const t = el('text', { x: 600, y: hdrY + 4, 'text-anchor': 'middle', 'dominant-baseline': 'central', fill: c.fg, 'font-family': 'Anton, Impact, sans-serif', 'letter-spacing': '3' }); t.textContent = st.h;
       const size = fitText(t, c.tri ? 860 : 1040, 210);
       if (c.tri) {
-        const w = t.getComputedTextLength(), x0 = 600 - w / 2 - 70, s = Math.min(150, size * .82);
-        t.setAttribute('x', 600 + 70);
-        const tx = x0 + 70, ty = hdrY + 6;
+        const w = t.getComputedTextLength(), s = Math.min(150, size * .82);
+        t.setAttribute('x', 600 + 75);
+        const tx = 600 - w / 2 - 30, ty = hdrY + 6;
         el('path', { d: `M ${tx} ${ty - s / 2} L ${tx + s * .58} ${ty + s / 2} L ${tx - s * .58} ${ty + s / 2} Z`, fill: '#000', 'stroke-linejoin': 'round', stroke: '#000', 'stroke-width': 8 });
         el('rect', { x: tx - 7, y: ty - s * .18, width: 14, height: s * .38, rx: 4, fill: c.band });
         el('circle', { cx: tx, cy: ty + s * .34, r: 8.5, fill: c.band });
@@ -133,7 +133,7 @@
     const top = 330, bottom = 760, lh = (bottom - top) / n;
     let size = Math.min(150, lh * .86);
     const ts = L.map((s, i) => { const t = el('text', { x: 600, y: top + lh * (i + .5), 'text-anchor': 'middle', 'dominant-baseline': 'central', fill: '#000', 'font-family': 'Anton, Impact, sans-serif', 'letter-spacing': '1' }); t.textContent = s; return t; });
-    ts.forEach((t) => { size = Math.min(size, fitText(t, 1090, size)); });
+    ts.forEach((t) => { size = Math.min(size, fitText(t, 1050, size)); });
     ts.forEach((t) => t.setAttribute('font-size', size));
     if (!L.length) { const t = el('text', { x: 600, y: 545, 'text-anchor': 'middle', 'dominant-baseline': 'central', fill: '#b8bdb5', 'font-family': 'Anton, Impact, sans-serif', 'font-size': 90 }); t.textContent = 'YOUR WORDING HERE'; }
     const f = el('text', { x: 1160, y: 780, 'text-anchor': 'end', fill: '#777', 'font-family': 'Arial, sans-serif', 'font-size': 14 }); f.textContent = 'cgapindustries.com';
