@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "cgap-sign-designer",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}
