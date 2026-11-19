@@ -238,7 +238,7 @@
   const customPrice = () => (C.custom ? C.custom.price / 100 : 29.99);
   function line(r) {
     if (r.state !== 'ok') return null;
-    if (r.pick >= 0) { const o = r.opts[r.pick]; return { id: o.id, unit: o.price, desc: o.full, sku: o.sku, url: location.origin + '/products/' + o.handle, custom: false }; }
+    if (r.pick >= 0) { const o = r.opts[r.pick]; return { id: o.id, unit: o.price, desc: (o.series ? o.series + ' ' : '') + o.title + ' Sign, 8x12 heavy-gauge aluminum', sku: o.sku, url: location.origin + '/products/' + o.handle, custom: false }; }
     return { id: C.custom && C.custom.id, unit: customPrice(), desc: 'Custom sign: ' + (r.header || 'NOTICE') + ' - ' + (r.wording || r.text), sku: 'CUSTOM', url: '', custom: true };
   }
   function totals() {
@@ -367,7 +367,7 @@
     [...who, ...ship].forEach((l, i) => doc.text(l, M, y + 15 + i * 13));
     const reg = [['UEI', C.uei], ['CAGE', C.cage], ['NAICS', C.naics], ['SAM.gov', 'Active'], ['Size', 'Small business'], ['Origin', 'Made in USA']];
     reg.forEach(([k, v], i) => { color(MUT); doc.text(k, 232, y + 15 + i * 13); color(INK); doc.text(clean(v).slice(0, 26), 280, y + 15 + i * 13); });
-    const det = [['Ref / PO', info.ref || '-'], ['Need by', info.needby || '-'], ['Tax', info.exempt ? 'Exempt (cert. to follow)' : 'Not included'], ['Shipping', 'Included'], ['Lead time', 'Ships in 2 bus. days']];
+    const det = [['Ref / PO', info.ref || '-'], ['Need by', info.needby || '-'], ['Tax', info.exempt ? 'Exempt, cert to follow' : 'Not included'], ['Shipping', 'Included'], ['Lead time', 'Ships in 2 bus. days']];
     det.forEach(([k, v], i) => { color(MUT); doc.text(k, 420, y + 15 + i * 13); color(INK); doc.text(clean(v).slice(0, 22), W - M, y + 15 + i * 13, { align: 'right' }); });
     y += 15 + Math.max(who.length + ship.length, reg.length, det.length) * 13 + 14;
     // table
@@ -376,7 +376,7 @@
     head();
     rows.forEach((r, i) => {
       const l = line(r); if (!l) return;
-      const dl = doc.splitTextToSize(clean(l.desc), 340); const sub = l.custom ? 'Custom 8x12 sign, customer wording, ANSI layout' : 'SKU ' + clean(l.sku);
+      const dl = doc.splitTextToSize(clean(l.desc), 300); const sub = l.custom ? 'Custom 8x12 sign, customer wording, ANSI layout' : 'SKU ' + clean(l.sku);
       const need = dl.length * 11 + 14;
       if (y + need > H - 70) { doc.addPage(); y = 50; head(); }
       doc.setFontSize(9.5); color(INK);
