@@ -204,7 +204,21 @@
   async function search(q) {
     const u = new URL(C.api); u.searchParams.set('q', q);
     const r = await fetch(u); if (!r.ok) throw new Error('search'); const d = await r.json();
-    return (d.results || []).slice(0, 4);
+    return rerank(q, (d.results || []).slice(0, 10));
+  }
+  const STOP = new Set(['sign', 'signs', 'the', 'a', 'an', 'of', 'in', 'at', 'to', 'and', 'for', 'on', 'is', 'be', 'all', 'area']);
+  const words = (t) => String(t || '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').split(/\s+/).filter((w) => w && !STOP.has(w)).map((w) => w.replace(/(ies)$/, 'y').replace(/([^s])s$/, '$1'));
+  const SER = ['danger', 'warning', 'caution', 'notice', 'safety', 'first'];
+  function score(q, r, i) {
+    const qw = words(q).filter((w) => !SER.includes(w)), qj = qw.join(''), sw = words(r.subject);
+    if (!qw.length || !sw.length) return { rec: 0, prec: 0, s: 0 };
+    const rec = qw.filter((w) => sw.some((x) => x === w || (w.length > 2 && x.includes(w)))).length / qw.length;
+    const prec = sw.filter((x) => qw.includes(x) || qj.includes(x)).length / sw.length;
+    const ser = (r.series || '').toUpperCase();
+    return { rec, prec, s: 2 * rec + prec + (0.3 - i * 0.03) + (ser && q.toUpperCase().includes(ser) ? 0.4 : 0) };
+  }
+  function rerank(q, res) {
+    return res.map((r, i) => { const k = score(q, r, i); return { ...r, _rec: k.rec, _prec: k.prec, _s: k.s }; }).sort((x, y) => y._s - x._s);
   }
   async function match(row) {
     row.state = 'loading'; draw();
@@ -213,7 +227,7 @@
       const opts = [];
       for (const r of res) { const p = await product(r.handle); if (p && p.available !== false) opts.push({ sku: r.sku, handle: r.handle, series: (r.series || '').toUpperCase(), title: r.subject || short(p.title), full: p.title, id: p.variants[0].id, price: p.price / 100, img: p.featured_image }); if (opts.length >= 3) break; }
       row.opts = opts;
-      row.pick = opts.length ? 0 : -1;
+      row.pick = opts.length && res[0]._rec >= 0.6 && res[0]._prec >= 0.5 ? 0 : -1;
     } catch (e) { row.opts = []; row.pick = -1; }
     if (row.pick === -1) { row.header = guessHeader(row.text); row.wording = stripHeader(row.text); }
     row.state = 'ok'; draw();
