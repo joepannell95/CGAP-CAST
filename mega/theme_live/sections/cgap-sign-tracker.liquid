@@ -1,0 +1,262 @@
+{%- comment -%} CGAP facility sign tracker: signed-in customers log which signs are posted where, see what is due for inspection or replacement, download calendar reminders and reorder in one click. Data lives in the sign-tracker edge function, keyed to the Shopify customer id with an HMAC signed here. {%- endcomment -%}
+<style>
+  .tk{--g:#173F24;--o:#E0731A;--ink:#14181a;--mut:#5d6660;--line:#dfe3dc;color:var(--ink)}
+  .tk *{box-sizing:border-box}
+  .tk-hero{background:var(--g);color:#fff;padding:4rem 1.6rem 3.2rem;border-bottom:4px solid var(--o)}
+  .tk-wrap{max-width:1180px;margin:0 auto;padding:0 1.6rem}
+  .tk-hero .tk-wrap{padding:0}
+  .tk-eyebrow{display:inline-block;font-size:1.2rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#f3c79c;margin:0 0 1rem}
+  .tk-hero h1{color:#fff;font-size:clamp(3rem,4.6vw,4.4rem);line-height:1.08;margin:0 0 1.2rem;text-transform:uppercase}
+  .tk-hero p{font-size:1.7rem;line-height:1.5;max-width:780px;margin:0;opacity:.92}
+  .tk-main{padding:3rem 0 5rem}
+  .tk-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:2rem;margin:0 0 2rem}
+  .tk-btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;background:var(--g);color:#fff;font-weight:700;font-size:1.4rem;padding:1.1rem 1.8rem;border-radius:4px;text-transform:uppercase;letter-spacing:.03em}
+  .tk-btn--o{background:var(--o)}.tk-btn--ghost{background:#fff;color:var(--g);border:2px solid var(--g);padding:.9rem 1.6rem}
+  .tk-btn[disabled]{opacity:.45;cursor:default}
+  .tk-row{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center}
+  .tk-pts{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.4rem;margin:0 0 2rem}
+  .tk-pts div{background:#fff;border:1px solid var(--line);border-top:4px solid var(--g);border-radius:8px;padding:1.6rem}
+  .tk-pts h3{margin:0 0 .5rem;font-size:1.6rem;text-transform:uppercase}
+  .tk-pts p{margin:0;font-size:1.4rem;color:var(--mut);line-height:1.5}
+  .tk-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:0 0 1.6rem}
+  .tk-stat{background:#fff;border:1px solid var(--line);border-radius:8px;padding:1.2rem 1.4rem;cursor:pointer}
+  .tk-stat b{display:block;font-size:2.8rem;line-height:1}
+  .tk-stat span{font-size:1.2rem;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+  .tk-stat.red b{color:#C8102E}.tk-stat.amb b{color:#b26b00}.tk-stat.blu b{color:#0057B8}
+  .tk-stat[aria-pressed=true]{border-color:var(--g);box-shadow:0 0 0 2px var(--g) inset}
+  .tk-loc{margin:0 0 1.6rem}
+  .tk-loc h3{font-size:1.5rem;text-transform:uppercase;margin:0;padding:.8rem 0;border-bottom:2px solid var(--line);display:flex;justify-content:space-between}
+  .tk-it{display:grid;grid-template-columns:2.4rem minmax(0,1fr) auto;gap:.4rem 1.2rem;align-items:start;padding:1rem 0;border-bottom:1px solid var(--line)}
+  .tk-it input[type=checkbox]{width:1.8rem;height:1.8rem;margin-top:.3rem;accent-color:var(--g)}
+  .tk-t{font-weight:700;font-size:1.5rem}
+  .tk-t a{color:var(--ink)}
+  .tk-m{font-size:1.25rem;color:var(--mut);margin-top:.2rem}
+  .tk-b{display:inline-block;font-size:1.05rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:.2rem .7rem;border-radius:3px;margin-right:.4rem}
+  .tk-b.ok{background:#e3f1e5;color:#1e6b2c}.tk-b.due{background:#fff1d6;color:#8a5200}.tk-b.now{background:#C8102E;color:#fff}.tk-b.chk{background:#e3edf9;color:#0057B8}
+  .tk-acts{display:flex;gap:.4rem;flex-wrap:wrap;justify-content:flex-end}
+  .tk-ic{all:unset;cursor:pointer;font-size:1.2rem;font-weight:700;border:1px solid #cfd4cc;border-radius:4px;padding:.5rem .8rem;background:#fff}
+  .tk-ic:hover{border-color:var(--g)}
+  .tk-bar{position:sticky;bottom:0;background:#fff;border-top:3px solid var(--o);padding:1rem 1.6rem;display:flex;gap:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap;box-shadow:0 -6px 20px rgba(0,0,0,.08);z-index:5}
+  .tk-empty{text-align:center;padding:3rem 1rem}
+  .tk-empty h2{text-transform:uppercase}
+  .tk-dlg{border:0;border-radius:10px;padding:0;max-width:620px;width:calc(100% - 2.4rem);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  .tk-dlg::backdrop{background:rgba(10,20,14,.55)}
+  .tk-in{padding:2.4rem;position:relative;max-height:88vh;overflow:auto}
+  .tk-in h3{margin:0 0 .8rem;font-size:2rem;color:var(--g);text-transform:uppercase}
+  .tk-f{display:block;margin:0 0 1rem}
+  .tk-f span{display:block;font-weight:700;font-size:1.25rem;margin:0 0 .3rem}
+  .tk-f input,.tk-f select,.tk-f textarea{width:100%;border:1px solid #cfd4cc;border-radius:6px;padding:.9rem 1rem;font:inherit;font-size:1.45rem;background:#fff}
+  .tk-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+  .tk-res{max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:6px;margin:-.4rem 0 1rem}
+  .tk-res button{all:unset;cursor:pointer;display:block;width:100%;box-sizing:border-box;padding:.8rem 1rem;border-bottom:1px solid var(--line);font-size:1.35rem}
+  .tk-res button:hover,.tk-res button.on{background:#eef4ef}
+  .tk-xd{all:unset;cursor:pointer;position:absolute;right:1.4rem;top:1rem;font-size:2.6rem;line-height:1}
+  .tk-ord label{display:flex;gap:.8rem;align-items:flex-start;padding:.7rem 0;border-bottom:1px solid var(--line);font-size:1.35rem}
+  .tk-ord input{margin-top:.3rem}
+  .tk-err{color:#b3261e;font-size:1.3rem;min-height:1.6rem}
+  @media (max-width:640px){.tk-3{grid-template-columns:1fr}.tk-it{grid-template-columns:2.4rem 1fr}.tk-acts{grid-column:2;justify-content:flex-start}}
+  @media print{.tk-hero,.tk-bar,.tk-acts,.tk-tools,header,footer,.tk-it input{display:none!important}.tk-it{grid-template-columns:1fr}}
+</style>
+<div class="tk">
+  <div class="tk-hero"><div class="tk-wrap">
+    <div class="tk-eyebrow">{{ section.settings.eyebrow }}</div>
+    <h1>{{ section.settings.heading }}</h1>
+    <p>{{ section.settings.subheading }}</p>
+  </div></div>
+  <div class="tk-wrap tk-main" id="tk-main">
+  {%- if customer -%}
+    <div class="tk-card"><p>Loading your signs...</p></div>
+  {%- else -%}
+    <div class="tk-pts">
+      <div><h3>Every sign, every room</h3><p>Log what's posted where, in your own words: building, room, door, panel. Pull signs in straight from your past orders.</p></div>
+      <div><h3>Know what's due</h3><p>See which signs are due for replacement or haven't been checked in a year, before an inspector or insurer finds them.</p></div>
+      <div><h3>Reorder in one click</h3><p>Select the faded or due signs and send them straight to your cart. Quantity discounts apply.</p></div>
+      <div><h3>Calendar reminders</h3><p>Download reminders for every replace-by date into Outlook, Google or Apple Calendar.</p></div>
+    </div>
+    <div class="tk-card" style="text-align:center">
+      <h2 style="text-transform:uppercase;margin-top:0">Free with a CGAP Safety account</h2>
+      <p style="font-size:1.5rem;color:var(--mut)">Sign in or create an account with your email. No credit card, no catch.</p>
+      <div class="tk-row" style="justify-content:center"><a class="tk-btn tk-btn--o" href="{{ routes.account_login_url }}?return_url={{ request.path | url_encode }}">Sign in or create account</a><a class="tk-btn tk-btn--ghost" href="/pages/sign-compliance-checker">Not sure what you need? Run the checker</a></div>
+    </div>
+  {%- endif -%}
+  </div>
+  <dialog class="tk-dlg" id="tk-dlg"><div class="tk-in" id="tk-in"></div></dialog>
+</div>
+{%- if customer and section.settings.secret != blank -%}
+  {%- assign tk_ts = 'now' | date: '%s' -%}
+  {%- capture tk_msg -%}{{ customer.id }}:{{ tk_ts }}{%- endcapture -%}
+  <script type="application/json" id="tk-cfg">{
+    "api": {{ section.settings.api_url | json }},
+    "finder": {{ section.settings.finder_url | json }},
+    "auth": { "cid": {{ customer.id | append: '' | json }}, "ts": {{ tk_ts | json }}, "sig": {{ tk_msg | hmac_sha256: section.settings.secret | json }} },
+    "name": {{ customer.first_name | default: '' | json }},
+    "orders": [{%- assign tk_first = true -%}{%- for o in customer.orders limit: 25 -%}{%- for li in o.line_items -%}{%- unless tk_first -%},{%- endunless -%}{"h": {{ li.product.handle | json }}, "t": {{ li.product.title | default: li.title | json }}, "s": {{ li.sku | json }}, "q": {{ li.quantity | json }}, "d": {{ o.created_at | date: '%Y-%m-%d' | json }}, "o": {{ o.name | json }}}{%- assign tk_first = false -%}{%- endfor -%}{%- endfor -%}]
+  }</script>
+{% raw %}
+<script>
+(() => {
+  let C;
+  try { C = JSON.parse(document.getElementById('tk-cfg').textContent); } catch (e) { return; }
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const main = $('#tk-main'), dlg = $('#tk-dlg'), inn = $('#tk-in');
+  const today = () => new Date().toISOString().slice(0, 10);
+  const addYears = (d, y) => { const x = new Date(d + 'T12:00:00'); x.setFullYear(x.getFullYear() + y); return x; };
+  const fmt = (d) => d ? new Date((d.length === 10 ? d + 'T12:00:00' : d)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'never';
+  let items = [], sel = new Set(), filter = '';
+
+  async function api(body) {
+    const r = await fetch(C.api, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...C.auth, ...body }) });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || !d.ok) throw new Error(d.error || 'Something went wrong');
+    items = d.items || []; return d;
+  }
+  function status(it) {
+    const by = addYears(it.installed, it.replace_years), days = (by - new Date()) / 864e5;
+    const checked = it.last_checked || it.installed, sinceCheck = (new Date() - new Date(checked + 'T12:00:00')) / 864e5;
+    return { by, s: days <= 0 ? 'now' : days <= 180 ? 'due' : 'ok', chk: sinceCheck > 365 };
+  }
+  const counts = () => { const c = { all: 0, now: 0, due: 0, chk: 0 }; items.forEach((it) => { const s = status(it); c.all += it.qty; if (s.s === 'now') c.now += it.qty; if (s.s === 'due') c.due += it.qty; if (s.chk) c.chk += it.qty; }); return c; };
+
+  function draw() {
+    if (!items.length) {
+      main.innerHTML = `<div class="tk-card tk-empty"><h2>${C.name ? esc(C.name) + ', start' : 'Start'} your sign list</h2><p style="font-size:1.5rem;color:var(--mut)">Add the signs posted at your site, or pull them in from your past CGAP orders.</p>
+        <div class="tk-row" style="justify-content:center"><button class="tk-btn tk-btn--o" type="button" data-a="add">+ Add a sign</button>${C.orders.length ? '<button class="tk-btn" type="button" data-a="import">Import from my orders</button>' : ''}</div></div>`;
+      return;
+    }
+    const c = counts();
+    const shown = items.filter((it) => { const s = status(it); return !filter || (filter === 'chk' ? s.chk : s.s === filter); });
+    const byLoc = {}; shown.forEach((it) => { (byLoc[it.location] = byLoc[it.location] || []).push(it); });
+    main.innerHTML = `<div class="tk-stats">
+        <div class="tk-stat" data-f="" aria-pressed="${!filter}"><b>${c.all}</b><span>Signs tracked</span></div>
+        <div class="tk-stat red" data-f="now" aria-pressed="${filter === 'now'}"><b>${c.now}</b><span>Replace now</span></div>
+        <div class="tk-stat amb" data-f="due" aria-pressed="${filter === 'due'}"><b>${c.due}</b><span>Due in 6 months</span></div>
+        <div class="tk-stat blu" data-f="chk" aria-pressed="${filter === 'chk'}"><b>${c.chk}</b><span>Not checked in a year</span></div></div>
+      <div class="tk-row tk-tools" style="margin:0 0 1.6rem"><button class="tk-btn tk-btn--o" type="button" data-a="add">+ Add signs</button>${C.orders.length ? '<button class="tk-btn tk-btn--ghost" type="button" data-a="import">Import from orders</button>' : ''}<button class="tk-btn tk-btn--ghost" type="button" data-a="ics">Calendar reminders</button><button class="tk-btn tk-btn--ghost" type="button" data-a="csv">Download list</button><button class="tk-btn tk-btn--ghost" type="button" data-a="print">Print</button></div>
+      ${Object.entries(byLoc).map(([loc, arr]) => `<div class="tk-loc"><h3><span>${esc(loc)}</span><span style="font-size:1.2rem;color:var(--mut)">${arr.reduce((s, x) => s + x.qty, 0)} signs</span></h3>${arr.map(itemHtml).join('')}</div>`).join('') || '<p>Nothing in this view.</p>'}
+      <div class="tk-bar"><span id="tk-selc">${sel.size} selected</span><div class="tk-row"><button class="tk-ic" type="button" data-a="selall">Select all due</button><button class="tk-ic" type="button" data-a="checked"${sel.size ? '' : ' disabled'}>Mark checked today</button><button class="tk-ic" type="button" data-a="replaced"${sel.size ? '' : ' disabled'}>Mark replaced today</button><button class="tk-btn tk-btn--o" type="button" data-a="reorder"${sel.size ? '' : ' disabled'}>Reorder selected</button></div></div>`;
+  }
+  function itemHtml(it) {
+    const s = status(it);
+    const badge = { now: '<span class="tk-b now">Replace now</span>', due: '<span class="tk-b due">Due soon</span>', ok: '<span class="tk-b ok">OK</span>' }[s.s] + (s.chk ? '<span class="tk-b chk">Inspect</span>' : '');
+    const title = it.handle ? `<a href="/products/${encodeURIComponent(it.handle)}" target="_blank" rel="noopener">${esc(it.title)}</a>` : esc(it.title);
+    return `<div class="tk-it" data-id="${esc(it.id)}"><input type="checkbox" data-sel${sel.has(it.id) ? ' checked' : ''} aria-label="Select">
+      <div><div class="tk-t">${it.qty > 1 ? it.qty + ' x ' : ''}${title}</div><div class="tk-m">${badge} Posted ${fmt(it.installed)} &middot; replace by ${fmt(s.by.toISOString().slice(0, 10))} &middot; last checked ${fmt(it.last_checked)}${it.notes ? ' &middot; ' + esc(it.notes) : ''}</div></div>
+      <div class="tk-acts"><button class="tk-ic" type="button" data-i="chk">Checked today</button><button class="tk-ic" type="button" data-i="edit">Edit</button><button class="tk-ic" type="button" data-i="del" aria-label="Remove">&times;</button></div></div>`;
+  }
+  const busy = (on) => main.style.opacity = on ? .55 : 1;
+  async function run(body) { busy(true); try { await api(body); } catch (e) { alert(e.message === 'sign in again' ? 'Your session expired. Refresh the page.' : e.message); } busy(false); draw(); }
+
+  main.addEventListener('click', async (e) => {
+    const st = e.target.closest('[data-f]'); if (st) { filter = st.dataset.f; draw(); return; }
+    const a = e.target.closest('[data-a]')?.dataset.a;
+    const it = e.target.closest('.tk-it'); const id = it?.dataset.id; const i = e.target.closest('[data-i]')?.dataset.i;
+    if (e.target.matches('[data-sel]')) { e.target.checked ? sel.add(id) : sel.delete(id); $('#tk-selc').textContent = sel.size + ' selected'; main.querySelectorAll('.tk-bar [data-a]:not([data-a=selall])').forEach((b) => b.disabled = !sel.size); return; }
+    if (i === 'chk') return run({ action: 'update', ids: [id], fields: { last_checked: today() } });
+    if (i === 'del') { if (confirm('Remove this sign from your list?')) { sel.delete(id); return run({ action: 'delete', ids: [id] }); } return; }
+    if (i === 'edit') return editDlg(items.find((x) => x.id === id));
+    if (a === 'add') return editDlg(null);
+    if (a === 'import') return importDlg();
+    if (a === 'csv') return csv();
+    if (a === 'ics') return ics();
+    if (a === 'print') return window.print();
+    if (a === 'selall') { items.forEach((x) => { if (status(x).s !== 'ok') sel.add(x.id); }); draw(); return; }
+    if (a === 'checked') { const ids = [...sel]; sel.clear(); return run({ action: 'update', ids, fields: { last_checked: today() } }); }
+    if (a === 'replaced') { const ids = [...sel]; sel.clear(); return run({ action: 'update', ids, fields: { installed: today(), last_checked: today() } }); }
+    if (a === 'reorder') return reorder();
+  });
+
+  const open = (html) => { inn.innerHTML = '<button class="tk-xd" type="button" aria-label="Close">&times;</button>' + html; inn.querySelector('.tk-xd').addEventListener('click', () => dlg.close()); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); };
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  const locs = () => [...new Set(items.map((x) => x.location))];
+
+  function editDlg(it) {
+    const v = it || { title: '', location: locs()[0] || '', qty: 1, installed: today(), replace_years: 5, notes: '' };
+    open(`<h3>${it ? 'Edit sign' : 'Add a sign'}</h3>
+      <label class="tk-f"><span>Sign (search our catalog or type your own)</span><input id="tk-q" value="${esc(v.title)}" autocomplete="off" placeholder="e.g. eyewash station, high voltage"></label><div class="tk-res" id="tk-res" hidden></div>
+      <label class="tk-f"><span>Location (building, room, door, panel...)</span><input id="tk-loc" list="tk-locs" value="${esc(v.location)}" placeholder="e.g. Plant 2 / Chlorine room door"><datalist id="tk-locs">${locs().map((l) => `<option value="${esc(l)}">`).join('')}</datalist></label>
+      <div class="tk-3"><label class="tk-f"><span>Qty</span><input id="tk-qty" type="number" min="1" max="999" value="${v.qty}"></label><label class="tk-f"><span>Posted on</span><input id="tk-ins" type="date" value="${esc(v.installed)}"></label>
+      <label class="tk-f"><span>Replace after</span><select id="tk-yrs">${[2, 3, 5, 7, 10].map((y) => `<option value="${y}"${y === v.replace_years ? ' selected' : ''}>${y} years</option>`).join('')}</select></label></div>
+      <label class="tk-f"><span>Notes (optional)</span><input id="tk-notes" value="${esc(v.notes || '')}" maxlength="200"></label>
+      <p style="font-size:1.25rem;color:var(--mut);margin:0 0 1rem">CGAP signs carry a 5-year outdoor warranty against fading, peeling and rust. Indoor signs usually last longer.</p>
+      <div class="tk-err" id="tk-err"></div><button class="tk-btn tk-btn--o" style="width:100%" type="button" id="tk-save">${it ? 'Save changes' : 'Add to my list'}</button>`);
+    let pick = it ? { sku: it.sku, handle: it.handle } : {};
+    let t; $('#tk-q').addEventListener('input', (e) => { pick = {}; clearTimeout(t); const q = e.target.value.trim(); if (q.length < 3) { $('#tk-res').hidden = true; return; }
+      t = setTimeout(async () => { try { const u = new URL(C.finder); u.searchParams.set('q', q); const d = await (await fetch(u)).json(); const r = (d.results || []).slice(0, 8);
+        $('#tk-res').innerHTML = r.map((x, i) => `<button type="button" data-k="${i}"><b>${esc(x.series)}</b> ${esc(x.subject)}</button>`).join(''); $('#tk-res').hidden = !r.length;
+        $('#tk-res').querySelectorAll('[data-k]').forEach((b) => b.addEventListener('click', () => { const x = r[+b.dataset.k]; pick = { sku: x.sku, handle: x.handle }; $('#tk-q').value = x.series + ' ' + x.subject; $('#tk-res').hidden = true; }));
+      } catch (er) {} }, 250); });
+    $('#tk-save').addEventListener('click', async () => {
+      const f = { title: $('#tk-q').value.trim(), location: $('#tk-loc').value.trim() || 'General', qty: +$('#tk-qty').value || 1, installed: $('#tk-ins').value || today(), replace_years: +$('#tk-yrs').value, notes: $('#tk-notes').value.trim(), sku: pick.sku || null, handle: pick.handle || null };
+      if (!f.title) { $('#tk-err').textContent = 'Name the sign.'; return; }
+      $('#tk-save').disabled = true;
+      try { await api(it ? { action: 'update', ids: [it.id], fields: f } : { action: 'add', items: [f] }); dlg.close(); draw(); } catch (e) { $('#tk-err').textContent = e.message; $('#tk-save').disabled = false; }
+    });
+  }
+
+  function importDlg() {
+    const seen = new Set(); const rows = C.orders.filter((o) => { const k = o.h + o.o; if (!o.h || seen.has(k)) return false; seen.add(k); return true; });
+    open(`<h3>Import from your orders</h3><p style="font-size:1.4rem;color:var(--mut)">Pick the signs you've posted and where they went.</p>
+      <label class="tk-f"><span>Location for these signs</span><input id="tk-iloc" list="tk-locs2" placeholder="e.g. Main shop"><datalist id="tk-locs2">${locs().map((l) => `<option value="${esc(l)}">`).join('')}</datalist></label>
+      <div class="tk-ord">${rows.map((o, i) => `<label><input type="checkbox" data-o="${i}" checked><span>${o.q} x ${esc(o.t)}<br><small style="color:var(--mut)">Order ${esc(o.o)}, ${fmt(o.d)}</small></span></label>`).join('')}</div>
+      <div class="tk-err" id="tk-err"></div><button class="tk-btn tk-btn--o" style="width:100%;margin-top:1rem" type="button" id="tk-imp">Add selected signs</button>`);
+    $('#tk-imp').addEventListener('click', async () => {
+      const loc = $('#tk-iloc').value.trim() || 'General';
+      const add = [...inn.querySelectorAll('[data-o]:checked')].map((c) => { const o = rows[+c.dataset.o]; return { title: o.t, handle: o.h, sku: o.s, qty: o.q, location: loc, installed: o.d, replace_years: 5 }; });
+      if (!add.length) { $('#tk-err').textContent = 'Pick at least one sign.'; return; }
+      $('#tk-imp').disabled = true;
+      try { await api({ action: 'add', items: add }); dlg.close(); draw(); } catch (e) { $('#tk-err').textContent = e.message; $('#tk-imp').disabled = false; }
+    });
+  }
+
+  async function reorder() {
+    const pick = items.filter((x) => sel.has(x.id));
+    const lines = [], skipped = [];
+    for (const it of pick) {
+      if (!it.handle) { skipped.push(it.title); continue; }
+      const p = await fetch('/products/' + it.handle + '.js').then((r) => (r.ok ? r.json() : null)).catch(() => null);
+      if (p && p.available !== false) lines.push({ id: p.variants[0].id, quantity: it.qty }); else skipped.push(it.title);
+    }
+    if (!lines.length) { alert('These signs are not linked to catalog items. Edit them and pick the matching sign, or use the custom sign designer.'); return; }
+    const r = await fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: lines }) });
+    if (!r.ok) { alert('Could not add to cart. Try again.'); return; }
+    if (skipped.length) alert('Added. Not linked to a catalog sign: ' + skipped.join(', '));
+    location.href = '/cart';
+  }
+  function dl(name, type, text) { const b = new Blob([text], { type }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
+  function csv() {
+    const q = (s) => '"' + String(s ?? '').replace(/"/g, '""') + '"';
+    dl('cgap-sign-list.csv', 'text/csv', ['Location,Sign,Qty,Posted,Replace by,Last checked,Status,Notes', ...items.map((it) => { const s = status(it); return [it.location, it.title, it.qty, it.installed, s.by.toISOString().slice(0, 10), it.last_checked || '', s.s === 'now' ? 'Replace now' : s.s === 'due' ? 'Due soon' : 'OK', it.notes || ''].map(q).join(','); })].join('\r\n'));
+  }
+  function ics() {
+    const groups = {};
+    items.forEach((it) => { const d = status(it).by; const k = d.toISOString().slice(0, 10); (groups[k] = groups[k] || []).push(it); });
+    const stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
+    const ev = Object.entries(groups).map(([d, arr], i) => { let dd = d.replace(/-/g, ''); if (new Date(d) < new Date()) dd = today().replace(/-/g, '');
+      const desc = arr.map((x) => `${x.qty} x ${x.title} (${x.location})`).join('\\n').replace(/[,;]/g, ' ');
+      return ['BEGIN:VEVENT', `UID:cgap-tracker-${d}-${i}@cgapindustries.com`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${dd}`, `SUMMARY:Replace ${arr.reduce((s, x) => s + x.qty, 0)} safety sign(s)`, `DESCRIPTION:${desc}\\nReorder: ${location.origin}${location.pathname}`, 'BEGIN:VALARM', 'TRIGGER:-P14D', 'ACTION:DISPLAY', 'DESCRIPTION:Safety signs due for replacement in 2 weeks', 'END:VALARM', 'END:VEVENT'].join('\r\n'); });
+    ev.push(['BEGIN:VEVENT', `UID:cgap-tracker-annual@cgapindustries.com`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${today().replace(/-/g, '')}`, 'RRULE:FREQ=YEARLY', 'SUMMARY:Annual safety sign walk-through', `DESCRIPTION:Check every sign is posted and readable. ${location.origin}${location.pathname}`, 'END:VEVENT'].join('\r\n'));
+    dl('cgap-sign-reminders.ics', 'text/calendar', ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//CGAP Safety//Sign Tracker//EN', ...ev, 'END:VCALENDAR'].join('\r\n'));
+  }
+
+  api({ action: 'list' }).then(draw).catch((e) => { main.innerHTML = `<div class="tk-card"><h2>Couldn't load your list</h2><p>${e.message === 'sign in again' ? 'Your session expired. Refresh the page.' : 'Please refresh in a moment.'}</p></div>`; });
+})();
+</script>
+{% endraw %}
+{%- endif -%}
+{% schema %}
+{
+  "name": "CGAP Sign Tracker",
+  "tag": "section",
+  "class": "cgap-sign-tracker",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Free facility sign tracker" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Keep every sign posted, readable and current" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Log the signs at your sites, see what is due for inspection or replacement, get calendar reminders and reorder in one click." },
+    { "type": "text", "id": "secret", "label": "Tracker key (do not share)" },
+    { "type": "text", "id": "api_url", "label": "Tracker API URL", "default": "https://esmwoaqemeukjrjaesby.supabase.co/functions/v1/sign-tracker" },
+    { "type": "text", "id": "finder_url", "label": "Sign Finder API URL", "default": "https://esmwoaqemeukjrjaesby.supabase.co/functions/v1/sign-finder" }
+  ],
+  "presets": [{ "name": "CGAP Sign Tracker" }]
+}
+{% endschema %}
