@@ -1,0 +1,194 @@
+{%- comment -%} CGAP custom sign designer: live ANSI-style preview of an 8x12 sign with the buyer's header and wording, added to the cart as the custom sign product with the wording saved on the order line. {%- endcomment -%}
+{%- assign custom = all_products[section.settings.custom_handle] -%}
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+<style>
+  .sd{--g:#173F24;--o:#E0731A;--ink:#14181a;--mut:#5d6660;--line:#dfe3dc;color:var(--ink)}
+  .sd *{box-sizing:border-box}
+  .sd-hero{background:var(--g);color:#fff;padding:4rem 1.6rem 3.2rem;border-bottom:4px solid var(--o)}
+  .sd-wrap{max-width:1180px;margin:0 auto;padding:0 1.6rem}
+  .sd-hero .sd-wrap{padding:0}
+  .sd-eyebrow{display:inline-block;font-size:1.2rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#f3c79c;margin:0 0 1rem}
+  .sd-hero h1{color:#fff;font-size:clamp(3rem,4.6vw,4.6rem);line-height:1.08;margin:0 0 1.2rem;text-transform:uppercase}
+  .sd-hero p{font-size:1.75rem;line-height:1.5;max-width:760px;margin:0;opacity:.92}
+  .sd-main{padding:3.2rem 0 5rem;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:3rem;align-items:start}
+  .sd-prev{position:sticky;top:2rem}
+  .sd-prev svg{width:100%;height:auto;display:block;filter:drop-shadow(0 12px 24px rgba(0,0,0,.18))}
+  .sd-note{font-size:1.25rem;color:var(--mut);margin:1rem 0 0;line-height:1.5}
+  .sd-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:2rem;margin:0 0 1.6rem}
+  .sd-card h2{font-size:1.5rem;text-transform:uppercase;letter-spacing:.06em;margin:0 0 1rem}
+  .sd-hdrs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.6rem}
+  .sd-hdrs button{all:unset;cursor:pointer;text-align:center;font-family:Anton,Impact,sans-serif;font-size:1.7rem;letter-spacing:.04em;padding:.9rem .4rem;border-radius:4px;border:3px solid transparent}
+  .sd-hdrs button[aria-pressed=true]{border-color:var(--ink);box-shadow:0 0 0 2px #fff inset}
+  .sd-ta{width:100%;min-height:150px;border:1px solid #cfd4cc;border-radius:6px;padding:1.1rem 1.2rem;font:inherit;font-size:1.6rem;line-height:1.55;text-transform:uppercase;resize:vertical}
+  .sd-help{font-size:1.3rem;color:var(--mut);margin:.7rem 0 0;line-height:1.5}
+  .sd-warn{color:#b3261e;font-weight:700}
+  .sd-ideas{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem}
+  .sd-ideas button{all:unset;cursor:pointer;font-size:1.25rem;border:1px solid var(--line);border-radius:20px;padding:.5rem 1.1rem;background:#f6f7f4}
+  .sd-ideas button:hover{border-color:var(--g)}
+  .sd-row{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+  .sd-qty{display:inline-flex;border:1px solid #cfd4cc;border-radius:5px;overflow:hidden}
+  .sd-qty button{all:unset;cursor:pointer;width:4rem;text-align:center;font-size:2rem;background:#f6f7f4}
+  .sd-qty input{width:6rem;border:0;text-align:center;font:inherit;font-size:1.7rem;font-weight:700}
+  .sd-price{font-size:2.4rem;font-weight:800;color:var(--g)}
+  .sd-price small{display:block;font-size:1.25rem;color:var(--mut);font-weight:600}
+  .sd-btn{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:center;width:100%;background:var(--o);color:#fff;font-weight:700;font-size:1.6rem;padding:1.4rem;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;margin-top:1.4rem}
+  .sd-btn[disabled]{opacity:.5;cursor:default}
+  .sd-link{all:unset;cursor:pointer;color:var(--g);font-weight:700;font-size:1.35rem;text-decoration:underline}
+  .sd-f{display:block;margin-top:1rem}
+  .sd-f span{display:block;font-weight:700;font-size:1.25rem;margin:0 0 .3rem}
+  .sd-f input{width:100%;border:1px solid #cfd4cc;border-radius:6px;padding:.9rem 1rem;font:inherit;font-size:1.45rem}
+  .sd-pts{list-style:none;padding:0;margin:0;display:grid;gap:.6rem;font-size:1.4rem}
+  .sd-pts li:before{content:"\2713";color:var(--g);font-weight:800;margin-right:.6rem}
+  @media (max-width:900px){.sd-main{grid-template-columns:1fr}.sd-prev{position:static}}
+</style>
+<div class="sd">
+  <div class="sd-hero"><div class="sd-wrap">
+    <div class="sd-eyebrow">{{ section.settings.eyebrow }}</div>
+    <h1>{{ section.settings.heading }}</h1>
+    <p>{{ section.settings.subheading }}</p>
+  </div></div>
+  <div class="sd-wrap sd-main">
+    <div class="sd-prev">
+      <svg id="sd-svg" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sign preview"></svg>
+      <p class="sd-note">Live preview of your 12 x 8 in sign. We check every custom sign for ANSI layout and spelling before it's made, and email you if anything needs a second look.</p>
+    </div>
+    <div>
+      <div class="sd-card"><h2>1. Pick the header</h2><div class="sd-hdrs" id="sd-hdrs"></div><p class="sd-help" id="sd-hhelp"></p></div>
+      <div class="sd-card"><h2>2. Type your wording</h2>
+        <textarea class="sd-ta" id="sd-ta" maxlength="200" spellcheck="true" placeholder="One line per row, up to 5 rows"></textarea>
+        <p class="sd-help" id="sd-tip">Up to 5 lines. Short lines print biggest and read from farther away.</p>
+        <div class="sd-ideas" id="sd-ideas"></div>
+      </div>
+      <div class="sd-card"><h2>3. Quantity</h2>
+        <div class="sd-row" style="justify-content:space-between">
+          <div class="sd-qty"><button type="button" data-q="-1" aria-label="Fewer">&minus;</button><input id="sd-q" type="number" min="1" max="999" value="1" aria-label="Quantity"><button type="button" data-q="1" aria-label="More">+</button></div>
+          <div class="sd-price" id="sd-price"></div>
+        </div>
+        <label class="sd-f"><span>Where will it go? (optional, helps us check the wording)</span><input id="sd-where" maxlength="120" placeholder="e.g. Door to the chlorine room at the lift station"></label>
+        <button class="sd-btn" type="button" id="sd-add"{% unless custom and custom.id %} disabled{% endunless %}>Add to cart</button>
+        <div class="sd-row" style="justify-content:space-between;margin-top:1rem"><button class="sd-link" type="button" id="sd-share">Copy a link to this design</button><a class="sd-link" href="/pages/government-quote">Need a quote instead?</a></div>
+      </div>
+      <div class="sd-card"><ul class="sd-pts">
+        <li>Same $29.99 as our catalog signs, no setup fee</li>
+        <li>Counts toward quantity discounts: 5+ 10%, 10+ 15%, 20+ 20%</li>
+        <li>8 x 12 in heavy-gauge, rust-resistant aluminum, pre-drilled corners</li>
+        <li>Made in Amory, Mississippi and ships in 2 business days</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+<script type="application/json" id="sd-cfg">{"custom": {% if custom and custom.id %}{"id": {{ custom.variants.first.id | json }}, "price": {{ custom.price | json }}}{% else %}null{% endif %}}</script>
+{% raw %}
+<script>
+(() => {
+  const C = JSON.parse(document.getElementById('sd-cfg').textContent);
+  const $ = (s) => document.querySelector(s);
+  const NS = 'http://www.w3.org/2000/svg';
+  const H = {
+    DANGER: { band: '#000', fg: '#fff', help: 'Death or serious injury will happen if the hazard is not avoided. Use for the worst hazards only.' },
+    WARNING: { band: '#FF7900', fg: '#000', tri: true, help: 'Death or serious injury could happen. The middle level.' },
+    CAUTION: { band: '#FFD100', fg: '#000', tri: true, help: 'Minor or moderate injury could happen.' },
+    NOTICE: { band: '#0057B8', fg: '#fff', help: 'Information, rules or property protection. No injury hazard.' },
+    'SAFETY FIRST': { band: '#00843D', fg: '#fff', help: 'Safety practices, PPE rules, first aid and emergency equipment.' },
+  };
+  const IDEAS = {
+    DANGER: ['CONFINED SPACE\nENTER BY PERMIT ONLY', 'HIGH VOLTAGE\nKEEP OUT', 'CHLORINE\nAUTHORIZED PERSONNEL ONLY'],
+    WARNING: ['FORKLIFT TRAFFIC\nLOOK BOTH WAYS', 'HEARING PROTECTION\nREQUIRED IN THIS AREA', 'CONTENTS UNDER PRESSURE'],
+    CAUTION: ['WATCH YOUR STEP', 'WET FLOOR\nSLIP HAZARD', 'HOT SURFACE\nDO NOT TOUCH'],
+    NOTICE: ['AUTHORIZED PERSONNEL ONLY', 'ALL VISITORS MUST\nCHECK IN AT OFFICE', 'KEEP DOOR CLOSED'],
+    'SAFETY FIRST': ['HARD HATS REQUIRED\nBEYOND THIS POINT', 'EYEWASH STATION', 'FIRST AID KIT'],
+  };
+  const tiers = [[20, 0.20], [10, 0.15], [5, 0.10]];
+  const st = { h: 'DANGER', text: 'CONFINED SPACE\nENTER BY PERMIT ONLY' };
+  try { const u = new URLSearchParams(location.search); if (H[(u.get('h') || '').toUpperCase()]) st.h = u.get('h').toUpperCase(); if (u.get('t')) st.text = u.get('t').split('|').join('\n'); } catch (e) {}
+
+  const svg = $('#sd-svg');
+  const el = (t, a, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); (p || svg).appendChild(e); return e; };
+  const lines = () => st.text.toUpperCase().split(/\r?\n/).map((l) => l.trim()).filter(Boolean).slice(0, 5);
+  function fitText(t, maxW, size) { t.setAttribute('font-size', size); const w = t.getComputedTextLength(); if (w > maxW) t.setAttribute('font-size', Math.floor((size * maxW) / w)); return +t.getAttribute('font-size'); }
+  function draw() {
+    svg.innerHTML = '';
+    const c = H[st.h];
+    el('rect', { x: 6, y: 6, width: 1188, height: 788, rx: 34, fill: '#fff', stroke: '#000', 'stroke-width': 12 });
+    el('rect', { x: 26, y: 26, width: 1148, height: 280, rx: 18, fill: c.band });
+    const hdrY = 166;
+    if (st.h === 'DANGER') {
+      el('ellipse', { cx: 600, cy: hdrY, rx: 380, ry: 112, fill: '#fff' });
+      el('ellipse', { cx: 600, cy: hdrY, rx: 362, ry: 96, fill: '#D52B1E' });
+      const t = el('text', { x: 600, y: hdrY, 'text-anchor': 'middle', 'dominant-baseline': 'central', fill: '#fff', 'font-family': 'Anton, Impact, sans-serif', 'letter-spacing': '6' }); t.textContent = 'DANGER'; fitText(t, 560, 150);
+    } else {
+      const t = el('text', { x: 600, y: hdrY + 4, 'text-anchor': 'middle', 'dominant-baseline': 'central', fill: c.fg, 'font-family': 'Anton, Impact, sans-serif', 'letter-spacing': '3' }); t.textContent = st.h;
+      const size = fitText(t, c.tri ? 860 : 1040, 210);
+      if (c.tri) {
+        const w = t.getComputedTextLength(), x0 = 600 - w / 2 - 70, s = Math.min(150, size * .82);
+        t.setAttribute('x', 600 + 70);
+        const tx = x0 + 70, ty = hdrY + 6;
+        el('path', { d: `M ${tx} ${ty - s / 2} L ${tx + s * .58} ${ty + s / 2} L ${tx - s * .58} ${ty + s / 2} Z`, fill: '#000', 'stroke-linejoin': 'round', stroke: '#000', 'stroke-width': 8 });
+        el('rect', { x: tx - 7, y: ty - s * .18, width: 14, height: s * .38, rx: 4, fill: c.band });
+        el('circle', { cx: tx, cy: ty + s * .34, r: 8.5, fill: c.band });
+      }
+    }
+    const L = lines(); const n = Math.max(1, L.length);
+    const top = 330, bottom = 760, lh = (bottom - top) / n;
+    let size = Math.min(150, lh * .86);
+    const ts = L.map((s, i) => { const t = el('text', { x: 600, y: top + lh * (i + .5), 'text-anchor': 'middle', 'dominant-baseline': 'central', fill: '#000', 'font-family': 'Anton, Impact, sans-serif', 'letter-spacing': '1' }); t.textContent = s; return t; });
+    ts.forEach((t) => { size = Math.min(size, fitText(t, 1090, size)); });
+    ts.forEach((t) => t.setAttribute('font-size', size));
+    if (!L.length) { const t = el('text', { x: 600, y: 545, 'text-anchor': 'middle', 'dominant-baseline': 'central', fill: '#b8bdb5', 'font-family': 'Anton, Impact, sans-serif', 'font-size': 90 }); t.textContent = 'YOUR WORDING HERE'; }
+    const f = el('text', { x: 1160, y: 780, 'text-anchor': 'end', fill: '#777', 'font-family': 'Arial, sans-serif', 'font-size': 14 }); f.textContent = 'cgapindustries.com';
+    // tips
+    const long = L.some((s) => s.length > 30);
+    $('#sd-tip').innerHTML = (st.text.split(/\r?\n/).filter((l) => l.trim()).length > 5 ? '<span class="sd-warn">Only the first 5 lines fit. </span>' : '') + (long ? '<span class="sd-warn">A line over 30 characters prints small. Try splitting it. </span>' : '') + 'Up to 5 lines. Short lines print biggest and read from farther away.';
+    $('#sd-hhelp').textContent = c.help;
+    document.querySelectorAll('#sd-hdrs button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.h === st.h)));
+    $('#sd-ideas').innerHTML = 'Ideas: ' + IDEAS[st.h].map((x) => `<button type="button" data-t="${x.replace(/"/g, '&quot;')}">${x.replace(/\n/g, ' / ')}</button>`).join('');
+    $('#sd-ideas').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { st.text = b.dataset.t; $('#sd-ta').value = st.text; draw(); }));
+    price(); $('#sd-add').disabled = !C.custom || !L.length;
+  }
+  function price() {
+    const q = Math.max(1, Math.min(999, parseInt($('#sd-q').value, 10) || 1)), u = C.custom ? C.custom.price / 100 : 29.99;
+    const t = tiers.find(([m]) => q >= m), d = t ? t[1] : 0;
+    $('#sd-price').innerHTML = '$' + (q * u * (1 - d)).toFixed(2) + `<small>${q} x $${u.toFixed(2)}${d ? ', ' + Math.round(d * 100) + '% off' : ''}</small>`;
+  }
+  $('#sd-hdrs').innerHTML = Object.entries(H).map(([k, c]) => `<button type="button" data-h="${k}" style="background:${c.band};color:${k === 'DANGER' ? '#fff' : c.fg}">${k}</button>`).join('');
+  $('#sd-hdrs').addEventListener('click', (e) => { const b = e.target.closest('[data-h]'); if (!b) return; st.h = b.dataset.h; draw(); });
+  $('#sd-ta').value = st.text;
+  $('#sd-ta').addEventListener('input', (e) => { st.text = e.target.value; draw(); });
+  document.querySelectorAll('[data-q]').forEach((b) => b.addEventListener('click', () => { const i = $('#sd-q'); i.value = Math.max(1, Math.min(999, (parseInt(i.value, 10) || 1) + +b.dataset.q)); price(); }));
+  $('#sd-q').addEventListener('input', price);
+  $('#sd-share').addEventListener('click', async () => {
+    const u = location.origin + location.pathname + '?h=' + encodeURIComponent(st.h) + '&t=' + encodeURIComponent(lines().join('|'));
+    try { await navigator.clipboard.writeText(u); $('#sd-share').textContent = 'Link copied'; } catch (e) { prompt('Copy this link:', u); }
+    setTimeout(() => { $('#sd-share').textContent = 'Copy a link to this design'; }, 2000);
+  });
+  $('#sd-add').addEventListener('click', async () => {
+    const b = $('#sd-add'); b.disabled = true; b.textContent = 'Adding...';
+    const q = Math.max(1, Math.min(999, parseInt($('#sd-q').value, 10) || 1));
+    const props = { Header: st.h, Wording: lines().join(' / ') };
+    const w = $('#sd-where').value.trim(); if (w) props.Location = w;
+    try {
+      const r = await fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: [{ id: C.custom.id, quantity: q, properties: props }] }) });
+      if (!r.ok) throw new Error('cart');
+      b.textContent = 'Added. Going to cart...'; location.href = '/cart';
+    } catch (e) { b.disabled = false; b.textContent = 'Try again'; }
+  });
+  (document.fonts && document.fonts.load ? document.fonts.load('100px Anton') : Promise.resolve()).then(draw, draw);
+  draw();
+})();
+</script>
+{% endraw %}
+{% schema %}
+{
+  "name": "CGAP Sign Designer",
+  "tag": "section",
+  "class": "cgap-sign-designer",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Custom safety signs" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Design your own sign" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Pick the header, type your wording and see it live. Same price as our catalog signs, no setup fee, and it ships in 2 business days." },
+    { "type": "text", "id": "custom_handle", "label": "Custom sign product handle", "default": "custom-safety-sign-8x12-aluminum" }
+  ],
+  "presets": [{ "name": "CGAP Sign Designer" }]
+}
+{% endschema %}
