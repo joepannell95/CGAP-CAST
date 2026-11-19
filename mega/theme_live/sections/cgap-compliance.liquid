@@ -205,7 +205,7 @@
     let y = 104;
     const key = () => { color(MUT); doc.setFontSize(8); doc.text('OK = posted and readable     X = missing or damaged     N/A = not at this site     R = required (most often cited)', M0, y); y += 18; };
     key();
-    const byArea = {}; s.list.forEach((it) => { (byArea[it.a] = byArea[it.a] || []).push(it); });
+    const byArea = {}; items().forEach((it) => { (byArea[it.a] = byArea[it.a] || []).push(it); });
     for (const [a, arr] of Object.entries(byArea)) {
       if (y > H - 90) { doc.addPage(); y = 50; }
       doc.setFillColor(238, 244, 239); doc.rect(M0, y - 11, W - 2 * M0, 18, 'F'); color(G); doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.text(clean(M.areas[a].label).toUpperCase(), M0 + 6, y + 2); y += 20;
