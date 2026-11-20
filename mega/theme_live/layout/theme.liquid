@@ -16,10 +16,14 @@
     {%- endunless -%}
 
     <title>
+      {%- if template.name == 'product' and product -%}
+        {%- render 'cgap-short-title', product: product %} | CGAP Safety
+      {%- else -%}
       {{ page_title }}
       {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
       {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
       {%- unless page_title contains 'CGAP' %} &ndash; {{ shop.name }}{% endunless -%}
+      {%- endif -%}
     </title>
 
     {% if page_description %}
