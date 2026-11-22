@@ -202,7 +202,7 @@
   const TIERS = [[20, 23.99], [10, 25.49], [5, 26.99], [1, 29.99]];
   const BASE = 29.99;
   const QUOTE_AT = 5000;
-  const SER = { 'DANGER': ['#C8102E', '#fff'], 'WARNING': ['#F47B20', '#111'], 'CAUTION': ['#FFD100', '#111'], 'NOTICE': ['#005EB8', '#fff'], 'SAFETY FIRST': ['#00843D', '#fff'] };
+  const SER = { 'DANGER': ['#C8102E', '#fff'], 'WARNING': ['#F47B20', '#111'], 'CAUTION': ['#FFD100', '#111'], 'NOTICE': ['#005EB8', '#fff'], 'SAFETY FIRST': ['#00843D', '#fff'], 'ISO 7010': ['#1f3a5f', '#fff'] };
   const SCOPE = { site: 'One for the site', entrance: 'One at each entrance', area: 'One at each area' };
   const $ = (s, r = document) => r.querySelector(s);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -337,7 +337,8 @@
       let qty = k in set ? set[k] : (sl.scope === 'site' ? 1 : sl.scope === 'entrance' ? st.entrances : st.areas[a]);
       qty += add[k] || 0;
       if (qty <= 0) continue;
-      const i = Math.max(0, alts.findIndex((s) => !used.has(s)));
+      const bi = st.ans.spanish ? alts.findIndex((s) => M.signs[s].b && !used.has(s)) : -1;
+      const i = bi >= 0 ? bi : Math.max(0, alts.findIndex((s) => !used.has(s)));
       used.add(alts[i]);
       const pri = sl.pri || 2;
       // For inspections and audits, good-practice signs start switched off so the list leads with what gets cited.
@@ -411,7 +412,7 @@
     main.innerHTML = `${ADMIN ? '<div class="sp-adm-bn"><b>Admin mode.</b> Pin the sign you want shown first for each need, for this site type or for every site. Draft signs stay hidden from shoppers until you activate them.</div>' : ''}<div class="sp-banner">${GB[st.goal] || GB.new}</div>
       ${st.cut ? `<div class="sp-nudge">To stay under ${money(st.budget).replace('.00', '')}, we left out <b>${st.cut} lower-priority line${st.cut === 1 ? '' : 's'}</b>. Code-cited signs always stay in. <button class="sp-ic" type="button" id="sp-uncut">Add them back</button></div>` : ''}
       ${st.budget && tr.total > st.budget && st.rows.every((r) => !r.on || r.pri === 1) ? `<div class="sp-nudge">Code-cited signs alone come to <b>${money(tr.total)}</b>, over your budget. Order these first, or download a quote to split across two purchases.</div>` : ''}
-      ${st.ans.spanish ? `<div class="sp-nudge">Crews that read Spanish first: any sign can be made <b>bilingual, English and Spanish</b>, as a custom sign at the same ${money(BASE)}. <button class="sp-ic" type="button" data-cu="">Make a bilingual sign</button></div>` : ''}
+      ${st.ans.spanish ? `<div class="sp-nudge">Crews that read Spanish first: where we have one, your plan uses an <a href="/collections/iso-7010-symbol-signs">ISO symbol sign with English and Spanish text</a>. Any other sign can be made <b>bilingual, English and Spanish</b>, as a custom sign at the same ${money(BASE)}. <button class="sp-ic" type="button" data-cu="">Make a bilingual sign</button></div>` : ''}
       <div class="sp-sum" id="sp-sum"></div><div id="sp-nudge"></div>
       <div class="sp-tools"><span>Show:</span><div class="sp-chips"><button type="button" data-only="0" aria-pressed="${!st.onlyReq}">Whole plan</button><button type="button" data-only="1" aria-pressed="${st.onlyReq}">Code-cited only</button></div></div>
       ${groups.map((a) => { const rs = st.rows.map((r, i) => [r, i]).filter(([r]) => r.area === a); return `<section class="sp-grp"><div class="sp-grp-h"><h3>${esc(M.areas[a].label)}</h3><span>${st.areas[a] > 1 ? st.areas[a] + ' areas' : '1 area'}</span></div>${rs.map(([r, i]) => rowHtml(r, i)).join('')}
